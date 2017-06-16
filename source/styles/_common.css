@@ -1,0 +1,8 @@
+:root {
+    --font: #222;
+    --red: #e23b0a;
+    --blue: #3f52e2;
+}
+
+@custom-media --tb (max-width: 1024px);
+@custom-media --sp (max-width: 768px);

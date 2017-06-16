@@ -1,10 +1,12 @@
+@import './styles/_common.css';
+
 html {
     font-size: 62.5%;
 }
 
 body {
     font-size: 1.4em;
-    color: #222;
+    color: var(--font);
 }
 
 *,

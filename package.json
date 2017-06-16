@@ -1,0 +1,26 @@
+{
+  "name": "scaffold-wordpress",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "kaave <abe@framelunch.jp>",
+  "license": "MIT",
+  "scripts": {
+    "start": "gulp"
+  },
+  "devDependencies": {
+    "cssnano": "^3.10.0",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-postcss": "^7.0.0",
+    "postcss-cssnext": "^2.11.0",
+    "postcss-flexbugs-fixes": "^3.0.0",
+    "postcss-import": "^10.0.0",
+    "postcss-nth-child-fix": "^2.0.0",
+    "require-dir": "^0.3.2",
+    "run-sequence": "^1.2.2",
+    "stylelint": "^7.11.1",
+    "webpack": "^2.6.1",
+    "webpack-stream": "^3.2.0"
+  }
+}
