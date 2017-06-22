@@ -5,10 +5,28 @@
   "author": "kaave <abe@framelunch.jp>",
   "license": "MIT",
   "scripts": {
-    "start": "gulp"
+    "start": "NODE_ENV=development gulp",
+    "build": "NODE_ENV=production gulp"
   },
+  "browserslist": [
+    "ie 11",
+    "ios >= 9",
+    "and_chr >= 49",
+    "chrome >= 49",
+    "firefox >= 53",
+    "safari >= 10",
+    "edge >= 14",
+    "last 2 versions",
+    "not ie < 11"
+  ],
   "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-stage-0": "^6.24.1",
     "cssnano": "^3.10.0",
+    "globby": "^6.1.0",
     "gulp": "^3.9.1",
     "gulp-load-plugins": "^1.5.0",
     "gulp-plumber": "^1.1.0",
@@ -20,7 +38,12 @@
     "require-dir": "^0.3.2",
     "run-sequence": "^1.2.2",
     "stylelint": "^7.11.1",
-    "webpack": "^2.6.1",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.0.0",
     "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "jquery": "^3.2.1"
   }
 }

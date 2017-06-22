@@ -1,4 +1,4 @@
-@import './styles/_common.css';
+@import 'modules/_common.css';
 
 html {
     font-size: 62.5%;
