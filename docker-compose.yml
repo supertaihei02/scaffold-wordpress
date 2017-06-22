@@ -13,7 +13,9 @@ services:
     volumes:
       - ./themes/fl:/var/www/html/wp-content/themes/fl
   db:
-    image: wangxian/alpine-mysql:latest
+    image: mysql:latest
+    # 微妙だった
+    # image: wangxian/alpine-mysql:latest
     env_file: .env
     volumes:
       - ./data/mysql:/var/lib/mysql
