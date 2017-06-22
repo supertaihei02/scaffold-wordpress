@@ -5,14 +5,14 @@ module.exports = {
   //},
 
   style: {
-    entries: ['source/styles/*.css', '!source/styles/_*.css'],
+    entries: ['frontend/styles/*.css', '!frontend/styles/_*.css'],
     outputDir: 'themes/fl',
-    watches: ['source/styles/*.css', 'source/styles/**/*.css']
+    watches: ['frontend/styles/*.css', 'frontend/styles/**/*.css']
   },
 
   script: {
-    entries: ['source/scripts/*.{js,jsx}', '!source/scripts/_*.{js,jsx}'],
+    entries: ['frontend/scripts/*.{js,jsx}', '!frontend/scripts/_*.{js,jsx}'],
     outputDir: 'themes/fl/js',
-    watches: ['source/scripts/*.{js,jsx}', 'source/scripts/**/*.{js,jsx}']
+    watches: ['frontend/scripts/*.{js,jsx}', 'frontend/scripts/**/*.{js,jsx}']
   }
 };
