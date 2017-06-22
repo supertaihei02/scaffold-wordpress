@@ -154,4 +154,7 @@ $RECYCLE.BIN/
 /themes/fl/js/*
 !/themes/fl/js/.gitkeep
 /themes/fl/style.css
+/plugins/akismet/
+/plugins/hello.php
+/plugins/index.php
 
