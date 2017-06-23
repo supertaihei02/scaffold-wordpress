@@ -8,6 +8,7 @@
     "start": "NODE_ENV=development gulp",
     "build": "NODE_ENV=production gulp",
     "lint": "run-p lint:*",
+    "lint:script": "eslint --ext .js,.jsx frontend/",
     "lint:style": "stylelint 'frontend/**/*.css'"
   },
   "browserslist": [
@@ -28,6 +29,11 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
     "cssnano": "^3.10.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.5.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.1.0",
     "globby": "^6.1.0",
     "gulp": "^3.9.1",
     "gulp-load-plugins": "^1.5.0",

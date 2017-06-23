@@ -38,7 +38,7 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 - [ ] 画像とかフォントとかassets関係の整備
 - [ ] Reset.css系の当て込み
 - [ ] font-awesomeをnpmから突っ込む
-- [ ] ESLint
+- [x] ESLint
 - [x] stylelint
 - [ ] Wordpressってwatchしてリロードってやってくんないの？
     - 手動でJS書けばOK
