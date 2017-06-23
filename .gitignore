@@ -150,6 +150,7 @@ $RECYCLE.BIN/
 ### Manual ###
 /.env
 /.idea
+/flow-typed
 /data
 /themes/fl/js/*
 !/themes/fl/js/.gitkeep

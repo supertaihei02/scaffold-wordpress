@@ -51,4 +51,6 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 
 - https://tech.recruit-mp.co.jp/infrastructure/post-11266/
 - https://liginc.co.jp/327631
- 
+- http://tech.quartetcom.co.jp/2014/06/30/wordpress-silex-twig/
+    - コレができたらいけてるだろうな・・・
+- http://oki2a24.com/2014/06/28/set-wordpress-permalink-or-nginx/ 
