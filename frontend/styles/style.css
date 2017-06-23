@@ -1,4 +1,4 @@
-@import 'modules/_common.css';
+@import "modules/_common.css";
 
 html {
     font-size: 62.5%;
@@ -9,6 +9,7 @@ body {
     color: var(--font);
 }
 
+/* stylelint-disable-next-line selector-no-universal */
 *,
 ::before,
 ::after {
