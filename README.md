@@ -32,7 +32,7 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 6. 外観 > テーマ > fl
 
 ## DBの状態をGit管理したいとき
-sh operation/db/export.sh
+sh tools/shell-scripts/export.sh
 
 ## TODO or 野望
 
