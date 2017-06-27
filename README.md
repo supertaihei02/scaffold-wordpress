@@ -11,7 +11,7 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 
 1. `make`
 2. `yarn start`
-3. ブラウザで `http://localhost:9000`
+3. ブラウザで `http://localhost`
     - 初回はいろいろ言われるので適当にセットアップ
 4. 外観 > テーマ > fl
 
@@ -27,9 +27,12 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
     - または `npm install` 。いつものです。
 4. `yarn start`
     - または `npm start` 。ビルド&ウォッチです。
-5. ブラウザで `http://localhost:9000`
+5. ブラウザで `http://localhost`
     - 初回はいろいろ言われるので適当にセットアップ
 6. 外観 > テーマ > fl
+
+## DBの状態をGit管理したいとき
+sh operation/db/export.sh
 
 ## TODO or 野望
 
