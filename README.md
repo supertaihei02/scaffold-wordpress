@@ -15,24 +15,15 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
     - 初回はいろいろ言われるので適当にセットアップ
 4. 外観 > テーマ > fl
 
-あとはよしなに。 `yarn build` で例によって圧縮版を出力します
-
-### make使わないなら
-
-1. `cp .env.sample .env`
-    - 設定ファイルを作成します。必要に応じて中身をいじりましょう。
-2. `docker-compose up -d`
-    - Dockerのイメージを起動します。必要に応じてダウンロードもしてきます。
-3. `yarn`
-    - または `npm install` 。いつものです。
-4. `yarn start`
-    - または `npm start` 。ビルド&ウォッチです。
-5. ブラウザで `http://localhost`
-    - 初回はいろいろ言われるので適当にセットアップ
-6. 外観 > テーマ > fl
+あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します
 
 ## DBの状態をGit管理したいとき
-sh tools/shell-scripts/export.sh
+
+DBファイルをバックアップ取ってやります。
+
+```bash
+make export
+```
 
 ## TODO or 野望
 
@@ -45,7 +36,8 @@ sh tools/shell-scripts/export.sh
 - [x] stylelint
 - [ ] Wordpressってwatchしてリロードってやってくんないの？
     - 手動でJS書けばOK
-- [ ] 初期データを適当に突っ込む
+- [x] 初期データを適当に突っ込む
+    - ダンプ読んでもらうようにした
 - [ ] テーマの中を整備 またはドキュメントで補足
 - [ ] ステージング用デプロイ環境なんかないか
 - [x] プラグイン開発への対応
