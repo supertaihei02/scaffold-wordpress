@@ -34,8 +34,7 @@ make export
 - [ ] font-awesomeをnpmから突っ込む
 - [x] ESLint
 - [x] stylelint
-- [ ] Wordpressってwatchしてリロードってやってくんないの？
-    - 手動でJS書けばOK
+- [x] Wordpressってwatchしてリロードってやってくんないの？
 - [x] 初期データを適当に突っ込む
     - ダンプ読んでもらうようにした
 - [ ] テーマの中を整備 またはドキュメントで補足
@@ -49,3 +48,4 @@ make export
 - http://tech.quartetcom.co.jp/2014/06/30/wordpress-silex-twig/
     - コレができたらいけてるだろうな・・・
 - http://oki2a24.com/2014/06/28/set-wordpress-permalink-or-nginx/ 
+- https://torounit.com/blog/2017/03/15/3396/

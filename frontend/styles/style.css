@@ -9,6 +9,7 @@ body {
     font-size: 1.4rem;
     color: var(--color-font);
     background: var(--color-main);
+    transition: background-color 0.3s var(--ease-in-out-sine);
 }
 
 /* stylelint-disable-next-line selector-no-universal */

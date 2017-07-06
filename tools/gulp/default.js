@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const $ = require('gulp-load-plugins')();
 const runSequence = require('run-sequence');
+const browserSync = require('browser-sync');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const customProperties = require('postcss-custom-properties');
@@ -22,12 +23,25 @@ gulp.task('default', () => process.env.NODE_ENV === 'production' ? runSequence(
 ) : runSequence(
   // development
   ['scripts', 'styles'],
+  'browserSync',
   'watch'
 ));
 
 gulp.task('watch', () => {
   gulp.watch(conf.script.watches, ['scripts']);
   gulp.watch(conf.style.watches, ['styles']);
+});
+
+gulp.task('browserSync', function () {
+  browserSync({
+    proxy: 'localhost',
+    files: [
+      "./wordpress/themes/fl/style.css",
+      "./wordpress/themes/fl/js/*.js",
+      "./wordpress/**/*.php",
+      "!./wordpress/themes/fl/js/vendor.bundle.js",
+    ]
+  });
 });
 
 gulp.task('scripts', () => $.plumber()
