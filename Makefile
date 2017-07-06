@@ -6,7 +6,6 @@ init:
 	mkdir -p data/mysql
 	docker-compose up -d
 	yarn
-	yarn build
 	make import
 
 clean:
