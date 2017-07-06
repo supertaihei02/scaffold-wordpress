@@ -1,0 +1,29 @@
+@import "_variables.css";
+@import "_keyframes.css";
+@import "_reset.css";
+
+body {
+    font-family: var(--font-base);
+    background: var(--color-main);
+    color: var(--color-font);
+
+    @media (--over-sp) {
+        background: var(--color-gray);
+    }
+}
+
+/* stylelint-disable-next-line */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+a,
+a:hover,
+a:focus {
+    appearance: none;
+}
+
+pre {
+    font-family: var(--font-base);
+    font-weight: var(--font-weight-normal);
+}

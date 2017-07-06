@@ -1,12 +1,14 @@
-@import "modules/_common.css";
+@import "modules/_global.css";
 
 html {
     font-size: 62.5%;
 }
 
 body {
-    font-size: 1.4em;
-    color: var(--font);
+    font-family: var(--font-base);
+    font-size: 1.4rem;
+    color: var(--color-font);
+    background: var(--color-main);
 }
 
 /* stylelint-disable-next-line selector-no-universal */

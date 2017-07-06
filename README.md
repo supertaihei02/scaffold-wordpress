@@ -30,7 +30,7 @@ make export
 ### そもそも案件こなしたことないからほとんど妄想なんだけど、こんなんでいいのかな？
 
 - [ ] 画像とかフォントとかassets関係の整備
-- [ ] Reset.css系の当て込み
+- [x] Reset.css系の当て込み
 - [ ] font-awesomeをnpmから突っ込む
 - [x] ESLint
 - [x] stylelint

@@ -1,3 +1,5 @@
+const { browserslist } = require('../package.json');
+
 module.exports = {
   //copy: {
   //  static: ['src/*.*'],
@@ -6,13 +8,34 @@ module.exports = {
 
   style: {
     entries: ['frontend/styles/*.css', '!frontend/styles/_*.css'],
+    watches: ['frontend/styles/*.css', 'frontend/styles/**/*.css'],
     outputDir: 'wordpress/themes/fl',
-    watches: ['frontend/styles/*.css', 'frontend/styles/**/*.css']
+    autoprefixerOption: { grid: true }
   },
 
   script: {
     entries: ['frontend/scripts/*.{js,jsx}', '!frontend/scripts/_*.{js,jsx}'],
+    watches: ['frontend/scripts/*.{js,jsx}', 'frontend/scripts/**/*.{js,jsx}'],
     outputDir: 'wordpress/themes/fl/js',
-    watches: ['frontend/scripts/*.{js,jsx}', 'frontend/scripts/**/*.{js,jsx}']
+    babelOptions: {
+      presets: [
+        ['env', {
+          // package.jsonで指定したbrowserslistを利用する
+          targets: { browsers: browserslist },
+          // babel-polyfillのうちbrowserslistを踏まえて必要なものだけ読み込む
+          useBuiltIns: true,
+          // productionの場合tree shakingを有効化
+          modules: process.env.NODE_ENV === 'production' ? false : 'commonjs',
+          // developmentの際にデバッグ情報を出力する
+          debug: process.env.NODE_ENV === 'development'
+        }],
+        'flow'
+      ],
+      plugins: [
+        'transform-object-rest-spread'
+      ],
+      cacheDirectory: true,
+      babelrc: false
+    }
   }
 };
