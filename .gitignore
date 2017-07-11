@@ -152,9 +152,12 @@ $RECYCLE.BIN/
 /.idea
 /flow-typed
 /data
-/wordpress/themes/fl/js/*
-/wordpress!/themes/fl/js/.gitkeep
-/wordpress/themes/fl/style.css
+/wordpress/themes/fl/**/*
+!/wordpress/themes/fl/**/*.php
+!/wordpress/themes/fl/readme.txt
+!/wordpress/themes/fl/screenshot.*
+!/wordpress/themes/fl/languages/.gitkeep
+
 /wordpress/plugins/akismet/
 /wordpress/plugins/hello.php
 /wordpress/plugins/index.php
