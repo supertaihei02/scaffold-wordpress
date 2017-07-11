@@ -1,13 +1,13 @@
-@import "_variables.css";
-@import "_keyframes.css";
-@import "_reset.css";
+@import "./_variables.css";
+@import "./_keyframes.css";
+@import "../../../node_modules/libraries-frontend-framelunch/css/_reset.css";
 
 body {
-    font-family: var(--font-base);
+    font-family: var(--fontFamily-base);
     background: var(--color-main);
     color: var(--color-font);
 
-    @media (--over-sp) {
+    @media (--not-sp) {
         background: var(--color-gray);
     }
 }
@@ -24,6 +24,6 @@ a:focus {
 }
 
 pre {
-    font-family: var(--font-base);
-    font-weight: var(--font-weight-normal);
+    font-family: var(--fontFamily-base);
+    font-weight: var(--fontWeight-normal);
 }

@@ -9,7 +9,8 @@ class Main {
   onDOMContentLoaded() {
     console.log(`onDOMContentLoaded: ${new Date().toISOString()}`);
 
-    setInterval(() => document.body.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 90%, 70%)`, 300);
+    //setInterval(() => document.body.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 90%, 70%)`, 300);
+    setInterval(() => document.body.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 60%, 30%)`, 300);
   }
 }
 
