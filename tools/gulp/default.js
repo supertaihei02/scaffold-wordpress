@@ -6,9 +6,11 @@ const conf = require('../config');
 
 gulp.task('default', () => process.env.NODE_ENV === 'production' ? runSequence(
   // production
+  'copy',
   ['b.script', 'b.style']
 ) : runSequence(
   // development
+  'copy',
   ['script', 'style'],
   'browserSync',
   'watch'

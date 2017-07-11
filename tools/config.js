@@ -1,10 +1,10 @@
 const { browserslist } = require('../package.json');
 
 module.exports = {
-  //copy: {
-  //  static: ['src/*.*'],
-  //  assets: ['src/assets/**/*'],
-  //},
+  copy: {
+    sources: ['frontend/assets/**/*'],
+    outputDir: 'wordpress/themes/fl'
+  },
 
   style: {
     entries: ['frontend/styles/*.css', '!frontend/styles/_*.css'],
