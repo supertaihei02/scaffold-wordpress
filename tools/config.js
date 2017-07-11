@@ -21,7 +21,10 @@ module.exports = {
       presets: [
         ['env', {
           // package.jsonで指定したbrowserslistを利用する
-          targets: { browsers: browserslist },
+          targets: {
+            browsers: browserslist,
+            uglify: process.env.NODE_ENV === 'production'
+          },
           // babel-polyfillのうちbrowserslistを踏まえて必要なものだけ読み込む
           useBuiltIns: true,
           // productionの場合tree shakingを有効化
