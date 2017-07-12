@@ -17,17 +17,16 @@ gulp.task('default', () => process.env.NODE_ENV === 'production' ? runSequence(
 ));
 
 gulp.task('watch', () => {
-  gulp.watch(conf.script.watches, ['scripts']);
-  gulp.watch(conf.style.watches, ['styles']);
+  gulp.watch(conf.copy.sources, ['copy']);
+  gulp.watch(conf.script.watches, ['script']);
+  gulp.watch(conf.style.watches, ['style']);
 });
 
-gulp.task('browserSync', function () {
+gulp.task('browserSync', () => {
   browserSync({
     proxy: 'localhost',
     files: [
-      "./wordpress/themes/fl/style.css",
-      "./wordpress/themes/fl/js/*.js",
-      "./wordpress/**/*.php",
+      "./wordpress/themes/fl/**/*",
       "!./wordpress/themes/fl/js/vendor.bundle.js",
     ]
   });
