@@ -11,9 +11,7 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 
 1. `make`
 2. `yarn start`
-3. ブラウザで `http://localhost`
-    - 初回はいろいろ言われるので適当にセットアップ
-4. 外観 > テーマ > fl
+3. 外観 > テーマ > fl
 
 あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します
 
@@ -30,7 +28,6 @@ make export
 ### そもそも案件こなしたことないからほとんど妄想なんだけど、こんなんでいいのかな？
 
 - [x] 画像とかフォントとかassets関係の整備
-    - frontendの中に入れてgulpタスクでコピーしてもいいけど、そんなに需要ないかなって・・・
 - [x] Reset.css系の当て込み
 - [ ] font-awesomeをnpmから突っ込む
 - [x] ESLint
