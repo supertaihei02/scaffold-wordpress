@@ -33,8 +33,25 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: conf.babelOptions
+          options: conf.script.babelOptions
         }
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            name: '[name].[ext]'
+          }
+        }
+      },
+      {
+        test: /\.svg$/,
+        use: 'svg-inline-loader'
+      },
+      {
+        test: /\.(txt|log|md)$/,
+        use: 'raw-loader'
       }
     ]
   }

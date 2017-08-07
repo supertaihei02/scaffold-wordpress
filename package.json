@@ -17,12 +17,8 @@
   "browserslist": [
     "ie 11",
     "ios >= 9",
-    "and_chr >= 49",
-    "chrome >= 49",
-    "firefox >= 53",
-    "safari >= 10",
-    "edge >= 14",
-    "last 2 versions",
+    "android >= 4.4.4",
+    "> 1% in JP",
     "not ie < 11"
   ],
   "devDependencies": {
@@ -35,9 +31,9 @@
     "babel-preset-flow": "^6.23.0",
     "browser-sync": "^2.18.12",
     "cssnano": "^3.10.0",
-    "eslint": "^3.19.0",
-    "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.1.0",
-    "flow-bin": "^0.48.0",
+    "eslint": "^4.4.0",
+    "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.2.3",
+    "flow-bin": "^0.52.0",
     "flow-typed": "^2.1.2",
     "globby": "^6.1.0",
     "gulp": "^3.9.1",
@@ -48,21 +44,22 @@
     "postcss-custom-media": "^6.0.0",
     "postcss-custom-properties": "^6.1.0",
     "postcss-fixes": "^2.0.1",
-    "postcss-flexbugs-fixes": "^3.0.0",
     "postcss-import": "^10.0.0",
     "postcss-nested": "^2.0.2",
-    "postcss-nth-child-fix": "^2.0.0",
     "postcss-url": "^7.0.0",
+    "raw-loader": "^0.5.1",
     "require-dir": "^0.3.2",
-    "run-sequence": "^1.2.2",
-    "stylelint-config-framelunch": "framelunch/stylelint-config-framelunch#v0.1.0",
+    "run-sequence": "^2.1.0",
+    "stylelint-config-framelunch": "framelunch/stylelint-config-framelunch#v0.2.0",
+    "svg-inline-loader": "^0.8.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.0.0",
+    "url-loader": "^0.5.9",
+    "webpack": "^3.4.1",
     "webpack-stream": "^3.2.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "jquery": "^3.2.1",
-    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch"
+    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch#0.1.2"
   }
 }

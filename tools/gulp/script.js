@@ -15,4 +15,3 @@ gulp.task('script', () => $.plumber()
 gulp.task('b.script', () => webpackStream(scriptConfProduction, webpack)
   .pipe(gulp.dest(conf.script.outputDir))
 );
-

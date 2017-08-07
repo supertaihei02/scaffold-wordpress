@@ -2,7 +2,7 @@
 
 ## 何
 
-フロントまわりを極力npmに切り離したWordpress開発環境です。  
+フロントまわりを極力npmに切り離したWordpress開発環境です。
 WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプルな環境を用意しました。
 
 元ネタのテーマは[BlankSlate](http://tidythemes.com/concept/)を使いました。
@@ -70,6 +70,11 @@ make export
 
 ほとんどいじってないです。画像突っ込めるかの確認に"武丸"さんを貼っただけ
 
+#### JS、CSSまわり
+
+使っているツール周りは基本的に[scaffold-frontend](https://github.com/framelunch/scaffold-frontend)と同じです。
+一部使ってないツールや設定(JSからのCSS読み込み)が混じってますが、どうしようか決めかねてます。
+
 #### いじりどころ
 
 共通っぽいファイルは端折った
@@ -92,12 +97,12 @@ make export
         - サムネイル: `the_post_thumbnail`
         - 記事: `the_content`
         - 詳細表示: `wp_link_pages`
-- サムネイル表示用: `attachment.php`        
-- 対象なし: `404.php`        
-- 月別一覧: `archive.php`        
-- 著者別一覧: `author.php`        
-- カテゴリ別一覧: `category.php`        
-- 検索結果: `search.php`        
+- サムネイル表示用: `attachment.php`
+- 対象なし: `404.php`
+- 月別一覧: `archive.php`
+- 著者別一覧: `author.php`
+- カテゴリ別一覧: `category.php`
+- 検索結果: `search.php`
 - 固定ページ: `page.php`
 - タグ別一覧ページ: `tag.php`
 
@@ -112,10 +117,13 @@ make export
 - [x] stylelint
 - [x] Wordpressってwatchしてリロードってやってくんないの？
 - [x] 初期データを適当に突っ込む
-    - ダンプ読んでもらうようにした
-- [ ] テーマの中を整備 またはドキュメントで補足
+    - ダンプ読めるようにしてもらった
+- [x] テーマの中を整備 またはドキュメントで補足
 - [ ] ステージング用デプロイ環境なんかないか
 - [x] プラグイン開発への対応
+- [ ] WP REST APIあたりを上手に組み込めないか？
+    - 使わないケースも当然多々あるので、切り替えがわかりやすくできるとベスト
+- [ ] しばらくほっといて、久々に触ると502エラー
 
 ## メモ
 

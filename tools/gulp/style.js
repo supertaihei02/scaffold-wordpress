@@ -33,7 +33,10 @@ gulp.task('b.style', () => gulp.src(conf.style.entries)
     nested,
     cssFixes,
     autoprefixer(conf.style.autoprefixerOption),
-    cssnano
+    cssnano({
+      safe: true,
+      calc: false
+    })
   ]))
   .pipe(gulp.dest(conf.style.outputDir))
 );
