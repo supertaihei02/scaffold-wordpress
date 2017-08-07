@@ -14,6 +14,11 @@ services:
     volumes:
       - ./wordpress/themes/fl:/var/www/html/wp-content/themes/fl
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
+      - ./wordpress/wp-console:/var/www/html/wp-console
+    networks:
+      main:
+        aliases:
+          - wp
   nginx:
     container_name: wp-web
     image: nginx:alpine
@@ -26,15 +31,19 @@ services:
       - wordpress
     links:
       - wordpress
+    networks:
+      main:
+        aliases:
+          - web
   db:
     container_name: wp-db
     image: mariadb:latest
     env_file: .env
     volumes:
-      - ./data/mysql:/var/lib/mysql
-
-# databaseのように永続的なストレージが欲しい場合に必要な設定
-# https://docs.docker.com/compose/compose-file/#volume-configuration-reference
-# volumes:
-#   db-data:
-#     driver: local
+      - ./settings/db:/etc/mysql/data
+    networks:
+      main:
+        aliases:
+          - db
+networks:
+  main:
