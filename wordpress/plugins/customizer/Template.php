@@ -173,9 +173,9 @@ function getPostsForRender($args)
             }
             $page = $args[SI_GET_P_PAGE];
 
-            // $argsに条件値を追加(-1 の場合は全件取得)
+            // $argsに条件値を追加
+            $args[SI_GET_P_LIMIT] = $count;
             if ($count !== -1) {
-                $args[SI_GET_P_LIMIT] = $count;
                 $args[SI_GET_P_OFFSET] = ($page - 1) * $count;
             }
         }
@@ -434,4 +434,74 @@ function getCustomTerms($post_id){
     }
 
     return $result;
+}
+
+/* *******************************
+ *        Search 関連
+ * *******************************/
+/**
+ * @param $keyword
+ * @param int $page
+ * @param int $limit
+ * @return WP_Query
+ */
+function getSearchQuery($keyword, $page = 1, $limit = 10)
+{
+    global $wpdb;
+    $keyword = '%' . $wpdb->esc_like($keyword) . '%';
+    $post_ids_meta = $wpdb->get_col($wpdb->prepare(
+        "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE '%s'",
+        $keyword
+    ));
+    $post_ids_post = $wpdb->get_col($wpdb->prepare(
+        "SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_title LIKE '%s' OR post_content LIKE '%s'",
+        $keyword, $keyword)
+    );
+    $post_ids = array_merge($post_ids_meta, $post_ids_post);
+
+    $args = array(
+        'paged' => $page,
+        'posts_per_page' => $limit,
+        'post_type' => 'any',
+        'post_status' => 'publish',
+        'post__in' => $post_ids
+    );
+
+    // 検索した結果、マッチしなかったケースでは何もマッチさせない
+    if ($keyword !== '%%' && empty($post_ids)) {
+        $args = array('ID' => -999 );
+    }
+    return new WP_Query($args);
+}
+
+add_action( 'wp_ajax_get_search_result', 'getSearchResults');
+add_action( 'wp_ajax_nopriv_get_search_result', 'getSearchResults');
+function getSearchResults()
+{
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
+    $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+    $query = getSearchQuery($keyword, $page, $limit);
+
+    $posts = array();
+    while ($query->have_posts()) {
+        $query->the_post();
+        $data = array();
+        $data['post_id'] = get_the_ID();
+        $data['title'] = strip_tags(get_the_title());
+        $data['link'] = get_the_permalink();
+        $posts[] = $data;
+    }
+
+    $results = array(
+        'search_word' => $keyword,
+        'max_page' => $query->max_num_pages,
+        'current_page' => $page,
+        'found_count' => $query->found_posts,
+        'display_count' => $query->post_count,
+        'posts' => $posts
+    );
+
+    echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    die();
 }

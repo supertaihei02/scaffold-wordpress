@@ -21,5 +21,5 @@ if [ ! -f $DUMP_FILE ]; then
     exit;
 fi
 
-docker exec wp-db /bin/bash -c "mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $DUMP_CONTAINER_PATH;" \
+docker exec $MYSQL_CONTAINER /bin/bash -c "mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $DUMP_CONTAINER_PATH;" \
     && echo "import from '$DUMP_PATH'"

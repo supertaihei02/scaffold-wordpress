@@ -1,19 +1,18 @@
 <?php
-phpinfo();
 /* *******************************
  *       管理画面ログイン
  * *******************************/
-define('LOGIN_KEY_PASSWORD', 'si');
-define('LOGIN_PAGE', '/si-console/');
+define('LOGIN_KEY_PASSWORD', 'framelunch');
+define('LOGIN_PAGE', '/wp-console/');
 
 /* *******************************
  *          権限周り
  * *******************************/
 // それぞれのRoleを割り当てるUserIDをセットする
 define('REL_USER_ROLE', [
-    ROLE_SUPER_ADMIN    => ['nakanishi'],
+    ROLE_SUPER_ADMIN    => ['framelunch'],
     ROLE_ADMIN    => ['admin'],
-    ROLE_OPERATOR => ['mates']
+    ROLE_OPERATOR => ['operator']
 ]);
 
 // adminに表示させないページ
@@ -48,13 +47,12 @@ define('USER_FORBIDDEN_PAGES', [
  *          記事の設定
  * *******************************/
 // POST TYPE, TAXONOMYのKEYは何度か使うので、define して使う
-define('POST_BOOKS',  'column');
-define('TAX_BOOKS_CATEGORY',  'category');
-define('TAX_BOOKS_REGION',  'region');
-define('TAX_BOOKS_RELATION',  'relation');
+define('POST_RECRUIT',  'recruit');
 
 define('POST_NEWS',  'news');
-define('TAX_NEWS_TAGS',  'tags');
+define('TAX_NEWS_SEMINAR',  'seminar');
+define('TAX_NEWS_RELEASE',  'release');
+
 
 // ポストタイプやタクソノミーの設定
 define('SI_CUSTOM_POST_TYPES', [
@@ -64,16 +62,16 @@ define('SI_CUSTOM_POST_TYPES', [
             // このカスタムポストタイプに投稿できるRole
             SI_ALLOW_ROLES => [ROLE_ADMIN, ROLE_OPERATOR],
             // POST TYPEのID
-            SI_KEY  => POST_BOOKS,
+            SI_KEY  => POST_RECRUIT,
             // POST TYPEの表示名称
-            SI_NAME => 'BOOKS',
+            SI_NAME => 'RECRUIT',
             /*
              * < リッチエディタを使用するかどうか >
              * - SI_RICH_EDITOR_NOT_USE    : 全てのRoleで使用しない
              * - SI_RICH_EDITOR_ONLY_ADMIN : ADMIN だけ使用
              * - SI_RICH_EDITOR_USE        : だれでも使用
              */
-            SI_USE_RICH_EDITOR => SI_RICH_EDITOR_ONLY_ADMIN, 
+            SI_USE_RICH_EDITOR => SI_RICH_EDITOR_NOT_USE, 
             // 管理画面でこのPOST_TYPEが表示される順序に関係する数値。それぞれずらすこと。
             SI_MENU_POSITION => 6,
             // 表示件数関連(指定が必要ならそれぞれ -1 を設定する)
@@ -90,9 +88,9 @@ define('SI_CUSTOM_POST_TYPES', [
                 // グループ階層
                 [
                     // グループID
-                    SI_KEY  => 'books-base',
+                    SI_KEY  => 'recruit',
                     // 項目のラベル
-                    SI_NAME => '基本情報',
+                    SI_NAME => '募集情報',
                     // 動的に増やせる項目なのかどうか
                     SI_IS_MULTIPLE => false,
                     // 入力項目リスト
@@ -100,9 +98,86 @@ define('SI_CUSTOM_POST_TYPES', [
                         // 入力項目
                         [
                             // 項目ID(一意)
-                            SI_KEY  => 'img',
+                            SI_KEY  => 'detail',
                             // 項目のラベル
-                            SI_NAME => 'メイン画像(推奨: 882x450)',
+                            SI_NAME => '仕事内容',
+                            // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
+                            SI_FIELD_IS_REQUIRE => true,
+                            /*
+                             * 項目の Input Type
+                             * - text:         SI_FIELD_TYPE_TEXT
+                             * - textarea:     SI_FIELD_TYPE_TEXTAREA
+                             * - hidden:       SI_FIELD_TYPE_HIDDEN
+                             * - file:         SI_FIELD_TYPE_FILE
+                             */
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ],
+                        [
+                            SI_KEY  => 'eng_name',
+                            SI_NAME => '英名',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ],
+                        [
+                            SI_KEY  => 'requirement',
+                            SI_NAME => '応募要項',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ],
+                        [
+                            SI_KEY  => 'employment_type',
+                            SI_NAME => '雇用形態',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ],
+                        [
+                            SI_KEY  => 'working_hours',
+                            SI_NAME => '勤務時間',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ],
+                        [
+                            SI_KEY  => 'salary',
+                            SI_NAME => '給与',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ],
+                        [
+                            SI_KEY  => 'welfare',
+                            SI_NAME => '待遇・福利厚生',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ],
+                        [
+                            SI_KEY  => 'vacation',
+                            SI_NAME => '休日・休暇',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ],
+                        [
+                            SI_KEY  => 'location',
+                            SI_NAME => '勤務地',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ],
+                    ]
+                ],
+                // グループ階層
+                [
+                    // グループID
+                    SI_KEY  => 'links',
+                    // 項目のラベル
+                    SI_NAME => 'リクルーティングサービスリンク',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => true,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            // 項目ID(一意)
+                            SI_KEY  => 'link',
+                            // 項目のラベル
+                            SI_NAME => 'リンクURL',
                             // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
                             SI_FIELD_IS_REQUIRE => false,
                             /*
@@ -112,81 +187,16 @@ define('SI_CUSTOM_POST_TYPES', [
                              * - hidden:       SI_FIELD_TYPE_HIDDEN
                              * - file:         SI_FIELD_TYPE_FILE
                              */
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
-                        ],
-                        [
-                            SI_KEY  => 'author',
-                            SI_NAME => '著者',
-                            SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
                         ],
-                        [
-                            SI_KEY  => 'price',
-                            SI_NAME => '価格',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'spec',
-                            SI_NAME => '仕様',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'day_of_issue',
-                            SI_NAME => '発行日',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'content',
-                            SI_NAME => '本の内容紹介',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
-                        ],
-                    ]
-                ],
-                [
-                    SI_KEY  => 'books-samples',
-                    SI_NAME => 'サンプルページ',
-                    SI_IS_MULTIPLE => true,
-                    SI_FIELDS => [
-                        [
-                            // 項目ID(一意)
-                            SI_KEY  => 'img',
-                            // 項目のラベル
-                            SI_NAME => '画像(推奨: 882x450)',
-                            // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
-                        ],
-                        [
-                            SI_KEY  => 'caption',
-                            SI_NAME => 'ページ説明',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
-                        ],
-                    ]
-                ],
-                [
-                    SI_KEY  => 'books-support',
-                    SI_NAME => '書籍サポート',
-                    SI_IS_MULTIPLE => true,
-                    SI_FIELDS => [
                         [
                             SI_KEY  => 'name',
-                            SI_NAME => '表示名',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'link',
-                            SI_NAME => 'リンク',
+                            SI_NAME => '表示名称',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
                         ],
                     ]
-                ],
+                ]
             ]
         ],
         [
@@ -202,7 +212,7 @@ define('SI_CUSTOM_POST_TYPES', [
              * - SI_RICH_EDITOR_ONLY_ADMIN : ADMIN だけ使用
              * - SI_RICH_EDITOR_USE        : だれでも使用
              */
-            SI_USE_RICH_EDITOR => SI_RICH_EDITOR_ONLY_ADMIN,
+            SI_USE_RICH_EDITOR => SI_RICH_EDITOR_USE,
             // 管理画面でこのPOST_TYPEが表示される順序に関係する数値。それぞれずらすこと。
             SI_MENU_POSITION => 7,
             // 表示件数関連(指定が必要ならそれぞれ -1 を設定する)
@@ -213,15 +223,15 @@ define('SI_CUSTOM_POST_TYPES', [
                 SI_RELATED_COUNT => -1
             ],
             // アーカイブを有効にするか否か
-            SI_HAS_ARCHIVE => false,
+            SI_HAS_ARCHIVE => true,
             // Custom Fieldsの設定
             SI_CUSTOM_FIELDS => [
                 // グループ階層
                 [
                     // グループID
-                    SI_KEY  => 'news-base',
+                    SI_KEY  => 'news',
                     // 項目のラベル
-                    SI_NAME => '基本情報',
+                    SI_NAME => '',
                     // 動的に増やせる項目なのかどうか
                     SI_IS_MULTIPLE => false,
                     // 入力項目リスト
@@ -229,11 +239,11 @@ define('SI_CUSTOM_POST_TYPES', [
                         // 入力項目
                         [
                             // 項目ID(一意)
-                            SI_KEY  => 'img',
+                            SI_KEY  => 'topic',
                             // 項目のラベル
-                            SI_NAME => 'メイン画像(推奨: 882x450)',
+                            SI_NAME => '見出し',
                             // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
-                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_IS_REQUIRE => true,
                             /*
                              * 項目の Input Type
                              * - text:         SI_FIELD_TYPE_TEXT
@@ -241,25 +251,7 @@ define('SI_CUSTOM_POST_TYPES', [
                              * - hidden:       SI_FIELD_TYPE_HIDDEN
                              * - file:         SI_FIELD_TYPE_FILE
                              */
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
-                        ],
-                        [
-                            SI_KEY  => 'caption',
-                            SI_NAME => 'メイン画像キャプション',
-                            SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'bold',
-                            SI_NAME => '小見出し',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
-                        ],
-                        [
-                            SI_KEY  => 'content',
-                            SI_NAME => '内容',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
                         ]
                     ]
                 ],
@@ -269,51 +261,25 @@ define('SI_CUSTOM_POST_TYPES', [
     // TAXONOMYの設定
     SI_TAXONOMIES   => [
         // POST TYPEをKEY値にする
-        POST_BOOKS => [
-            [
-                // TAXONOMYのID
-                SI_KEY  => TAX_BOOKS_CATEGORY,
-                // TAXONOMYの表示名称
-                SI_NAME => 'カテゴリ',
-                // 初期登録する TERM 情報
-                SI_DEFAULT => []
-            ],
-            [
-                // TAXONOMYのID
-                SI_KEY  => TAX_BOOKS_REGION,
-                // TAXONOMYの表示名称
-                SI_NAME => '地域',
-                // 初期登録する TERM 情報
-                SI_DEFAULT => []
-            ],
-            [
-                // TAXONOMYのID
-                SI_KEY  => TAX_BOOKS_RELATION,
-                // TAXONOMYの表示名称
-                SI_NAME => '書籍属性',
-                // 初期登録する TERM 情報
-                SI_DEFAULT => []
-            ],
-        ],
         POST_NEWS => [
             [
                 // TAXONOMYのID
-                SI_KEY  => TAX_NEWS_TAGS,
+                SI_KEY  => 'tags',
                 // TAXONOMYの表示名称
-                SI_NAME => 'Tags',
+                SI_NAME => 'カテゴリ',
                 // 初期登録する TERM 情報
                 SI_DEFAULT => [
                     [
-                        SI_KEY  => 'news',
-                        SI_NAME => 'お知らせ'
+                        SI_KEY => TAX_NEWS_SEMINAR,
+                        SI_NAME => 'SEMINAR',
                     ],
                     [
-                        SI_KEY  => 'update',
-                        SI_NAME => '更新情報'
+                        SI_KEY => TAX_NEWS_RELEASE,
+                        SI_NAME => 'RELEASE',
                     ]
                 ]
             ]
-        ]
+        ],
     ],
     /*
      * (上級者向け。っていうかこれ使うならこのプラグイン使わなくていいレベル。)

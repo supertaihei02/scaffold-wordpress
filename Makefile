@@ -3,15 +3,12 @@ _:
 
 init:
 	cp .env.sample .env
-	mkdir -p data/mysql
 	docker-compose up -d
 	yarn
 	make import
 
 clean:
 	docker-compose down
-	rm -rf data
-	mkdir -p data/mysql
 	docker-compose up -d
 	make import
 
