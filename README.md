@@ -2,9 +2,8 @@
 
 ## 何
 
-フロントまわりを極力npmに切り離したWordpress開発環境です。
-WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプルな環境を用意しました。
-
+フロントまわりを極力npmに切り離したWordpress開発環境です。  
+WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプルな環境を用意しました。  
 元ネタのテーマは[BlankSlate](http://tidythemes.com/concept/)を使いました。
 
 ## 動かす
@@ -13,14 +12,22 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 2. `yarn start`
 3. 外観 > テーマ > fl
 
-あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します
+あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します。  
+dockerポートが被るので同時起動できません。  
+「docker-compose.yml」でポート番号を変更するか以下手順で起動中のプロジェクトを停止する必要があります。  
+
+```bash
+$ cd path/to/running/project
+$ docker-compose down
+```
+
 
 ## DBの状態をGit管理したいとき
 
 DBファイルをバックアップ取ってやります。
 
 ```bash
-make export
+# make export
 ```
 
 ## ディレクトリ構成

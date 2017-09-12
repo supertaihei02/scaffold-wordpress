@@ -8,8 +8,8 @@ cd $(dirname $0)
 ENV_FILE=../../.env
 
 if [ ! -f $ENV_FILE ]; then
-    echo "FILE '$ENV_FILE' does not exist."
-    exit;
+    echo "[ERROR] FILE '$ENV_FILE' not found."
+    exit -1;
 fi
 
 source $ENV_FILE
