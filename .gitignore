@@ -162,4 +162,8 @@ $RECYCLE.BIN/
 /wordpress/plugins/akismet/
 /wordpress/plugins/hello.php
 /wordpress/plugins/index.php
+/wordpress/plugins/customizer/log/
 
+### まだしっかり実装できていないから省く
+/tools/hooks/
+/tools/operation/

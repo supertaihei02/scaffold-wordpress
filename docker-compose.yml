@@ -2,7 +2,7 @@ version: "2"
 services:
   # このイメージのバージョンアップ = wordpress, PHPのバージョンアップ
   wordpress:
-    container_name: wp
+    container_name: scaffold-wp-wp
     image: wordpress:php7.1-fpm-alpine
     ports:
       - "9000:9000"
@@ -20,7 +20,7 @@ services:
         aliases:
           - wp
   nginx:
-    container_name: wp-web
+    container_name: scaffold-wp-web
     image: nginx:alpine
     ports:
       - "80:80"
@@ -36,7 +36,7 @@ services:
         aliases:
           - web
   db:
-    container_name: wp-db
+    container_name: scaffold-wp-db
     image: mariadb:latest
     env_file: .env
     volumes:

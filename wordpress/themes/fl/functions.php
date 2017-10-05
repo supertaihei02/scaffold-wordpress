@@ -1,117 +1,118 @@
 <?php
-add_action('after_setup_theme', 'blankslate_setup');
-
-/*
- * global setup
+/**
+ * Customizerプラグインの有効チェック
+ * @return bool
  */
-function blankslate_setup()
+function isActiveCustomizer()
 {
-    load_theme_textdomain('blankslate', get_template_directory() . '/languages');
-    add_theme_support('title-tag');
-    add_theme_support('automatic-feed-links');
-    add_theme_support('post-thumbnails');
-    global $content_width;
-    if (!isset($content_width)) {
-        $content_width = 640;
-    }
-    register_nav_menus(
-        array('main-menu' => __('Main Menu', 'blankslate'))
-   );
-}
-
-/*
- * load JavaScript files
- */
-add_action('wp_enqueue_scripts', 'blankslate_load_scripts');
-
-function blankslate_load_scripts()
-{
-    wp_enqueue_script('vendor.bundle', get_settings('site_url') . '/wp-content/themes/fl/js/vendor.bundle.js');
-    wp_enqueue_script('app', get_settings('site_url') . '/wp-content/themes/fl/js/index.js');
-}
-
-/*
- * set favicon
- */
-add_action('wp_head', 'blog_favicon');
-
-function blog_favicon()
-{
-    echo '<link rel="shortcut icon" type="image/x-icon" href="' . get_bloginfo('template_url').'/favicon.ico" />' . "\n";
-}
-
-/*
- * enable comment reply
- */
-add_action('comment_form_before', 'blankslate_enqueue_comment_reply_script');
-
-function blankslate_enqueue_comment_reply_script()
-{
-    if (get_option('thread_comments')) {
-        wp_enqueue_script('comment-reply');
-    }
-}
-
-/*
- * set title
- */
-add_filter('the_title', 'blankslate_title');
-
-function blankslate_title($title)
-{
-    return $title === '' ? '&rarr;' : $title;
-}
-
-/*
- * set filtered title
- */
-add_filter('wp_title', 'blankslate_filter_wp_title');
-
-function blankslate_filter_wp_title($title)
-{
-    return $title . esc_attr(get_bloginfo('name'));
-}
-
-/*
- * set widgets
- */
-add_action('widgets_init', 'blankslate_widgets_init');
-
-function blankslate_widgets_init()
-{
-    register_sidebar(array(
-        'name' => __('Sidebar Widget Area', 'blankslate'),
-        'id' => 'primary-widget-area',
-        'before_widget' => '<li id="%1$s" class="widget-container %2$s">',
-        'after_widget' => "</li>",
-        'before_title' => '<h3 class="widget-title">',
-        'after_title' => '</h3>',
-   ));
-}
-
-/*
- * set custom pings (not use it)
- */
-function blankslate_custom_pings($comment)
-{
-    $GLOBALS['comment'] = $comment;
-    ?>
-    <li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>"><?php echo comment_author_link(); ?></li>
-    <?php
-}
-
-/*
- * get comment number
- */
-add_filter('get_comments_number', 'blankslate_comments_number');
-
-function blankslate_comments_number($count)
-{
-    if (!is_admin()) {
-        global $id;
-        $comments_by_type = &separate_comments(get_comments('status=approve&post_id=' . $id));
-        return count($comments_by_type['comment']);
+    $plugin = 'customizer/index.php';
+    if (function_exists('is_plugin_active')) {
+        return is_plugin_active($plugin);
     } else {
-        return $count;
+        return in_array(
+            $plugin,
+            get_option('active_plugins')
+        );
     }
+}
+
+$conditions = [];
+if (isActiveCustomizer()) {
+    $conditions = [
+        // Top Page
+        'top' => [
+            /*
+             * News記事を 8件取得
+             */
+            'news' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_LIMIT => 8,
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+            ]
+        ],
+        // News Page 
+        'news-archive' => [
+            'terms' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_T_TAXONOMIES => POST_NEWS.'_categories',
+                SI_GET_T_HIDE_EMPTY => false,
+                SI_GET_T_TAGS => SiUtils::get($_GET, SI_GET_T_TAGS, -1),
+            ],
+            'news' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_LIMIT => SiUtils::get($_GET, SI_GET_P_LIMIT, 4),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_COUNT_TYPE => SI_LIST_COUNT,
+                SI_GET_P_TAGS => SiUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => SiUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ]
+        ],
+    ];
+
+
+
+    /**
+     * API実行用URLをJavascriptから読めるように出力
+     */
+    add_action('wp_enqueue_scripts', 'add_my_ajaxurl', 1);
+    function add_my_ajaxurl() {
+        ?>
+        <script>
+          var ajaxurl = '<?php echo admin_url( 'admin-ajax.php'); ?>';
+        </script>
+        <?php
+    }
+
+    /**
+     * GET系のテンプレ
+     * @param $template
+     * @param $condition
+     * @return array
+     */
+    function getApiTemplate($template, $condition)
+    {
+        header('content-type: application/json; charset=utf-8');
+        if (isset($_GET[SI_GET_P_OFFSET]) && intval($_GET[SI_GET_P_OFFSET]) !== -1) {
+            $condition[SI_GET_P_OFFSET] = intval($_GET[SI_GET_P_OFFSET]) +
+                (($condition[SI_GET_P_PAGE] - 1) * $condition[SI_GET_P_LIMIT]);
+        }
+        ob_clean();
+        ob_start();
+        $count_all = renderPosts($template, $condition);
+        $html = ob_get_contents();
+        ob_end_clean();
+
+        // paging
+        $posts_per_page = SiUtils::get($condition, SI_GET_P_LIMIT, 4);
+        $next_page = SiUtils::get($condition, SI_GET_P_PAGE, 1) + 1;
+        $page_total = ceil($count_all / $posts_per_page);
+        $next = $next_page > $page_total ? -1 : $next_page;
+        return array(
+            'html' => $html,
+            'count' => $count_all,
+            'next' => $next
+        );
+    }
+    /* *******************************
+     *   NEWS の取得API
+     * *******************************/
+    add_action( 'wp_ajax_get_news_archive', 'getNewsArchive');
+    add_action( 'wp_ajax_nopriv_get_news_archive', 'getNewsArchive');
+    function getNewsArchive()
+    {
+        global $conditions;
+        $cnd = $conditions['news-archive']['news'];
+        echo json_encode(getApiTemplate('news-archive', $cnd));
+        die();
+    }
+
+    /* *******************************
+     * タイトルタグを自動生成する機能を削除
+     * *******************************/
+    remove_action('wp_head', '_wp_render_title_tag', 1);
 }

@@ -77,4 +77,53 @@ class SiUtils
         }
         return $result;
     }
+    
+    static function strposArray($haystack, $needles) {
+        $result = false;
+        if (is_array($needles)) {
+            foreach ($needles as $str) {
+                if (is_array($str)) {
+                    $pos = strpos_array($haystack, $str);
+                } else {
+                    $pos = strpos($haystack, $str);
+                }
+                $result = $pos;
+                if ($result !== false) {
+                    break;
+                }
+            }
+        } else {
+            $result = strpos($haystack, $needles);
+        }
+        
+        return $result;
+    }
+
+    static function isCustomizeSingle($current_post_type)
+    {
+        $result = false;
+        if (is_single() && in_array($current_post_type, self::getCustomizePostTypes())) {
+            $result = true;
+        }
+        return $result;
+    }
+
+    static function getCustomizePostTypes()
+    {
+        return array_reduce(SI_CUSTOM_POST_TYPES[SI_POST_TYPES], function ($reduced, $config) {
+            $reduced[] = $config[SI_KEY];
+            return $reduced;
+        });
+    }
+
+    static function title($title)
+    {
+        return $title . SI_TITLE_SEPARATOR . get_bloginfo('name');
+    }
+}
+
+function draw($text, $raw = false)
+{
+    $value = $raw ? htmlspecialchars($text) : $text;
+    echo $value;
 }

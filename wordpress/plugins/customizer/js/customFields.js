@@ -87,8 +87,15 @@ document.addEventListener('DOMContentLoaded', function()
     
     function renderNextFieldGroup(post_type, field_group, next_serial, target, append_target)
     {
+        var action = 'siBuildEmptyGroup';
+        var element = 'div';
+        if (location.pathname.indexOf('edit-tags.php') !== -1 || 
+          location.pathname.indexOf('term.php') !== -1) {
+          action = 'siBuildEmptyGroupForTerm';
+          element = 'tbody';
+        }
         var data = {
-            action:      "siBuildEmptyGroup",
+            action:      action,
             post_type:   post_type,
             field_group: field_group,
             next_serial: next_serial,
@@ -99,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function()
             if (request.readyState === 4) {
                 if (request.status === 200) {
                     // 追加したいHTML NODE情報を作成
-                    var $element = document.createElement('div');
+                    var $element = document.createElement(element);
                     $element.innerHTML = request.responseText.trim();
                     $element = $element.firstChild;
                     

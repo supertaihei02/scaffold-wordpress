@@ -12,7 +12,7 @@ function siCustomFields() {
             $value_indexes = [0];
             if ($custom_field_group[SI_IS_MULTIPLE]) {
                 // 動的な項目の場合はValueIndex情報を更新する
-                $stored_serial = get_post_meta($post->ID, $custom_field_group[SI_KEY].'-serial', true);
+                $stored_serial = get_post_meta($post->ID, $custom_field_group[SI_KEY]. SI_HYPHEN .'serial', true);
                 if (!empty($stored_serial)) {
                     $value_indexes = $stored_serial;
                 }
@@ -23,7 +23,7 @@ function siCustomFields() {
             $before_group_key = null;
             // 各グループの最初の Name だけ色を変えて見やすくする
             $is_first_in_group = true;
-            $first_name_style = "<span style=\"color: #0073aa;\">First. %s</span>";
+            $first_name_style = "<span style=\"color: #0073aa;\">● %s</span>";
             $others_name_style = "<span>%s</span>";
             foreach ($value_indexes as $array_index => $value_index) {
                 // multiの時はmeta_box_keyにくっ付ける
@@ -66,8 +66,9 @@ add_action('add_meta_boxes', 'siCustomFields');
  * 
  * @param $post
  * @param $args
+ * @param bool $term_mode
  */
-function siRender($post, $args) {
+function siRender($post, $args, $term_mode = false) {
     // 引数
     $args = $args['args'];
     $post_type = $args[SI_POST_TYPE];
@@ -104,14 +105,18 @@ function siRender($post, $args) {
     <div id="inner-<?php echo $group_id;?>" class="<?php echo $group_key;?>">
         <?php echo $serial_html; ?>
         <?php foreach ($fields as $field) :
-        $value = empty($post) ? '' : get_post_meta($post->ID, $group_key.'-'.$field[SI_KEY], true);
-        if (!empty($value) && $group_info[SI_IS_MULTIPLE]) {
-            $value = $value[$array_idx];
-        }
-        $label = siGetLabel($field, $group_key, $serial_number);
-        $input = siGetInput($field, $group_key, $value, $serial_number, $multiple_sign);
+            if ($term_mode) {
+                $value = empty($post) ? '' : get_term_meta($post, $group_key.SI_HYPHEN.$field[SI_KEY], true);
+            } else {
+                $value = empty($post) ? '' : get_post_meta($post->ID, $group_key.SI_HYPHEN.$field[SI_KEY], true);
+            }
+            if (!empty($value) && $group_info[SI_IS_MULTIPLE]) {
+                $value = $value[$array_idx];
+            }
+            $label = siGetLabel($field, $group_key, $serial_number);
+            $input = siGetInput($field, $group_key, $value, $serial_number, $multiple_sign);
         // 各項目 ?>    
-        <p><?php echo $label.$input; ?></p>
+        <?php echo '<br />'.$label.$input; ?>
         <?php endforeach; ?>
     </div>
     <?php
@@ -146,8 +151,8 @@ function siRender($post, $args) {
 function siGetLabel($field_info, $group_key, $serial_number = '')
 {
     $label = '';
-    $id = $group_key .'-'. $field_info[SI_KEY];
-    $id = empty($serial_number) ? $id : $id.'-'.$serial_number;
+    $id = $group_key .SI_HYPHEN. $field_info[SI_KEY];
+    $id = empty($serial_number) ? $id : $id.SI_HYPHEN.$serial_number;
     $require = $field_info[SI_FIELD_IS_REQUIRE] ? '(必須)' : '(任意)';
     switch ($field_info[SI_FIELD_TYPE]) {
         case SI_FIELD_TYPE_TEXT:
@@ -180,9 +185,9 @@ function siGetInput($field_info, $group_key, $value, $serial_number = '', $multi
     $FILE_SELECT_STYLE = "width: 200px;";
     
     // ID, Nameの作成
-    $id = $group_key .'-'. $field_info[SI_KEY];
+    $id = $group_key .SI_HYPHEN. $field_info[SI_KEY];
     $name = $id.$multiple_sign;
-    $id = empty($serial_number) ? $id : $id.'-'.$serial_number;
+    $id = empty($serial_number) ? $id : $id.SI_HYPHEN.$serial_number;
     
     // Require判断(Multiの場合は常に無効)
     $require = $field_info[SI_FIELD_IS_REQUIRE] ? 'required' : '';
@@ -253,7 +258,7 @@ function siSaveCustomFields($post_id) {
                 $group_key = $custom_field_group[SI_KEY];
                 // 項目保存
                 foreach ($custom_field_group[SI_FIELDS] as $custom_field) {
-                    $data_key = $group_key.'-'.$custom_field[SI_KEY];
+                    $data_key = $group_key.SI_HYPHEN.$custom_field[SI_KEY];
                     if (!isset($_POST[$data_key])) {
                         break;
                     }
@@ -265,7 +270,7 @@ function siSaveCustomFields($post_id) {
                 }
                 // multi対応なら、serialも保存する
                 if ($custom_field_group[SI_IS_MULTIPLE]) {
-                    $serial_key = $group_key.'-serial';
+                    $serial_key = $group_key. SI_HYPHEN.'serial';
                     if (!isset($_POST[$serial_key])) {
                         break; 
                     }
@@ -313,20 +318,26 @@ function siBuildEmptyGroup()
     }
 
     if (isset($args[SI_GROUP_INFO])) {
-        $group_key = $args[SI_GROUP_INFO][SI_KEY] . $serial;
-        $group_name = $args[SI_GROUP_INFO][SI_NAME];
-        ?>
-        <div id="<?php echo $group_key; ?>" class="postbox ">
-            <button type="button" class="handlediv button-link" aria-expanded="true"><span class="screen-reader-text">パネルを閉じる: <?php echo $group_name; ?></span><span class="toggle-indicator" aria-hidden="true"></span></button><h2 class="hndle ui-sortable-handle"><span><?php echo $group_name; ?></span></h2>
-            <div class="inside">
-                <?php siRender(null, ['args' => $args]); ?>
-            </div>
-        </div>
-        <?php
+        drawFrame($args, $serial);
     }
     die();
 }
 add_action('wp_ajax_siBuildEmptyGroup', 'siBuildEmptyGroup');
+
+
+function drawFrame($args, $serial, $post = null)
+{
+    $group_key = $args[SI_GROUP_INFO][SI_KEY] . $serial;
+    $group_name = $args[SI_GROUP_INFO][SI_NAME];
+    ?>
+    <div id="<?php echo $group_key; ?>" class="postbox ">
+        <button type="button" class="handlediv button-link" aria-expanded="true"><span class="screen-reader-text">パネルを閉じる: <?php echo $group_name; ?></span><span class="toggle-indicator" aria-hidden="true"></span></button><h2 class="hndle ui-sortable-handle"><span><?php echo $group_name; ?></span></h2>
+        <div class="inside">
+            <?php siRender($post, ['args' => $args]); ?>
+        </div>
+    </div>
+    <?php
+}
 
 /**
  * 
@@ -367,4 +378,199 @@ function isSavedCustomValues($post_id)
     }
     
     return $isSaved;
+}
+
+/* *******************************
+ *   Custom Taxonomies Fields
+ * *******************************/
+// Hook: 要素を一覧画面に追加するための関数
+function addTaxonomyField($taxonomy) {
+    siTaxonomyFormRender($taxonomy);
+}
+add_action( 'add_tag_form_fields', 'addTaxonomyField');
+foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type => $terms) {
+    foreach ($terms as $term) {
+        $filter_name = $post_type . SI_BOND . $term[SI_KEY];
+        add_action( $filter_name.'_add_form_fields', 'addTaxonomyField');
+    }
+}
+
+// Hook: 要素を詳細画面に追加するための関数
+function addTaxonomyFieldDetail($term) {
+    siTaxonomyFormRender($term->taxonomy, $term->slug);
+}
+add_action( 'edit_tag_form', 'addTaxonomyFieldDetail');
+
+
+// Hook: 保存処理
+function editTerms($term_id) {
+    $my_nonce = isset($_POST[NONCE_NAME]) ? $_POST[NONCE_NAME] : null;
+    if(!wp_verify_nonce($my_nonce, wp_create_nonce(__FILE__))) {
+        return false;
+    }
+    // 処理の必要可否
+    if (empty($_POST)) { return false; }
+    if (empty($_POST['taxonomy'])) { return false; }
+    if (empty(siSearchTaxonomyConfig($_POST['taxonomy'])[SI_CUSTOM_FIELDS])) { return false; }
+    
+    foreach (siSearchTaxonomyConfig($_POST['taxonomy'])[SI_CUSTOM_FIELDS] as $custom_field_group) {
+        $group_key = $custom_field_group[SI_KEY];
+        // 項目保存
+        foreach ($custom_field_group[SI_FIELDS] as $custom_field) {
+            $data_key = $group_key.SI_HYPHEN.$custom_field[SI_KEY];
+            if (!isset($_POST[$data_key])) {
+                break;
+            }
+            update_term_meta(
+                $term_id,
+                $data_key,
+                $_POST[$data_key]
+            );
+        }
+        // multi対応なら、serialも保存する
+        if ($custom_field_group[SI_IS_MULTIPLE]) {
+            $serial_key = $group_key. SI_HYPHEN. 'serial';
+            if (!isset($_POST[$serial_key])) {
+                break;
+            }
+            update_term_meta(
+                $term_id,
+                $serial_key,
+                $_POST[$serial_key]
+            );
+        }
+    }
+
+    return $term_id;
+}
+add_action( 'create_term', 'editTerms' );
+add_action( 'edit_terms', 'editTerms' );
+
+/**
+ * APIから呼んで、次のCustomFieldGroupを生成する用途
+ */
+function siBuildEmptyGroupForTerm()
+{
+    $serial = $_GET['next_serial'];
+    $args = [
+        SI_ARRAY_INDEX => 0,
+        SI_VALUE_INDEX => $serial,
+        SI_IS_FIRST => false,
+        SI_IS_LAST => true,
+        SI_BEFORE_FIELD_GROUP => $_GET['group_id']
+    ];
+
+    foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type => $terms) {
+        if ($post_type !== $_GET['post_type']) {
+            continue;
+        }
+        $args[SI_POST_TYPE] = $post_type;
+        foreach ($terms as $term_conf) {
+            foreach ($term_conf[SI_CUSTOM_FIELDS] as $custom_field_group) {
+                if ($custom_field_group[SI_KEY] !== $_GET['field_group']) {
+                    continue;
+                }
+                $args[SI_GROUP_INFO] = $custom_field_group;
+                break;
+            }
+            if (!empty($args[SI_GROUP_INFO])) {
+                break;
+            }
+        }
+        if (!empty($args[SI_GROUP_INFO])) {
+            break;
+        }
+    }
+    if (isset($args[SI_GROUP_INFO])) {
+        drawFrameForTerm($args, $serial);
+    }
+    die();
+}
+add_action('wp_ajax_siBuildEmptyGroupForTerm', 'siBuildEmptyGroupForTerm');
+
+function drawFrameForTerm($args, $serial, $post = null, $is_first_in_group = false)
+{
+    $group_key = $args[SI_GROUP_INFO][SI_KEY] . $serial;
+    $group_name = $args[SI_GROUP_INFO][SI_NAME];
+    if ($is_first_in_group) { echo '<tr><td><hr></td></tr>'; }
+    ?>
+    <tr id="<?php echo $group_key; ?>" class="form-field form-required term-name-wrap">
+        <th scope="row"><label><?php echo $group_name;?></label></th>
+        <td><?php siRender($post, ['args' => $args], true); ?></td>
+    </tr>
+    <?php
+}
+
+/**
+ * $taxonomyの管理画面にFormを追加する
+ * @param $taxonomy
+ * @param null $slug
+ */
+function siTaxonomyFormRender($taxonomy, $slug = null)
+{
+    $config = siSearchTaxonomyConfig($taxonomy);
+    if (empty($config[SI_CUSTOM_FIELDS])) {
+        return;
+    }
+    $custom_fields = $config[SI_CUSTOM_FIELDS];
+    if (empty($custom_fields)) {
+        return;
+    }
+    
+    // Taxonomy情報を取得
+    $term_id = (function ($taxonomy, $slug) {
+        if (is_null($slug)) {
+            return null;
+        }
+        $taxonomies = get_terms($taxonomy, [
+            'hide_empty' => false,
+            'slug' => $slug
+        ]);
+        $current_taxonomy = array_shift($taxonomies);   
+        return intval($current_taxonomy->term_id);
+    })($taxonomy, $slug);
+
+    echo '<table class="form-table"><tbody>';
+    
+    $is_first = true;
+    foreach ($custom_fields as $custom_field_group) {
+        // 引数の作成
+        $value_indexes = (function ($term_id, $custom_field_group) {
+            if (!$custom_field_group[SI_IS_MULTIPLE]) {
+                return [0];
+            }
+            // 動的な項目の場合はValueIndex情報を更新する
+            $stored_serial = get_term_meta($term_id, $custom_field_group[SI_KEY]. SI_HYPHEN. 'serial', true);
+            if (empty($stored_serial)) {
+                return [0];
+            }
+            return $stored_serial;
+        })($term_id, $custom_field_group);
+        end($value_indexes);
+        $final_key = key($value_indexes);
+        $before_group_key = null;
+        $is_first_in_group = true;
+
+        foreach ($value_indexes as $array_index => $value_index) {
+            // multiの時はmeta_box_keyにくっ付ける
+            $group_multi_key = $custom_field_group[SI_IS_MULTIPLE] ? $value_index : '';
+            $group_key = $custom_field_group[SI_KEY].$group_multi_key;
+
+            $render_config = [
+                SI_IS_FIRST => $is_first,
+                SI_IS_LAST => ($final_key === $array_index),
+                SI_ARRAY_INDEX => $array_index,
+                SI_VALUE_INDEX => $value_index,
+                SI_GROUP_INFO => $custom_field_group,
+                SI_POST_TYPE => $config[SI_POST_TYPE],
+                SI_BEFORE_FIELD_GROUP => $before_group_key
+            ];
+            drawFrameForTerm($render_config, $value_index, $term_id, $is_first_in_group);
+
+            $is_first = false;
+            $is_first_in_group = false;
+            $before_group_key = $group_key;
+        }
+    }
+    echo '</tbody></table>';
 }
