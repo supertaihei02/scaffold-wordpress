@@ -13,8 +13,7 @@ if (isActiveCustomizer()) {
     
     // DefaultのOGP画像
     $ogp_image = $ogp_url . SI_DEFAULT_OGP_IMAGE;
-    
-    if (SiUtils::isCustomizeSingle($post->post_type)) {
+    if (!empty($post) && SiUtils::isCustomizeSingle($post->post_type)) {
         // Custom Fieldsの値を取得
         setCustoms($post->ID);
         $custom = $si_customs[$post->ID];
