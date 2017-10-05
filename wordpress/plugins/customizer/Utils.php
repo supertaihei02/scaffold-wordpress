@@ -20,7 +20,7 @@ class SiUtils
             return $not_found;
         }
 
-        if (isset($obj[$key])) {
+        if (!empty($obj[$key])) {
             return $obj[$key];
         } else {
             return $not_found;

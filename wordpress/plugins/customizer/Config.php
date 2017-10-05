@@ -132,9 +132,9 @@ define('SI_CUSTOM_POST_TYPES', [
                 // グループ階層
                 [
                     // グループID
-                    SI_KEY  => 'news',
+                    SI_KEY  => 'archive',
                     // 項目のラベル
-                    SI_NAME => 'その他',
+                    SI_NAME => '[一覧画面] 基本情報',
                     // 動的に増やせる項目なのかどうか
                     SI_IS_MULTIPLE => false,
                     // 入力項目リスト
@@ -142,21 +142,57 @@ define('SI_CUSTOM_POST_TYPES', [
                         // 入力項目
                         [
                             SI_KEY  => 'img',
-                            SI_NAME => 'サムネイル画像[横330×縦210]',
+                            SI_NAME => 'サムネイル画像[横XXX×縦XXX]',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
                         ],
                         [
-                            SI_KEY  => 'detail_pc_img',
-                            SI_NAME => '詳細ヘッダ画像[PC][横980×縦成り行き]',
+                            SI_KEY  => 'topic',
+                            SI_NAME => '見出し',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ]
+                    ]
+                ],
+                [
+                    // グループID
+                    SI_KEY  => 'single-basic',
+                    // 項目のラベル
+                    SI_NAME => '[詳細画面] 基本情報',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => false,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            SI_KEY  => 'img',
+                            SI_NAME => 'メイン画像[横XXX×縦XXX]',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                        ]
+                    ]
+                ],
+                [
+                    // グループID
+                    SI_KEY  => 'single-options',
+                    // 項目のラベル
+                    SI_NAME => '[詳細画面] 記事情報',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => true,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            SI_KEY  => 'img',
+                            SI_NAME => '画像[横XXX×縦XXX]',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
                         ],
                         [
-                            SI_KEY  => 'detail_sp_img',
-                            SI_NAME => '詳細ヘッダ画像[SP][横670縦成り行き]',
+                            SI_KEY  => 'text',
+                            SI_NAME => '記事テキスト',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
                         ]
                     ]
                 ],
