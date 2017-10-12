@@ -60,6 +60,6 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "jquery": "^3.2.1",
-    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch#0.1.2"
+    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch#0.2.0"
   }
 }
