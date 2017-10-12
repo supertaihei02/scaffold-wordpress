@@ -31,10 +31,13 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: conf.script.babelOptions
-        }
+        use: [
+          'cache-loader',
+          {
+            loader: 'babel-loader',
+            options: conf.script.babelOptions
+          }
+        ]
       },
       {
         test: /\.(jpg|png|gif)$/,

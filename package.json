@@ -30,6 +30,7 @@
     "babel-preset-env": "^1.5.2",
     "babel-preset-flow": "^6.23.0",
     "browser-sync": "^2.18.12",
+    "cache-loader": "^1.1.0",
     "cssnano": "^3.10.0",
     "eslint": "^4.4.0",
     "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.2.3",

@@ -1,16 +1,17 @@
+@import "libraries-frontend-framelunch/css/_reset.css";
 @import "./_variables.css";
 @import "./_keyframes.css";
-@import "../../../node_modules/libraries-frontend-framelunch/css/_reset.css";
+
+html {
+    font-size: 62.5%;
+}
 
 body {
     font-family: var(--fontFamily-base);
-    background: var(--color-main);
-    color: var(--color-font);
-
-    @media (--not-sp) {
-        background: var(--color-gray);
-    }
+    font-size: 1.4rem;
+    transition: background-color 0.3s var(--easeOut-expo);
 }
+
 
 /* stylelint-disable-next-line */
 *, *::before, *::after {
