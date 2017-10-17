@@ -98,15 +98,62 @@ if (isActiveCustomizer()) {
         );
     }
     /* *******************************
-     *   NEWS の取得API
+     *   記事取得API
+     * 
+     * 　条件に合致した記事情報を
+     * 　template-partsでHTMLにビルドした結果を返します。
+     * 　
+     * 　
+     * 　【GETリクエスト例】
+     *   http://localhost/wp-admin/admin-ajax.php?action=get_posts&conditions=news-archive,news&template=news-archive
+     *   
+     * 　【リクエスト例の説明】
+     * 　Wordpress特有のAPI実装方法です。
+     * 　上記のリクエストによって、getPostsApiファンクションを呼び出します。
+     * 
+     *   【リクエストURL(http://localhost/wp-admin/admin-ajax.php)について】
+     * 　HTMLのヘッドタグに Javascriptの変数として「ajaxurl」が定義されているのでそれを利用
+     * 
+     * 　【パラメータ action について】
+     * 　これは「get_posts」のまま変える必要なし。
+     * 　呼び出す関数名を指定している。
+     * 
+     * 　【パラメータ conditions について】
+     * 　functions.php上部に定義されている $conditions のkey配列を指定する。
+     * 　配列はカンマ区切りとか、JSONとかで指定可能。
+     * 
+     * 　【パラメータ template について】
+     * 　template-parts 内のファイル名を指定する。
+     * 　"news-archive" を指定すると "template-parts/content-news-archive.php"が読み込まれる。
+     * 　
      * *******************************/
-    add_action( 'wp_ajax_get_news_archive', 'getNewsArchive');
-    add_action( 'wp_ajax_nopriv_get_news_archive', 'getNewsArchive');
-    function getNewsArchive()
+    add_action( 'wp_ajax_get_posts', 'getPostsApi');
+    add_action( 'wp_ajax_nopriv_get_posts', 'getPostsApi');
+    function getPostsApi()
     {
-        global $conditions;
-        $cnd = $conditions['news-archive']['news'];
-        echo json_encode(getApiTemplate('news-archive', $cnd));
+        global $conditions, $si_logger;
+        $si_logger->develop('getPostsApi');
+        $si_logger->develop($_GET);
+
+        if (!isset($_GET['conditions'])) {
+            die('Parameter [ conditions ] are required.');
+        }
+        if (!isset($_GET['template'])) {
+            die('Parameter [ template ] is required.');
+        }
+
+        $condition = (function ($conditions, $condition_keys) {
+            $condition = $conditions;
+            foreach (SiUtils::asArray($condition_keys) as $condition_key) {
+                if (!isset($condition[$condition_key])) {
+                    break;
+                }
+                $condition = $condition[$condition_key];
+            }
+            return $condition;
+        })($conditions, $_GET['conditions']);
+        
+        echo json_encode(getApiTemplate($_GET['template'], $condition));
         die();
     }
 
