@@ -83,6 +83,31 @@ add_shortcode('deco', 'decorationFunc');
 /* *******************************
  *          投稿関連
  * *******************************/
+
+/**
+ * 指定した条件の存在チェック
+ * @param $condition
+ * @return mixed
+ */
+function isExist($condition)
+{
+    $condition = argsInitialize($condition);
+    $render_info = getPostsForRender($condition);
+    return $render_info->is_exist;
+}
+
+/**
+ * 指定した条件のカウント
+ * @param $condition
+ * @return mixed
+ */
+function countPosts($condition)
+{
+    $condition = argsInitialize($condition);
+    $render_info = getPostsForRender($condition);
+    return $render_info->found_posts;
+}
+
 /**
  * 複数件の投稿に対する描画処理
  * 
