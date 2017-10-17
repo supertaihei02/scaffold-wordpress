@@ -90,6 +90,7 @@ add_shortcode('deco', 'decorationFunc');
  * @param $args
  * @param null || function $before
  * @param null || function $after
+ * @param null || function $customize
  * @param string $template_slug
  * @param string $none_slug
  * @param string $none_name
@@ -98,50 +99,14 @@ add_shortcode('deco', 'decorationFunc');
 function renderPosts($template_name, $args, $before = null, $after = null, $customize = null, $template_slug = SI_DEFAULT_TEMPLATE_SLUG,  $none_slug = 'template-parts/content', $none_name = 'none')
 {
     global $post, $si_customs;
-    
-    // 初期値の設定
-    if (!isset($args[SI_GET_P_ORDER_BY])) {
-        $args[SI_GET_P_ORDER_BY] = 'date';
-        $args[SI_GET_P_ORDER] = 'DESC';
-    }
-    // Post Typeを複数対応する
-    if (isset($args[SI_GET_P_POST_TYPE])) {
-        if (is_string($args[SI_GET_P_POST_TYPE])) {
-            $args[SI_GET_P_POST_TYPE] = [$args[SI_GET_P_POST_TYPE]];
-        }
-        $posts = getPostsForRender($args);
-    } else {
-        $posts = new WP_Query($args);
-    }
 
-    $simple_offset = 0;
-    if ($posts->have_posts()) {
-        if (is_callable($before)) {
-            $before($posts, $args);
-        }
+    $args = argsInitialize($args);
+    $render_info = getPostsForRender($args);
+    if ($render_info->is_exist) {
+        if (is_callable($before)) { $before($render_info, $args); }
         
         // 投稿の取得
-        $post_contents = $posts->get_posts();
-        
-        // 単純に取得した投稿から数件無視する設定
-        if (isset($args[SI_GET_P_SIMPLE_OFFSET]) && is_numeric($args[SI_GET_P_SIMPLE_OFFSET])) {
-            $simple_offset = $args[SI_GET_P_SIMPLE_OFFSET];
-            $wk_offset = $simple_offset;
-            
-            $loop = $wk_offset > 0;
-            while ($loop) {
-                array_shift($post_contents);
-                --$wk_offset;
-                $loop = $wk_offset > 0;
-            }
-        }
-        
-        $index = 1;
-        foreach ($post_contents as $post) {
-            if (isset($args[SI_GET_P_POST_ID]) && 
-                $post->ID === $args[SI_GET_P_POST_ID]) {
-                continue;
-            }
+        foreach ($render_info->posts as $post) {
             setup_postdata($post);
             if (is_callable($customize)) {
                 $custom_post = $customize($args);
@@ -152,22 +117,19 @@ function renderPosts($template_name, $args, $before = null, $after = null, $cust
                     setup_postdata($post);
                 }
             }
-
             setCustoms($post->ID);
-            $si_customs[SI_INDEX] = $index;
+            $si_customs[$post->ID][SI_INDEX] = $post->{SI_INDEX};
             get_template_part($template_slug, $template_name);
-            ++$index;
         }
-        if (is_callable($after)) {
-            $after($posts, $args);
-        }
+        
+        if (is_callable($after)) { $after($render_info, $args); }
         wp_reset_postdata();
         resetPostGlobal();
     } else {
         get_template_part($none_slug, $none_name);
     }
     
-    return $posts->found_posts < $simple_offset ? 0 : $posts->found_posts - $simple_offset;
+    return $render_info->found_posts;
 }
 add_action('wp_ajax_getPosts', 'getPosts');
 add_action('wp_ajax_nopriv_getPosts', 'getPosts');
@@ -201,33 +163,45 @@ function isExistPostType($posts, $post_type)
     return $is_exist;
 }
 
+/**
+ * argsの初期値の編集
+ * 
+ * @param $args
+ * @return mixed
+ * @throws Exception
+ */
+function argsInitialize($args)
+{
+    if (!isset($args[SI_GET_P_POST_TYPE])) {
+        throw new Exception(SI_GET_P_POST_TYPE . ' is require argument.');
+    }
+    // デフォルトの並び順
+    if (!isset($args[SI_GET_P_ORDER_BY])) {
+        $args[SI_GET_P_ORDER_BY] = 'date';
+        $args[SI_GET_P_ORDER] = 'DESC';
+    }
+    
+    // 複数のPOST TYPEに対応
+    if (is_string($args[SI_GET_P_POST_TYPE])) {
+        $args[SI_GET_P_POST_TYPE] = [$args[SI_GET_P_POST_TYPE]];
+    }
+    
+    // Paging設定
+    if (isset($args[SI_GET_P_PAGE])) {
+        if (!isset($args[SI_GET_P_LIMIT])) {
+            $args[SI_GET_P_LIMIT] = SI_DEFAULT_GET_COUNT;
+        }
+        $page = $args[SI_GET_P_PAGE];
+        $offset = isset($args[SI_GET_P_OFFSET]) && intval($args[SI_GET_P_OFFSET]) !== -1 ? $args[SI_GET_P_OFFSET] : null;
+        $args[SI_GET_P_OFFSET] = is_null($offset) ? ($page - 1) * $args[SI_GET_P_LIMIT] : $offset;
+    }
+    // get_postsに存在しない条件値を削除
+    unset($args[SI_GET_P_PAGE]);
+    return $args;
+}
+
 function getPostsForRender($args)
 {
-    // ページング処理
-    $args = (function ($args) {
-        if (isset($args[SI_GET_P_PAGE]) && isset($args[SI_GET_P_POST_TYPE]) && isset($args[SI_COUNT_TYPE])) {
-            // 複数 POST TYPE対応
-            if (count($args[SI_GET_P_POST_TYPE]) === 1) {
-                $config = siGetPostTypeConfig(reset($args[SI_GET_P_POST_TYPE]));
-                $count = isset($args[SI_GET_P_LIMIT]) ? $args[SI_GET_P_LIMIT] : $config[SI_COUNT_TYPE][$args[SI_COUNT_TYPE]];
-            } else {
-                $count = SI_DEFAULT_GET_COUNT;
-            }
-            $page = $args[SI_GET_P_PAGE];
-
-            // $argsに条件値を追加
-            $args[SI_GET_P_LIMIT] = $count;
-            if ($count !== -1) {
-                $offset = isset($args[SI_GET_P_OFFSET]) && intval($args[SI_GET_P_OFFSET]) !== -1 ? $args[SI_GET_P_OFFSET] : null;
-                $args[SI_GET_P_OFFSET] = is_null($offset) ? ($page - 1) * $count : $offset;
-            }
-        }
-        // get_postsに存在しない条件値を削除
-        unset($args[SI_GET_P_PAGE]);
-        unset($args[SI_COUNT_TYPE]);
-        return $args;
-    })($args);
-
     // Taxonomyによる絞り込み
     $args = (function ($args) {
         if (isset($args[SI_GET_P_TAGS]) && isset($args[SI_GET_P_POST_TYPE]) && !isGetAllTags($args[SI_GET_P_TAGS])) {
@@ -251,9 +225,64 @@ function getPostsForRender($args)
         unset($args[SI_GET_P_TAGS]);
         return $args;
     })($args);
+    
+    $wp_query = new WP_Query($args);
+    $simple_offset = 0;
+    $post_contents = array();
+    if ($wp_query->have_posts()) {
+        // 投稿の取得
+        $post_contents = $wp_query->get_posts();
 
-    // --- 取得 ---
-    return new WP_Query($args);
+        // 単純に取得した投稿から数件無視する設定
+        $simple_offset = 0;
+        if (isset($args[SI_GET_P_SIMPLE_OFFSET]) && is_numeric($args[SI_GET_P_SIMPLE_OFFSET])) {
+            $simple_offset = $args[SI_GET_P_SIMPLE_OFFSET];
+            $wk_offset = $simple_offset;
+
+            $loop = $wk_offset > 0;
+            while ($loop) {
+                array_shift($post_contents);
+                --$wk_offset;
+                $loop = $wk_offset > 0;
+            }
+        }
+        
+        // 指定したPOST IDの除外
+        if (isset($args[SI_GET_P_POST_ID])) {
+            // 除外対象のサーチ
+            $delete_index = null;
+            foreach ($post_contents as $index => $post) {
+                if ($post->ID === $args[SI_GET_P_POST_ID]) {
+                    $delete_index = $index;
+                    break;
+                }
+            }
+            // 除外処理
+            if (!is_null($delete_index)) {
+                unset($post_contents[$delete_index]);
+                $post_contents = array_values($post_contents);
+                // 取得総数から1引くためにプラス
+                $simple_offset++;
+            }
+        }
+        
+        // 連番情報を出力したい場合のINDEXを付与
+        $index = 1;
+        foreach ($post_contents as &$post_content) {
+            $post_content->{SI_INDEX} = $index;
+            $index++;
+        }
+    }
+    // 返り値の作成
+    $std = new stdClass;
+    $std->is_exist = $wp_query->have_posts();
+    $std->found_posts = $wp_query->found_posts < $simple_offset
+        ? 0 
+        : $wp_query->found_posts - $simple_offset;
+
+    $std->posts = $post_contents;
+
+    return $std;
 }
 
 function isGetAllTags($tags)
@@ -332,26 +361,35 @@ function setCustoms($post_id)
                 }
                 
                 // 配列がシリアライズされているので、オブジェクトに直して保存
-                $serialized = array_shift($custom_data);
-                $custom_fields_data[$group_key][$group_and_field_key] = maybe_unserialize($serialized);
+                $serialized = array();
+                if (!empty($custom_data)) {
+                    $serialized = array_shift($custom_data);
+                    $serialized = maybe_unserialize($serialized);
+                }
+                $custom_fields_data[$group_key][$group_and_field_key] = $serialized;
             }
         }
         
         // 使いやすいようにデータをまとめる
         foreach ($custom_fields_data as $group_key => $field_values) {
             $group_conf = siGetFieldGroupConfig($post_type, $group_key);
+
             if (!$group_conf[SI_IS_MULTIPLE]) {
-                // 値が1つもないなら無視
-                if (SiUtils::isAllEmpty($field_values)) {
-                    continue; 
+                foreach ($field_values as $field_key => $field_value) {
+                    // 単一のグループならそのまま 
+                    $si_customs[$post_id][$group_key][$field_key] = $field_value;
+                    // 値が1つもないなら無視
+                    if (empty($field_value)) {
+                        $si_customs[$post_id][$group_key][$field_key] = null;
+                    }                     
                 }
-                // 単一のグループならそのまま 
-                $si_customs[$post_id][$group_key] = $field_values;
             } else {
                 // 複数グループなら、必ず同じ数ずつデータを保持しているので、Indexごとに値をまとめる
                 $converted_data_list = [];
                 $multi_data_set = [];
                 foreach ($field_values as $field_key => $field_multi_values) {
+                    if (empty($field_multi_values)) { continue; }
+                    
                     foreach ($field_multi_values as $idx => $field_multi_value) {
                         $converted_data_list[$idx][$field_key] = $field_multi_value;
                     }
@@ -494,13 +532,15 @@ function getCustomTerms($post_id){
     foreach ($taxonomies as $taxonomy_slug => $taxonomy ) {
         // 投稿に付けられたタームを取得
         $terms = get_the_terms($post->ID, $taxonomy_slug);
+
+        if (empty($terms)) {
+            continue;
+        }
         // タームのメタ情報を付与
         foreach ($terms as &$term) {
             $term->meta = getFormattedTermMeta($term);
         }
-        if (!empty( $terms )) {
-            $result += $terms;
-        }
+        $result += $terms;
     }
 
     return $result;

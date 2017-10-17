@@ -23,8 +23,6 @@ define('SI_POST_TYPES',  'post_types');
 define('SI_BEFORE_FIELD_GROUP',  'before_field_group');
 define('SI_TAXONOMIES',  'taxonomies');
 define('SI_MENU_POSITION',  'menu_position');
-define('SI_COUNT_TYPE',  'count_type');
-define('SI_LIST_COUNT',  'list_count');
 define('SI_RELATED_COUNT',  'related_count');
 define('SI_UNIQUE_SETTINGS',  'unique_settings');
 define('SI_ALLOW_ROLES',  'allow_roles');

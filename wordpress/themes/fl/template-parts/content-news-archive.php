@@ -35,6 +35,7 @@ $link = get_the_permalink();
 // 日付
 $date = get_post_time('F d, Y');
 ?>
+<hr>
 <dl>
     <dt>タイトル</dt>
     <dd><?php echo $title; ?></dd>

@@ -47,7 +47,6 @@ if (isActiveCustomizer()) {
                 SI_GET_P_ORDER => 'DESC',
                 SI_GET_P_ORDER_BY => 'date',
                 SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
-                SI_COUNT_TYPE => SI_LIST_COUNT,
                 SI_GET_P_TAGS => SiUtils::get($_GET, SI_GET_P_TAGS, -1),
                 SI_GET_P_YEAR => SiUtils::get($_GET, SI_GET_P_YEAR, ''),
             ]

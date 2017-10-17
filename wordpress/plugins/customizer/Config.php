@@ -116,13 +116,6 @@ define('SI_CUSTOM_POST_TYPES', [
             SI_USE_RICH_EDITOR => SI_RICH_EDITOR_USE,
             // 管理画面でこのPOST_TYPEが表示される順序に関係する数値。それぞれずらすこと。
             SI_MENU_POSITION => 7,
-            // 表示件数関連(指定が必要ならそれぞれ -1 を設定する)
-            SI_COUNT_TYPE => [
-                // 記事一覧
-                SI_LIST_COUNT => -1,
-                // 関連記事一覧
-                SI_RELATED_COUNT => -1
-            ],
             // アーカイブを有効にするか否か
             SI_HAS_ARCHIVE => true,
             // 管理画面の一覧画面で独自に並び替えができるようにするかどうか
@@ -268,4 +261,4 @@ define('SI_CUSTOM_POST_TYPES', [
 // テンプレートパートディレクトリ(基本は変更不要)
 define('SI_DEFAULT_TEMPLATE_SLUG', 'template-parts/content');
 // 複数のPOST TYPEをまたぐ時の投稿取得件数
-define('SI_DEFAULT_GET_COUNT', 30);
+define('SI_DEFAULT_GET_COUNT', 10);
