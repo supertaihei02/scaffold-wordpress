@@ -56,6 +56,7 @@ require_once SI_BASE_PATH . '/CustomPostTypes.php';
 require_once SI_BASE_PATH . '/CustomFields.php';
 require_once SI_BASE_PATH . '/ConsoleManager.php';
 require_once SI_BASE_PATH . '/Template.php';
+require_once SI_BASE_PATH . '/Ajax.php';
 
 // WP-Cronが効かない場合の回避策
 if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POWER) {
