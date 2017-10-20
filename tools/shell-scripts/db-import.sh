@@ -23,3 +23,13 @@ fi
 
 docker exec $MYSQL_CONTAINER /bin/bash -c "mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $DUMP_CONTAINER_PATH;" \
     && echo "import from '$DUMP_PATH'"
+
+# ARGS
+case $# in
+    1 ) DOMAIN=$1; LOCAL='localhost'; break;;
+    2 ) DOMAIN=$1; LOCAL=$2; break;;
+    * ) exit 0;;
+esac
+
+docker exec $WORDPRESS_CONTAINER /bin/bash -c "bash /var/www/tools/shell-scripts/search-replace.sh $DOMAIN $LOCAL"
+echo "Convert $DOMAIN to $LOCAL"

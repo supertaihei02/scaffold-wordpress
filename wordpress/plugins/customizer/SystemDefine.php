@@ -65,7 +65,6 @@ define('SI_RICH_EDITOR_USE',  1);
 
 // --- 以下 renderPosts系の変数名
 define('SI_GET_P_POST_TYPE',  'post_type');
-define('SI_GET_P_POST_ID',  'post_id');
 define('SI_GET_P_POST_NOT_IN',  'post__not_in');
 define('SI_GET_P_PID',  'p');
 define('SI_GET_P_ORDER_BY',  'orderby');

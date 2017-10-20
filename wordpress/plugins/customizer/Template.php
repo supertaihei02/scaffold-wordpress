@@ -272,25 +272,6 @@ function getPostsForRender($args)
             }
         }
         
-        // 指定したPOST IDの除外
-        if (isset($args[SI_GET_P_POST_ID])) {
-            // 除外対象のサーチ
-            $delete_index = null;
-            foreach ($post_contents as $index => $post) {
-                if ($post->ID === $args[SI_GET_P_POST_ID]) {
-                    $delete_index = $index;
-                    break;
-                }
-            }
-            // 除外処理
-            if (!is_null($delete_index)) {
-                unset($post_contents[$delete_index]);
-                $post_contents = array_values($post_contents);
-                // 取得総数から1引くためにプラス
-                $simple_offset++;
-            }
-        }
-        
         // 連番情報を出力したい場合のINDEXを付与
         $index = 1;
         foreach ($post_contents as &$post_content) {
