@@ -309,7 +309,7 @@ function getPostsForRender($args, $customize = null)
             }
             
             if (!is_null($add_post)) {
-                $post_type = $add_post->post_type;
+                $post_type = $post_content->post_type;
                 $post_id = $add_post->ID;
                 // 詳細画面へのリンクを付与
                 if (siGetPostTypeConfig($post_type)[SI_ARCHIVE_PREVIEW]) {
