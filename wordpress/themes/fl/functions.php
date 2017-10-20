@@ -131,9 +131,7 @@ if (isActiveCustomizer()) {
     add_action( 'wp_ajax_nopriv_get_posts', 'getPostsApi');
     function getPostsApi()
     {
-        global $conditions, $si_logger;
-        $si_logger->develop('getPostsApi');
-        $si_logger->develop($_GET);
+        global $conditions;
 
         if (!isset($_GET['conditions'])) {
             die('Parameter [ conditions ] are required.');

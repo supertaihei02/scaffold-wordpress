@@ -37,6 +37,7 @@ define('SI_TERMS',  'terms');
 define('SI_IS_PLANE',  'plane');
 define('SI_CUR_CLASS',  'current_class_name');
 define('SI_HAS_ARCHIVE',  'has_archive');
+define('SI_ARCHIVE_PREVIEW',  'archive_preview');
 define('SI_INDEX',  'index');
 
 define('SI_TAX_SHOW_UI',  'show_ui');
@@ -66,10 +67,12 @@ define('SI_RICH_EDITOR_USE',  1);
 // --- 以下 renderPosts系の変数名
 define('SI_GET_P_POST_TYPE',  'post_type');
 define('SI_GET_P_POST_NOT_IN',  'post__not_in');
+define('SI_GET_P_POST_ID',  'post_id');
 define('SI_GET_P_PID',  'p');
 define('SI_GET_P_ORDER_BY',  'orderby');
 define('SI_GET_P_ORDER',  'order');
 define('SI_GET_P_CATEGORY',  'category');
+define('SI_GET_P_IS_PREVIEW',  'preview');
 
 // TAGSによってtax_queryが自動的に決定される
 define('SI_GET_P_TAGS',  'tags');
@@ -92,6 +95,9 @@ define('SI_GET_P_STATUS',  'post_status');
 define('SI_GET_P_STATUS_PUBLISH',  'publish'); // 公開
 define('SI_GET_P_STATUS_DRAFT',  'draft');     // 下書き
 define('SI_GET_P_STATUS_FUTURE',  'future');     // 予約投稿
+
+// FOR PREVIEW
+define('SI_GET_P_POST_PARENT',  'post_parent');
 
 // --- 以下 renderTerms系の変数名
 define('SI_GET_T_TAXONOMIES',  'taxonomies');

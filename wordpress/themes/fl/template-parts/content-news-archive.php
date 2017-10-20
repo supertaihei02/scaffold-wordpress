@@ -31,7 +31,7 @@ $title = get_the_title();
 // 見出し
 $topic = $news['archive-topic'];
 // リンク
-$link = get_the_permalink();
+$link = $post->link;
 // 日付
 $date = get_post_time('F d, Y');
 ?>

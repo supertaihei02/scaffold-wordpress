@@ -126,22 +126,13 @@ function renderPosts($template_name, $args, $before = null, $after = null, $cust
     global $post, $si_customs;
 
     $args = argsInitialize($args);
-    $render_info = getPostsForRender($args);
+    $render_info = getPostsForRender($args, $customize);
     if ($render_info->is_exist) {
         if (is_callable($before)) { $before($render_info, $args); }
         
         // 投稿の取得
         foreach ($render_info->posts as $post) {
             setup_postdata($post);
-            if (is_callable($customize)) {
-                $custom_post = $customize($args);
-                if ($custom_post === false) {
-                    continue;
-                } else if ($custom_post instanceof WP_Post) {
-                    $post = $custom_post;
-                    setup_postdata($post);
-                }
-            }
             setCustoms($post->ID);
             $si_customs[$post->ID][SI_INDEX] = $post->{SI_INDEX};
             get_template_part($template_slug, $template_name);
@@ -220,36 +211,74 @@ function argsInitialize($args)
         $offset = isset($args[SI_GET_P_OFFSET]) && intval($args[SI_GET_P_OFFSET]) !== -1 ? $args[SI_GET_P_OFFSET] : null;
         $args[SI_GET_P_OFFSET] = is_null($offset) ? ($page - 1) * $args[SI_GET_P_LIMIT] : $offset;
     }
+    
+    // TAGによる絞り込み
+    if (isset($args[SI_GET_P_TAGS]) && isset($args[SI_GET_P_POST_TYPE]) && !isGetAllTags($args[SI_GET_P_TAGS])) {
+        foreach ($args[SI_GET_P_POST_TYPE] as $post_type) {
+            $taxonomies = siGetTaxonomiesConfig($post_type);
+            foreach ($taxonomies as $taxonomy) {
+                $args[SI_GET_P_TAX_QUERY][] = [
+                    SI_GET_P_TAX_QUERY_FIELD => 'slug',
+                    SI_GET_P_TAX_QUERY_TX => $post_type.SI_BOND.$taxonomy[SI_KEY],
+                    SI_GET_P_TAX_QUERY_TERMS => SiUtils::asArray($args[SI_GET_P_TAGS])
+                ];
+            }
+        }
+
+        // 複数ある場合は OR 条件で指定する
+        if (count($args[SI_GET_P_TAX_QUERY]) > 1) {
+            $args[SI_GET_P_TAX_QUERY][SI_GET_P_TAX_QUERY_RELATION] = 'OR';
+        }
+    }
+
+    // Previewモードのパラメータセット
+    if (SiUtils::get($_GET, SI_GET_P_IS_PREVIEW, false) && is_numeric(SiUtils::get($_GET, SI_GET_P_POST_ID, false))) {
+        // Previewモードセット
+        $args[SI_GET_P_IS_PREVIEW] = true;
+        // Preview対象のpost_idをセット
+        $args[SI_GET_P_POST_ID] = SiUtils::get($_GET, SI_GET_P_POST_ID, 0);
+        // Previewなので取得対象に下書きも加える
+        $args[SI_GET_P_STATUS] = SiUtils::asArray($args[SI_GET_P_STATUS]);
+        $args[SI_GET_P_STATUS][] = SI_GET_P_STATUS_DRAFT;
+    }
+    
     // get_postsに存在しない条件値を削除
     unset($args[SI_GET_P_PAGE]);
+    unset($args[SI_GET_P_TAGS]);
+
     return $args;
 }
 
-function getPostsForRender($args)
+function getPostsForRender($args, $customize = null)
 {
-    // Taxonomyによる絞り込み
-    $args = (function ($args) {
-        if (isset($args[SI_GET_P_TAGS]) && isset($args[SI_GET_P_POST_TYPE]) && !isGetAllTags($args[SI_GET_P_TAGS])) {
-            foreach ($args[SI_GET_P_POST_TYPE] as $post_type) {
-                $taxonomies = siGetTaxonomiesConfig($post_type);
-                foreach ($taxonomies as $taxonomy) {
-                    $args[SI_GET_P_TAX_QUERY][] = [
-                        SI_GET_P_TAX_QUERY_FIELD => 'slug',
-                        SI_GET_P_TAX_QUERY_TX => $post_type.SI_BOND.$taxonomy[SI_KEY],
-                        SI_GET_P_TAX_QUERY_TERMS => SiUtils::asArray($args[SI_GET_P_TAGS])
-                    ];
+    global $post;
+
+    // もしもPreviewモードで、$customizeが指定されていない場合はデフォルトをセット
+    if (is_null($customize) && SiUtils::get($args, SI_GET_P_IS_PREVIEW, false) && is_numeric(SiUtils::get($args, SI_GET_P_POST_ID, false))) {
+        $customize = function ($args) {
+            if (get_the_ID() === intval(SiUtils::get($args, SI_GET_P_POST_ID, false))) {
+
+                $result = true;
+                $posts = get_posts([
+                    SI_GET_P_STATUS => 'any',
+                    SI_GET_P_POST_PARENT => intval(SiUtils::get($args, SI_GET_P_POST_ID, 0)),
+                    SI_POST_TYPE => 'revision',
+                    SI_GET_P_LIMIT => 1,
+                    'sort_column' => 'ID',
+                    'sort_order' => 'desc',
+                ]);
+                if (!empty($posts)) {
+                    $result = array_shift($posts);
                 }
+            } else if (get_post_status() === SI_GET_P_STATUS_PUBLISH) {
+                $result = true;
+            } else {
+                $result = false;
             }
 
-            // 複数ある場合は OR 条件で指定する
-            if (count($args[SI_GET_P_TAX_QUERY]) > 1) {
-                $args[SI_GET_P_TAX_QUERY][SI_GET_P_TAX_QUERY_RELATION] = 'OR';
-            }
-        }
-        // get_postsに存在しない条件値を削除
-        unset($args[SI_GET_P_TAGS]);
-        return $args;
-    })($args);
+            return $result;
+        };
+    }
     
     $wp_query = new WP_Query($args);
     $simple_offset = 0;
@@ -257,6 +286,45 @@ function getPostsForRender($args)
     if ($wp_query->have_posts()) {
         // 投稿の取得
         $post_contents = $wp_query->get_posts();
+
+        $ignore_draft_count = 0;
+        $post_contents = array_reduce($post_contents, function($reduced, $post_content)
+        use (&$post, $customize, $args, &$ignore_draft_count) {
+
+            $post = $post_content;
+            setup_postdata($post);
+            $add_post = $post;
+            
+            // カスタマイズ
+            if (is_callable($customize)) {
+                $custom_post = $customize($args);
+                if ($custom_post instanceof WP_Post) {
+                    $add_post = $custom_post;
+                } else if ($custom_post === true) {
+                    $add_post = $post_content;
+                } else {
+                    $add_post = null;
+                    $ignore_draft_count++;
+                }
+            }
+            
+            if (!is_null($add_post)) {
+                $post_type = $add_post->post_type;
+                $post_id = $add_post->ID;
+                // 詳細画面へのリンクを付与
+                if (siGetPostTypeConfig($post_type)[SI_ARCHIVE_PREVIEW]) {
+                    $add_post->link = site_url() . "/{$post_type}/#{$post_type}{$post_id}";
+                } else {
+                    $add_post->link = get_the_permalink();
+                }
+                $reduced[] = $add_post;
+            }
+            
+            return $reduced;
+        }, array());
+
+        wp_reset_postdata();
+        
 
         // 単純に取得した投稿から数件無視する設定
         $simple_offset = 0;
@@ -271,6 +339,9 @@ function getPostsForRender($args)
                 $loop = $wk_offset > 0;
             }
         }
+
+        // CustomizeとSIMPLE OFFSETで無視した件数を合算
+        $simple_offset += $ignore_draft_count; 
         
         // 連番情報を出力したい場合のINDEXを付与
         $index = 1;

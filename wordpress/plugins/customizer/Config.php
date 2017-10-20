@@ -118,6 +118,8 @@ define('SI_CUSTOM_POST_TYPES', [
             SI_MENU_POSITION => 7,
             // アーカイブを有効にするか否か
             SI_HAS_ARCHIVE => true,
+            // 記事詳細画面がデザイン上なくて、プレビュー機能で一覧画面を表示したい場合は true
+            SI_ARCHIVE_PREVIEW => false,
             // 管理画面の一覧画面で独自に並び替えができるようにするかどうか
             SI_USE_ORIGINAL_ORDER => false,
             // Custom Fieldsの設定

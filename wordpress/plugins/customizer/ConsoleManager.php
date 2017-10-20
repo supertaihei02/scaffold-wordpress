@@ -374,3 +374,27 @@ function overrideMceOptions( $init_array ) {
 }
 
 add_filter('tiny_mce_before_init', 'overrideMceOptions');
+
+/* *******************************
+ *  プレビューボタンのリンク先を変更する       
+ * *******************************/
+function getPreviewPostLink ($url)
+{
+    $preview_url = $url;
+    $post_type = get_post_type();
+    $conf = siGetPostTypeConfig($post_type);
+    if (SiUtils::get($conf, SI_ARCHIVE_PREVIEW, false)) {
+        $post_id = get_the_ID();
+        $add_query = array(
+            'preview' => true,
+            'post_id' => $post_id,
+        );
+
+        $preview_url = site_url() . '/' . $post_type;
+        $preview_url = add_query_arg($add_query, $preview_url);
+        $preview_url .= "#{$post_type}{$post_id}";
+    }
+
+    return $preview_url;
+}
+add_filter('preview_post_link', 'getPreviewPostLink');
