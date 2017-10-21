@@ -16,6 +16,9 @@ function isActiveCustomizer()
     }
 }
 
+/* *******************************
+ *   記事取得条件をまとめて指定する
+ * *******************************/
 $conditions = [];
 if (isActiveCustomizer()) {
     $conditions = [

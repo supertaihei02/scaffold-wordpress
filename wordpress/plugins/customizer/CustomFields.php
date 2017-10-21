@@ -250,7 +250,7 @@ function siSaveCustomFields($post_id) {
     // 処理の必要可否
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) { return false; }
     if (empty($post)) { return false; }
-    if(!current_user_can('edit_post', $post->ID)) { return false; }
+    if(!current_user_can('edit_post', $post_id)) { return false; }
 
     foreach (SI_CUSTOM_POST_TYPES[SI_POST_TYPES] as $post_type) {
         if ($post_type[SI_KEY] === $_POST['post_type']) {
@@ -262,10 +262,12 @@ function siSaveCustomFields($post_id) {
                     if (!isset($_POST[$data_key])) {
                         break;
                     }
-                    update_post_meta(
-                        $post->ID,
-                        $data_key,
-                        $_POST[$data_key]
+
+                    update_metadata(
+                            'post',
+                            $post_id,
+                            $data_key,
+                            $_POST[$data_key]
                     );
                 }
                 // multi対応なら、serialも保存する
@@ -274,8 +276,9 @@ function siSaveCustomFields($post_id) {
                     if (!isset($_POST[$serial_key])) {
                         break; 
                     }
-                    update_post_meta(
-                        $post->ID,
+                    update_metadata(
+                        'post',
+                        $post_id,
                         $serial_key,
                         $_POST[$serial_key]
                     );

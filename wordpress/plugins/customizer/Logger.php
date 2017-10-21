@@ -72,14 +72,20 @@ class Logger
      */
     function develop($log_object, $other_file = null, $keyword = '', $is_append = true)
     {
-        $this->logging("!!!!!!!!!!!!!!!!!!!!!!!!!!! $keyword !!!!!!!!!!!!!!!!!!!!!!!!!!!", self::$LEVEL_DEVELOP);
+        $this->mark($keyword, self::$LEVEL_DEVELOP);
         $this->logging($log_object, self::$LEVEL_DEVELOP);
         if (!is_null($other_file)) {
-            $this->logging("!!!!!!!!!!!!!!!!!!!!!!!!!!! $keyword !!!!!!!!!!!!!!!!!!!!!!!!!!!", self::$LEVEL_DEVELOP, $other_file, $is_append);
+            $this->mark($keyword, self::$LEVEL_DEVELOP, $other_file, $is_append);
             $this->logging($log_object, self::$LEVEL_DEVELOP, $other_file);
         }
     }
 
+    function mark($keyword, $level, $other_file = null, $is_append = true)
+    {
+        if (!empty($keyword)) {
+            $this->logging("!!!!!!!!!!!!!!!!!!!!!!!!!!! $keyword !!!!!!!!!!!!!!!!!!!!!!!!!!!", $level, $other_file, $is_append);
+        }
+    }
     /**
      * このメソッドは、ソースに残っていたら検索して消す
      * 

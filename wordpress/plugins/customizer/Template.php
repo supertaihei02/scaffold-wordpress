@@ -387,8 +387,33 @@ function renderPost($post_id, $template_name, $template_slug = SI_DEFAULT_TEMPLA
 {
     global $post, $si_customs;
     
+    // Preview対応
+    $preview = SiUtils::get($_GET, 'preview', false);
+    $preview_id = SiUtils::get($_GET, 'preview_id', false);
+    
+    if ($preview !== false && intval($preview_id) === $post_id) {
+        $post = (function ($post_id) {
+            $posts = get_posts([
+                SI_GET_P_STATUS => 'any',
+                SI_GET_P_POST_PARENT => $post_id,
+                SI_POST_TYPE => 'revision',
+                SI_GET_P_LIMIT => 1,
+                'sort_column' => 'ID',
+                'sort_order' => 'desc',
+            ]);
+            if (!empty($posts)) {
+                $result = array_shift($posts);
+            } else {
+                $result = get_post($post_id);
+            }
+            
+            return $result;
+        })($post_id);
+    } else {
+        $post = get_post($post_id);
+    }
+    
     // --- 取得 ---
-    $post = get_post($post_id);
     if (!empty($post)) {
         setup_postdata($post);
 
@@ -417,7 +442,12 @@ function setCustoms($post_id)
     global $si_customs;
 
     $post = get_post($post_id);
-    $post_type = $post->post_type;
+    if ($post->post_parent !== 0) {
+        $parent = get_post($post->post_parent);
+        $post_type = $parent->post_type;
+    } else {
+        $post_type = $post->post_type;
+    }
     $custom_data_list = get_post_custom($post_id);
     if (!empty($custom_data_list)) {
         $custom_fields_data = [];
