@@ -165,6 +165,8 @@ $RECYCLE.BIN/
 /wordpress/plugins/index.php
 /wordpress/plugins/customizer/log/
 
+/wordpress/uploads/
+
 ### まだしっかり実装できていないから省く
 /tools/hooks/
 /tools/operation/
