@@ -382,7 +382,7 @@ function getPreviewPostLink ($url)
 {
     $preview_url = $url;
     $post_type = get_post_type();
-    $conf = siGetPostTypeConfig($post_type);
+    $conf = siGetPostTypeConfig($post_type, false);
     if (SiUtils::get($conf, SI_ARCHIVE_PREVIEW, false)) {
         $post_id = get_the_ID();
         $add_query = array(

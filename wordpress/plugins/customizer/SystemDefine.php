@@ -224,7 +224,7 @@ if (!function_exists('siGetMyRole')) {
         return $pages;
     }
 
-    function siGetPostTypeConfig($arg_post_type)
+    function siGetPostTypeConfig($arg_post_type, $throw = true)
     {
         $conf = false;
         foreach (SI_CUSTOM_POST_TYPES[SI_POST_TYPES] as $post_type) {
@@ -234,14 +234,14 @@ if (!function_exists('siGetMyRole')) {
             }
         }
 
-        if ($conf === false) {
+        if ($conf === false && $throw) {
             throw new Exception("[ {$arg_post_type} ] is not Post Type.");
         }
 
         return $conf;
     }
 
-    function siGetFieldGroupConfig($arg_post_type, $arg_group_key)
+    function siGetFieldGroupConfig($arg_post_type, $arg_group_key, $throw = true)
     {
         $conf = false;
         foreach (siGetPostTypeConfig($arg_post_type)[SI_CUSTOM_FIELDS] as $group) {
@@ -251,14 +251,14 @@ if (!function_exists('siGetMyRole')) {
             }
         }
 
-        if ($conf === false) {
+        if ($conf === false && $throw) {
             throw new Exception("[ $arg_post_type => $arg_group_key ] is not exist.");
         }
 
         return $conf;
     }
 
-    function siGetTaxonomiesConfig($arg_post_type)
+    function siGetTaxonomiesConfig($arg_post_type, $throw = true)
     {
         $conf = false;
         foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type_key => $taxonomies) {
@@ -268,14 +268,14 @@ if (!function_exists('siGetMyRole')) {
             }
         }
 
-        if ($conf === false) {
+        if ($conf === false && $throw) {
             throw new Exception("[ $arg_post_type ] has not Taxonomies.");
         }
 
         return $conf;
     }
 
-    function siGetTaxonomyConfig($arg_post_type, $taxonomy_key)
+    function siGetTaxonomyConfig($arg_post_type, $taxonomy_key, $throw = true)
     {
         $conf = false;
         foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type_key => $taxonomies) {
@@ -289,7 +289,7 @@ if (!function_exists('siGetMyRole')) {
             }
         }
 
-        if ($conf === false) {
+        if ($conf === false && $throw) {
             throw new Exception("[ $arg_post_type => $taxonomy_key ] is not Taxonomy.");
         }
 
@@ -326,7 +326,7 @@ if (!function_exists('siGetMyRole')) {
         return $config;
     }
 
-    function siGetTaxonomyFieldGroupConfig($taxonomy_key, $arg_group_key)
+    function siGetTaxonomyFieldGroupConfig($taxonomy_key, $arg_group_key, $throw = true)
     {
         $conf = false;
         foreach (siSearchTaxonomyConfig($taxonomy_key)[SI_CUSTOM_FIELDS] as $group) {
@@ -336,7 +336,7 @@ if (!function_exists('siGetMyRole')) {
             }
         }
 
-        if ($conf === false) {
+        if ($conf === false && $throw) {
             throw new Exception("[ $taxonomy_key => $arg_group_key ] is not exist.");
         }
 
