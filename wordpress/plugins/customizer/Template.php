@@ -242,9 +242,23 @@ function argsInitialize($args)
         $args[SI_GET_P_STATUS][] = SI_GET_P_STATUS_DRAFT;
     }
     
+    // 年絞り込みのKEY変換
+    if (isset($args[SI_GET_P_YEAR])) {
+        $args['year'] = $args[SI_GET_P_YEAR];
+    }
+    if (isset($args[SI_GET_P_MONTH])) {
+        $args['monthnum'] = $args[SI_GET_P_MONTH];
+    }
+    if (isset($args[SI_GET_P_DAY])) {
+        $args['day'] = $args[SI_GET_P_DAY];
+    }
+    
     // get_postsに存在しない条件値を削除
     unset($args[SI_GET_P_PAGE]);
     unset($args[SI_GET_P_TAGS]);
+    unset($args[SI_GET_P_YEAR]);
+    unset($args[SI_GET_P_MONTH]);
+    unset($args[SI_GET_P_DAY]);
 
     return $args;
 }

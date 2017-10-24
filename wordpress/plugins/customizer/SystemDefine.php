@@ -88,7 +88,10 @@ define('SI_GET_P_LIMIT',  'posts_per_page');
 define('SI_GET_P_SIMPLE_OFFSET',  'simple_offset');
 define('SI_GET_P_OFFSET',  'offset');
 define('SI_GET_P_NO_PAGING',  'nopaging');
-define('SI_GET_P_YEAR',  'year');
+define('SI_GET_P_YEAR',  'y');
+define('SI_GET_P_MONTH',  'm');
+define('SI_GET_P_DAY',  'd');
+define('SI_GET_ALL',  'all');
 
 // POST STATUS
 define('SI_GET_P_STATUS',  'post_status');
