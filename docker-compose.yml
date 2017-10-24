@@ -3,7 +3,7 @@ services:
   # このイメージのバージョンアップ = wordpress, PHPのバージョンアップ
   wordpress:
     container_name: scaffold-wp-wp
-    image: wordpress:php7.1-fpm-alpine
+    build: ./settings/wp
     ports:
       - "9000:9000"
     links:
