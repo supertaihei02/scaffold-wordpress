@@ -33,10 +33,12 @@ class MovefileGenerator
 
 $twig = MovefileGenerator::createEngine();
 $template = $twig->loadTemplate("Movefile.twig");
-file_put_contents(
-    $web_root . '/Movefile',
-    $template->render(array(
-        'env' =>  $_ENV,
-        'move_library' => $move_library
-    ))
-);
+$content = $template->render(array(
+    'env' =>  $_ENV,
+    'move_library' => $move_library
+));
+$output = $web_root . '/Movefile';
+file_put_contents($output, $content);
+
+echo $content . PHP_EOL;
+echo 'Generated: ' . $output . PHP_EOL;

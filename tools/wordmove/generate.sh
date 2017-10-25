@@ -15,5 +15,5 @@ if [ ! -f $ENV_FILE ]; then
 fi
 source $ENV_FILE
 
-docker exec $WORDPRESS_CONTAINER /bin/bash -c "/usr/local/bin/php /var/www/tools/movefile/generate.php $1"
+docker exec $WORDPRESS_CONTAINER /bin/bash -c "/usr/local/bin/php /var/www/tools/wordmove/generate.php $1"
  

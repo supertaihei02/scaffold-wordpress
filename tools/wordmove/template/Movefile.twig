@@ -49,7 +49,7 @@ staging:
 {% endif %}
 
 {% if env.PRODUCTION_WP_HOME is not empty %}
-  staging:
+production:
   vhost: "{{ env.PRODUCTION_WP_HOME }}"
   wordpress_path: "{{ env.PRODUCTION_WP_SETTINGS_PATH }}"
 
