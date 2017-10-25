@@ -19,7 +19,7 @@ class MovefileGenerator
     {
         $env_dir = dirname(dirname(__DIR__));
         $dotenv = new Dotenv\Dotenv($env_dir);
-        $dotenv->load();
+        $dotenv->overload();
 
         $template_dir = __DIR__ . '/template';
         $loader = new \Twig_Loader_Filesystem($template_dir);

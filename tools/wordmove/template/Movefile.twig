@@ -29,27 +29,26 @@ staging:
     - "wp-config.php"
     - ".htaccess"
     - ".htpasswd"
-  {% if move_library == false %}
+{% if move_library == false %}
     - "vendor/"
     - "node_modules/"
-  {% endif %}  
-  {% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
+{% endif %}  
+{% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
   ssh:
     host: "{{ env.STAGING_UPLOAD_HOST }}"
     user: "{{ env.STAGING_UPLOAD_USER }}"
     port: {{ env.STAGING_UPLOAD_PORT }}
     pass: {{ env.STAGING_UPLOAD_PASS }}
     rsync_options: --verbose
-  {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
+{% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
     host: "{{ env.STAGING_UPLOAD_HOST }}"
     user: "{{ env.STAGING_UPLOAD_USER }}"
     port: {{ env.STAGING_UPLOAD_PORT }}
     pass: {{ env.STAGING_UPLOAD_PASS }}
     passive: true
-  {% endif %}
 {% endif %}
-
+{% endif %}
 {% if env.PRODUCTION_WP_HOME is not empty %}
 production:
   vhost: "{{ env.PRODUCTION_WP_HOME }}"
@@ -69,23 +68,23 @@ production:
     - "wp-config.php"
     - ".htaccess"
     - ".htpasswd"
-  {% if move_library == false %}
+{% if move_library == false %}
     - "vendor/"
     - "node_modules/"
-  {% endif %}
-  {% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
+{% endif %}
+{% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
   ssh:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
     pass: {{ env.PRODUCTION_UPLOAD_PASS }}
     rsync_options: --verbose
-  {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
+{% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
     pass: {{ env.PRODUCTION_UPLOAD_PASS }}
     passive: true
-  {% endif %}
+{% endif %}
 {% endif %}
