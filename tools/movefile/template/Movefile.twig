@@ -1,0 +1,89 @@
+local:
+  vhost: "{{ env.LOCAL_WP_HOME }}"
+  wordpress_path: "/var/www/html"
+  database:
+    name: "{{ env.WORDPRESS_DB_NAME }}"
+    user: "{{ env.WORDPRESS_DB_USER }}"
+    password: "{{ env.WORDPRESS_DB_PASSWORD }}"
+    host: "{{ env.MYSQL_CONTAINER }}"
+    charset: "utf8"
+
+{% if env.STAGING_WP_HOME is not empty %}
+staging:
+  vhost: "{{ env.STAGING_WP_HOME }}"
+  wordpress_path: "{{ env.STAGING_WP_SETTINGS_PATH }}"
+
+  database:
+    name: "{{ env.STAGING_WORDPRESS_DB_NAME }}"
+    user: "{{ env.STAGING_WORDPRESS_DB_USER }}"
+    password: "{{ env.STAGING_WORDPRESS_DB_PASSWORD }}"
+    host: "{{ env.STAGING_WORDPRESS_DB_HOST }}"
+    charset: "utf8"
+  exclude:
+    - ".git/"
+    - ".gitignore"
+    - "Movefile"
+    - "wp-content/*.sql"
+    - "wp-config.php"
+    - ".htaccess"
+    - ".htpasswd"
+  {% if move_library == false %}
+    - "vendor/"
+    - "node_modules/"
+  {% endif %}  
+  {% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
+  ssh:
+    host: "{{ env.STAGING_UPLOAD_HOST }}"
+    user: "{{ env.STAGING_UPLOAD_USER }}"
+    port: {{ env.STAGING_UPLOAD_PORT }}
+    pass: {{ env.STAGING_UPLOAD_PASS }}
+    rsync_options: --verbose
+  {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
+  ftp:
+    host: "{{ env.STAGING_UPLOAD_HOST }}"
+    user: "{{ env.STAGING_UPLOAD_USER }}"
+    port: {{ env.STAGING_UPLOAD_PORT }}
+    pass: {{ env.STAGING_UPLOAD_PASS }}
+    passive: true
+  {% endif %}
+{% endif %}
+
+{% if env.PRODUCTION_WP_HOME is not empty %}
+  staging:
+  vhost: "{{ env.PRODUCTION_WP_HOME }}"
+  wordpress_path: "{{ env.PRODUCTION_WP_SETTINGS_PATH }}"
+
+  database:
+    name: "{{ env.PRODUCTION_WORDPRESS_DB_NAME }}"
+    user: "{{ env.PRODUCTION_WORDPRESS_DB_USER }}"
+    password: "{{ env.PRODUCTION_WORDPRESS_DB_PASSWORD }}"
+    host: "{{ env.PRODUCTION_WORDPRESS_DB_HOST }}"
+    charset: "utf8"
+  exclude:
+    - ".git/"
+    - ".gitignore"
+    - "Movefile"
+    - "wp-content/*.sql"
+    - "wp-config.php"
+    - ".htaccess"
+    - ".htpasswd"
+  {% if move_library == false %}
+    - "vendor/"
+    - "node_modules/"
+  {% endif %}
+  {% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
+  ssh:
+    host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
+    user: "{{ env.PRODUCTION_UPLOAD_USER }}"
+    port: {{ env.PRODUCTION_UPLOAD_PORT }}
+    pass: {{ env.PRODUCTION_UPLOAD_PASS }}
+    rsync_options: --verbose
+  {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
+  ftp:
+    host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
+    user: "{{ env.PRODUCTION_UPLOAD_USER }}"
+    port: {{ env.PRODUCTION_UPLOAD_PORT }}
+    pass: {{ env.PRODUCTION_UPLOAD_PASS }}
+    passive: true
+  {% endif %}
+{% endif %}

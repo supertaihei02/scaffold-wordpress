@@ -20,7 +20,6 @@ function add_my_ajaxurl() {
  */
 function getApiTemplate($template, $condition)
 {
-    header('content-type: application/json; charset=utf-8');
     if (isset($_GET[SI_GET_P_OFFSET]) && intval($_GET[SI_GET_P_OFFSET]) !== -1) {
         $condition[SI_GET_P_OFFSET] = intval($_GET[SI_GET_P_OFFSET]) +
             (($condition[SI_GET_P_PAGE] - 1) * $condition[SI_GET_P_LIMIT]);
@@ -95,7 +94,8 @@ function getPostsApi()
         }
         return $condition;
     })($conditions, $_GET['conditions']);
-
+    
+    header('content-type: application/json; charset=utf-8');
     echo json_encode(getApiTemplate($_GET['template'], $condition));
     die();
 }

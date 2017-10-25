@@ -6,9 +6,19 @@ _:
 init:
 	cp .env.sample .env
 	docker-compose up -d
+	make composer
 	yarn
 	make import
 
+composer:
+	bash tools/composer/composer.sh
+
+gen-movefile:
+	bash tools/movefile/generate.sh 0
+
+gen-movefile-with-libraries:
+	bash tools/movefile/generate.sh 1
+	
 clean:
 	docker-compose down
 	docker-compose up -d

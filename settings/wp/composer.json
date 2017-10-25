@@ -1,0 +1,13 @@
+{
+    "name": "framelunch/scaffold-wordpress",
+    "authors": [
+        {
+            "name": "kenji nakanishi",
+            "email": "nakanishi@framelunch.jp"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^2.4",
+        "twig/twig": "^2.4"
+    }
+}
