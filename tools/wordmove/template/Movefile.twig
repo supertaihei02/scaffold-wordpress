@@ -46,7 +46,7 @@ staging:
     user: "{{ env.STAGING_UPLOAD_USER }}"
     port: {{ env.STAGING_UPLOAD_PORT }}
     pass: {{ env.STAGING_UPLOAD_PASS }}
-    passive: true
+    passive: false
 {% endif %}
 {% endif %}
 {% if env.PRODUCTION_WP_HOME is not empty %}
@@ -72,19 +72,18 @@ production:
     - "vendor/"
     - "node_modules/"
 {% endif %}
-{% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
+{% if env.PRODUCTION_UPLOAD_PROTOCOL == "SFTP" %}
   ssh:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
-    pass: {{ env.PRODUCTION_UPLOAD_PASS }}
+    password: "{{ env.PRODUCTION_UPLOAD_PASS }}"
     rsync_options: --verbose
-{% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
+{% elseif env.PRODUCTION_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
-    pass: {{ env.PRODUCTION_UPLOAD_PASS }}
-    passive: true
+    password: "{{ env.PRODUCTION_UPLOAD_PASS }}"
 {% endif %}
 {% endif %}

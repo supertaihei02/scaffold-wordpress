@@ -11,6 +11,7 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 
 # update repositories
 ADD ./repositories /root/repositories
+ADD ./.lftprc /root/.lftprc
 RUN cp -f /root/repositories /etc/apk/repositories
 
 # WordMove
