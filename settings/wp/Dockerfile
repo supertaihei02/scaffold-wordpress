@@ -16,7 +16,7 @@ RUN cp -f /root/repositories /etc/apk/repositories
 # WordMove
 RUN apk update && \
     apk --no-cache upgrade && \
-    apk --no-cache add bash openssh make gcc g++ ruby ruby-rdoc ruby-irb ruby-dev && \ 
+    apk --no-cache add bash openssh make gcc g++ rsync lftp ruby ruby-rdoc ruby-irb ruby-dev && \ 
     gem update --system && \
     gem install bigdecimal wordmove
 
