@@ -131,11 +131,7 @@ class SiUtils
     static function isFile($file_path)
     {
         clearstatcache();
-        if (is_file($file_path)) {
-            return true;
-        } else {
-            return false;
-        }
+        return is_file($file_path);
     }
 
     /**

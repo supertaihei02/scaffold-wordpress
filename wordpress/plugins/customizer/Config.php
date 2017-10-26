@@ -7,11 +7,9 @@ date_default_timezone_set('Asia/Tokyo');
 /* *******************************
  *       テンプレートエンジン Twig
  * *******************************/
-define('SI_USE_TWIG', true);
 define('SI_TWIG_DEBUG', true);
 define('SI_TWIG_TEMPLATE_DIR', get_template_directory());
 define('SI_TWIG_CACHE_DIR', get_template_directory() . '/twig_cache');
-
 
 /* *******************************
  *       ログ関係

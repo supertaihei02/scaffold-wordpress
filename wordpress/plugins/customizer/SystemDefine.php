@@ -110,6 +110,7 @@ define('SI_GET_T_TAGS',  'tags');
 define('SI_GET_T_CUR_CLASS',  'current_class_name');
 
 // --- 以下 Routing系定数
+define('SI_TEMPLATE_EXTENSION',  '.twig');
 define('SI_PAGE_TYPE_404',  '_404');
 define('SI_PAGE_TYPE_HOME',  '_home');
 define('SI_PAGE_TYPE_ARCHIVE',  '_archive');
@@ -117,6 +118,13 @@ define('SI_PAGE_TYPE_SINGLE',  '_single');
 define('SI_PAGE_TYPE_PAGE',  '_page');
 define('SI_PAGE_TYPE_SEARCH',  '_search');
 
+// --- META KEY
+define('SI_TITLE',  'title');
+define('SI_DESCRIPTION',  'description');
+define('SI_KEYWORDS',  'keywords');
+define('SI_OGP_IMAGE',  'ogp_image');
+define('SI_OGP_URL',  'ogp_url');
+define('SI_OGP_SITE_NAME',  'ogp_site_name');
 
 // デフォルトSEOフィールド
 define('SI_DEFAULT_SEO_FIELDS', [

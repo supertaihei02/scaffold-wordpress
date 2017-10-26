@@ -805,3 +805,84 @@ function getSearchResults()
     echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     die();
 }
+
+/* *******************************
+ *          ブログ基本 情報
+ * *******************************/
+function getBasicInfo()
+{
+    ob_start();
+    wp_head();
+    $wp_head = ob_get_contents();
+    ob_end_clean();
+    
+    return [
+        'lang' => get_language_attributes('html'),
+        'charset' => get_bloginfo('charset'),
+        'wp_head' => $wp_head,
+        'body_class' => join( ' ', get_body_class()),
+        'ga_id' => SI_GOOGLE_ANALYTICS_ID
+    ];
+}
+
+/* *******************************
+ *          SEO META 情報
+ * *******************************/
+function getSeoMeta($key)
+{
+    global $post, $si_customs, $seo_meta;
+    
+    $blog_name = get_bloginfo('name');
+    $ogp_url = empty(get_the_permalink()) ? site_url() : get_the_permalink();
+    $defaults = [
+        SI_TITLE => get_the_title(),
+        SI_DESCRIPTION => SI_DEFAULT_DESCRIPTION . ' ' . $blog_name,
+        SI_KEYWORDS => SI_DEFAULT_KEYWORDS . ',' . $blog_name,
+        SI_OGP_IMAGE => site_url() . SI_DEFAULT_OGP_IMAGE,
+    ];
+
+    /*
+     * 記事詳細画面のページのメタ情報を取得
+     */
+    if (!empty($post) && SiUtils::isCustomizeSingle($post->post_type)) {
+        // Custom Fieldsの値を取得
+        setCustoms($post->ID);
+        $custom = SiUtils::get($si_customs, $post->ID, []);
+        list($title, $description, $keywords, $ogp_image) = (function ($seo) use ($defaults) {
+            $title = SiUtils::get($seo, 'seo-title', $defaults[SI_TITLE]);
+            $description = SiUtils::get($seo, 'seo-description', $defaults[SI_DESCRIPTION]);
+            $keywords = SiUtils::get($seo, 'seo-keywords', $defaults[SI_KEYWORDS]);
+            $ogp_image = SiUtils::get($seo, 'seo-img', $defaults[SI_OGP_IMAGE]);
+            return [$title, $description, $keywords, $ogp_image];
+        })(SiUtils::get($custom, 'seo', []));
+    }
+    /*
+     * 記事詳細画面 "以外の" ページのメタ情報を取得
+     * 基本的に functions.php で $seo_meta を定義すること
+     */
+    else if (isset($seo_meta[$key])) {
+        $seo = $seo_meta[$key];
+        $title = SiUtils::get($seo, SI_TITLE, $defaults[SI_TITLE]);
+        $description = SiUtils::get($seo, SI_DESCRIPTION, $defaults[SI_DESCRIPTION]);
+        $keywords = SiUtils::get($seo, SI_KEYWORDS, $defaults[SI_KEYWORDS]);
+        $ogp_image = SiUtils::get($seo, SI_OGP_IMAGE, $defaults[SI_OGP_IMAGE]);
+    }
+    /*
+     * $seo_meta に定義されていないページはデフォルトを出力
+     */
+    else {
+        $title = $defaults[SI_TITLE];
+        $description = $defaults[SI_DESCRIPTION];
+        $keywords = $defaults[SI_KEYWORDS];
+        $ogp_image = $defaults[SI_OGP_IMAGE];
+    }
+    
+    return [
+        SI_TITLE => SiUtils::title($title),
+        SI_DESCRIPTION => $description,
+        SI_KEYWORDS => $keywords,
+        SI_OGP_IMAGE => $ogp_image,
+        SI_OGP_URL => $ogp_url,
+        SI_OGP_SITE_NAME => $blog_name
+    ];
+}

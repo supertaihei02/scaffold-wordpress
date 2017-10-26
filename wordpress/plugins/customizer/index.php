@@ -40,28 +40,24 @@ function loadScript($hook)
 add_action( 'admin_enqueue_scripts', 'loadScript' );
 
 // vendorを読み込む
-if (is_file(ABSPATH . '/vendor/autoload.php')) {
-    require_once ABSPATH . '/vendor/autoload.php';
+if (!is_file(ABSPATH . '/vendor/autoload.php')) {
+    die('Wordpressインストールディレクトリで次のコマンドを実行してください `composer install` ');
 }
+require_once ABSPATH . '/vendor/autoload.php';
 
 // ベースファイルを読み込む
 require_once SI_BASE_PATH . '/SystemDefine.php';
 require_once SI_BASE_PATH . '/Utils.php';
 require_once SI_BASE_PATH . '/Config.php';
 require_once SI_BASE_PATH . '/Logger.php';
+require_once SI_BASE_PATH . '/Twig.php';
 
 // このプラグインで利用するグローバル変数
 $si_logger = new Logger();
 $si_posts = [];   // WP_Postクラスのリストが入る。使用後は空にする。
 $si_customs = []; // post_idをkeyにしたカスタムフィールドの値が入る。使用後は空にする。
 $si_terms = [];   // get_termsの結果が入る。使用後は空にする。
-$si_twig = null;  // テンプレートエンジン Twig
-
-// Twigの使用準備
-if (SI_USE_TWIG) {
-    require_once SI_BASE_PATH . '/Twig.php';
-    $si_twig = CustomizerTwig::createEngine();
-}
+$si_twig = CustomizerTwig::createEngine();  // テンプレートエンジン Twig
 
 // phpの読み込み
 require_once SI_BASE_PATH . '/CustomPostTypes.php';
