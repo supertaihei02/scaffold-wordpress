@@ -122,7 +122,7 @@ class CustomizerTwig
     
     static function defaultGetArgumentsLogic()
     {
-        global $post, $si_customs;
+        global $post;
         
         $args = [];
         switch (SiUtils::getPageType()) {
@@ -131,16 +131,7 @@ class CustomizerTwig
             case SI_PAGE_TYPE_ARCHIVE:
                 break;
             case SI_PAGE_TYPE_SINGLE:
-                setCustoms($post->ID);
-                $args['post'] = [
-                    'title' => get_the_title(),
-                    'content' => get_the_content(),
-                    'link' => get_the_permalink(),
-                    'date' => get_the_date(),
-                ];
-                foreach ($si_customs[$post->ID] as $key => $custom) {
-                    $args['post'][$key] = $custom;
-                }
+                $args['post'] = getPostData($post->ID); 
                 break;
             case SI_PAGE_TYPE_PAGE:
                 break;

@@ -388,23 +388,14 @@ function isGetAllTags($tags)
     return $result;
 }
 
-/**
- * 1件の投稿に対する描画処理
- * 
- * @param $post_id
- * @param $template_slug
- * @param $template_name
- * @param string $none_slug
- * @param string $none_name
- */
-function renderPost($post_id, $template_name, $template_slug = SI_DEFAULT_TEMPLATE_SLUG, $none_slug = 'template-parts/content', $none_name = 'none')
+function getPostData($post_id)
 {
     global $post, $si_customs;
-    
+
     // Preview対応
     $preview = SiUtils::get($_GET, 'preview', false);
     $preview_id = SiUtils::get($_GET, 'preview_id', false);
-    
+
     if ($preview !== false && intval($preview_id) === $post_id) {
         $post = (function ($post_id) {
             $posts = get_posts([
@@ -420,28 +411,38 @@ function renderPost($post_id, $template_name, $template_slug = SI_DEFAULT_TEMPLA
             } else {
                 $result = get_post($post_id);
             }
-            
+
             return $result;
         })($post_id);
     } else {
         $post = get_post($post_id);
     }
-    
-    // --- 取得 ---
-    if (!empty($post)) {
-        setup_postdata($post);
 
-        if (empty($si_customs)) {
-            setCustoms($post->ID);
-        }
-
-        get_template_part($template_slug, $template_name);
-
-        wp_reset_postdata();
-        resetPostGlobal();
-    } else {
-        get_template_part($none_slug, $none_name);
+    if (empty($post)) {
+        return [];
     }
+    
+    setup_postdata($post);
+    if (empty($si_customs)) {
+        setCustoms($post->ID);
+    }
+
+
+    $args = [
+        'title' => get_the_title(),
+        'content' => get_the_content(),
+        'link' => get_the_permalink(),
+        'date' => get_the_date(),
+    ];
+    
+    foreach ($si_customs[$post->ID] as $key => $custom) {
+        $args[$key] = $custom;
+    }
+    
+    wp_reset_postdata();
+    resetPostGlobal();
+    
+    return $args;
 }
 
 function resetPostGlobal()
