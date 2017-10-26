@@ -1,27 +1,31 @@
 {% extends "default_frame.twig" %}
 {% block main %}
-  <pre>
-  {{ dump(post) }}
-  </pre>
+  <p>配列の中身</p>
+  <pre>{{ dump(post) }}</pre>
+  
   <dl>
     <dt>タイトル</dt>
-    <dd>{{ post.title }}</dd>
+    <dd>{{ post.post_title }}</dd>
 
     <dt>本文</dt>
     <dd>{{ post.content }}</dd>
 
     <dt>メイン画像</dt>
-    <dd>{{ post.archive.archive-img }}</dd>
+    <dd>{{ post.archive.img }}</dd>
 
     <dt>このページリンク</dt>
-    <dd><?php echo $link; ?></dd>
+    <dd>{{ post.link }}</dd>
 
     <dt>記事公開日付</dt>
-    <dd><?php echo $date; ?></dd>
+    <dd>{{ post.date }}</dd>
 
     <dt>タグ</dt>
-    <dd><?php echo $tag_html; ?></dd>
+    {% for key,tag in post.tags %}
+      <dd>{{ tag.slug }}</dd>
+    {% endfor %}
 
     <?php echo $options_html; ?>
   </dl>
+
+
 {% endblock main %}
