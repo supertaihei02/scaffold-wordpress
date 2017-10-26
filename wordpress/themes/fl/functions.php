@@ -28,13 +28,6 @@ if (isActiveCustomizer()) {
             SI_KEYWORDS => 'NEWS ARCHIVE keywords',
             SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
         ],
-        // NEWS SINGLE Page
-        SI_PAGE_TYPE_SINGLE . SI_HYPHEN . 'news' => [
-            SI_TITLE => 'NEWS SINGLE title',
-            SI_DESCRIPTION => 'NEWS SINGLE desc',
-            SI_KEYWORDS => 'NEWS SINGLE keywords',
-            SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
-        ],
     ];
     
     /* *******************************

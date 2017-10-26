@@ -25,8 +25,8 @@ define('SI_LOG_OUTPUT_TIME', true);
  *       SEO設定
  * *******************************/
 define('SI_TITLE_SEPARATOR', ' | ');
-define('SI_DEFAULT_DESCRIPTION', '');
-define('SI_DEFAULT_KEYWORDS', '');
+define('SI_DEFAULT_DESCRIPTION', 'default description');
+define('SI_DEFAULT_KEYWORDS', 'default,keywords');
 define('SI_DEFAULT_OGP_IMAGE', '/wp-content/themes/fl/images/ogp.png');
 define('SI_GOOGLE_ANALYTICS_ID', 'XXXXX');
 

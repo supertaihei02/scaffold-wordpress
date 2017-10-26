@@ -854,6 +854,11 @@ function getSeoMeta($key)
             $description = SiUtils::get($seo, 'seo-description', $defaults[SI_DESCRIPTION]);
             $keywords = SiUtils::get($seo, 'seo-keywords', $defaults[SI_KEYWORDS]);
             $ogp_image = SiUtils::get($seo, 'seo-img', $defaults[SI_OGP_IMAGE]);
+            
+            // 個別ページで設定していない場合はデフォルトをセット
+            $description = empty($description) ? $defaults[SI_DESCRIPTION] : $description;
+            $keywords = empty($keywords) ? $defaults[SI_KEYWORDS] : $keywords;
+            $ogp_image = empty($ogp_image) ? $defaults[SI_OGP_IMAGE] : $ogp_image;
             return [$title, $description, $keywords, $ogp_image];
         })(SiUtils::get($custom, 'seo', []));
     }
