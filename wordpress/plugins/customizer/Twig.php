@@ -11,7 +11,10 @@ class CustomizerTwig
         SiUtils::createDir(SI_TWIG_TEMPLATE_DIR);
         SiUtils::createDir(SI_TWIG_CACHE_DIR);
 
-        $loader = new \Twig_Loader_Filesystem(SI_TWIG_TEMPLATE_DIR);
+        $loader = new \Twig_Loader_Filesystem([
+            SI_TWIG_TEMPLATE_DIR,
+            SI_TWIG_TEMPLATE_DIR . '/template-parts'
+        ]);
         $twig = new \Twig_Environment($loader, [
             'debug' => SI_TWIG_DEBUG,
             'auto_reload' => SI_TWIG_DEBUG,
@@ -122,25 +125,23 @@ class CustomizerTwig
     
     static function defaultGetArgumentsLogic()
     {
-        global $post;
+        global $post, $conditions;
         
         $args = [];
-        switch (SiUtils::getPageType()) {
-            case SI_PAGE_TYPE_HOME:
-                break;
-            case SI_PAGE_TYPE_ARCHIVE:
-                break;
-            case SI_PAGE_TYPE_SINGLE:
-                $args['post'] = getPostData($post->ID); 
-                break;
-            case SI_PAGE_TYPE_PAGE:
-                break;
-            case SI_PAGE_TYPE_SEARCH:
-                break;
-            default:
-                // 404
 
-                break;
+        $page_type = SiUtils::getPageType();
+        $key = self::getTemplateKey(
+            $page_type, get_post_type()
+        );
+        
+        // 各ページの onLoad 条件があれば記事取得する
+        if (isset($conditions[$key]) && isset($conditions[$key]['onLoad']) && !empty($conditions[$key]['onLoad'])) {
+            $args['posts'] = getPostsForTemplate($conditions[$key]['onLoad']);
+        }
+        
+        // 詳細画面ではその記事情報を取得する
+        if ($page_type === SI_PAGE_TYPE_SINGLE) {
+            $args['post'] = getPostForTemplate($post->ID);
         }
         
         return $args;

@@ -2,30 +2,4 @@
 {% block main %}
   <p>配列の中身</p>
   <pre>{{ dump(post) }}</pre>
-  
-  <dl>
-    <dt>タイトル</dt>
-    <dd>{{ post.post_title }}</dd>
-
-    <dt>本文</dt>
-    <dd>{{ post.content }}</dd>
-
-    <dt>メイン画像</dt>
-    <dd>{{ post.archive.img }}</dd>
-
-    <dt>このページリンク</dt>
-    <dd>{{ post.link }}</dd>
-
-    <dt>記事公開日付</dt>
-    <dd>{{ post.date }}</dd>
-
-    <dt>タグ</dt>
-    {% for key,tag in post.tags %}
-      <dd>{{ tag.slug }}</dd>
-    {% endfor %}
-
-    <?php echo $options_html; ?>
-  </dl>
-
-
 {% endblock main %}

@@ -109,47 +109,12 @@ function countPosts($condition)
 }
 
 /**
- * 複数件の投稿に対する描画処理
- * 
- * @param $template_name
- * @param $args
- * @param null || function $before
- * @param null || function $after
- * @param null || function $customize
- * @param string $template_slug
- * @param string $none_slug
- * @param string $none_name
- * @return int
+ * offsetで減らした件数分
+ * 総取得件数を減らす
+ * @param $found_posts
+ * @param $query
+ * @return mixed
  */
-function renderPosts($template_name, $args, $before = null, $after = null, $customize = null, $template_slug = SI_DEFAULT_TEMPLATE_SLUG,  $none_slug = 'template-parts/content', $none_name = 'none')
-{
-    global $post, $si_customs;
-
-    $args = argsInitialize($args);
-    $render_info = getPostsForRender($args, $customize);
-    if ($render_info->is_exist) {
-        if (is_callable($before)) { $before($render_info, $args); }
-        
-        // 投稿の取得
-        foreach ($render_info->posts as $post) {
-            setup_postdata($post);
-            setCustoms($post->ID);
-            $si_customs[$post->ID][SI_INDEX] = $post->{SI_INDEX};
-            get_template_part($template_slug, $template_name);
-        }
-        
-        if (is_callable($after)) { $after($render_info, $args); }
-        wp_reset_postdata();
-        resetPostGlobal();
-    } else {
-        get_template_part($none_slug, $none_name);
-    }
-    
-    return $render_info->found_posts;
-}
-add_action('wp_ajax_getPosts', 'getPosts');
-add_action('wp_ajax_nopriv_getPosts', 'getPosts');
-
 function adjustOffsetPagination($found_posts, $query)
 {
     if (isset($_GET[SI_GET_P_OFFSET])) {
@@ -261,6 +226,31 @@ function argsInitialize($args)
     unset($args[SI_GET_P_DAY]);
 
     return $args;
+}
+
+/**
+ * 複数件の記事情報をTwig用の引数として返す
+ * @param $args
+ * @param null $customize
+ * @return array
+ */
+function getPostsForTemplate($args, $customize = null)
+{
+    global $post;
+    $template_args = [];
+    $args = argsInitialize($args);
+    $render_obj = getPostsForRender($args, $customize);
+    foreach ($render_obj->posts as $post) {
+        $unique_values['link'] = $post->link;
+        $unique_values['index'] = $post->index;
+        $formatted_arg = formatForTemplate($post, true);
+        foreach ($unique_values as $key => $unique_value) {
+            $formatted_arg[$key] = $unique_value;
+        }
+        $template_args[] = $formatted_arg;
+    }
+
+    return $template_args;
 }
 
 function getPostsForRender($args, $customize = null)
@@ -388,9 +378,14 @@ function isGetAllTags($tags)
     return $result;
 }
 
-function getPostData($post_id)
+/**
+ * 1件の記事情報をTwig用の引数として返す
+ * @param $post_id
+ * @return array
+ */
+function getPostForTemplate($post_id)
 {
-    global $post, $si_customs;
+    global $post;
 
     // Preview対応
     $preview = SiUtils::get($_GET, 'preview', false);
@@ -422,11 +417,23 @@ function getPostData($post_id)
         return [];
     }
     
+    return formatForTemplate($post);
+}
+
+/**
+ * Post1件をテンプレート用に情報整理
+ * 
+ * @param $post
+ * @param bool $force_request
+ * @return array
+ */
+function formatForTemplate($post, $force_request = false)
+{
+    global $post, $si_customs;
     setup_postdata($post);
-    if (empty($si_customs)) {
+    if (empty($si_customs) || $force_request) {
         setCustoms($post->ID);
     }
-
 
     $args = [
         'title' => get_the_title(),
@@ -434,11 +441,11 @@ function getPostData($post_id)
         'link' => get_the_permalink(),
         'date' => get_the_date(),
     ];
-    
+
     foreach ($si_customs[$post->ID] as $key => $custom) {
         $args[$key] = $custom;
     }
-    
+
     wp_reset_postdata();
     resetPostGlobal();
     

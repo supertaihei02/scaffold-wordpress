@@ -74,6 +74,11 @@ function redirect_dashboard()
         return str_replace($remove, '', $url);
     };
 
+    // Ajax通信の場合は画面は無関係なので無視
+    if (SiUtils::isWpAjax()) {
+        return true;
+    }
+    
     $user = wp_get_current_user();
     if (!empty($user->data)) {
         $user_id = $user->data->user_login;
@@ -86,8 +91,10 @@ function redirect_dashboard()
         }
     } else {
         wp_redirect(admin_url(DEFAULT_PAGE_NAME));
+        exit();
     }
 
+    return false;
 }
 
 add_action('admin_init', 'redirect_dashboard');

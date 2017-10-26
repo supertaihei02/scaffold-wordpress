@@ -3,8 +3,9 @@ $seo_meta = [];
 $conditions = [];
 if (isActiveCustomizer()) {
     /* *******************************
-     *       TDKをまとめて指定する
-     * 読み込まれる "Twigファイル名" がKEY
+     * TDKをページごとにまとめて指定する
+     * 読み込まれる "Twigファイル名(拡張子なし)"
+     * をKEYとして設定する
      * *******************************/
     $seo_meta = [
         // Top Page
@@ -21,7 +22,7 @@ if (isActiveCustomizer()) {
             SI_KEYWORDS => '',
             SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
         ],
-        // NEWS ARCHIVE Page
+        // News Archive Page
         SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
             SI_TITLE => 'NEWS ARCHIVE title',
             SI_DESCRIPTION => 'NEWS ARCHIVE desc',
@@ -31,15 +32,19 @@ if (isActiveCustomizer()) {
     ];
     
     /* *******************************
-     *   記事取得条件をまとめて指定する
+     * 記事取得条件をページごとにまとめて指定する
+     * 読み込まれる "Twigファイル名(拡張子なし)"
+     * をKEYとして設定する
+     * onLoad に指定した条件はページ読み込み時に
+     * その条件で記事を取得したものが渡される
      * *******************************/
     $conditions = [
         // Top Page
-        'home' => [
+        SI_PAGE_TYPE_HOME => [
             /*
-             * News記事を 8件取得
+             * [読み込み時]
              */
-            'news' => [
+            'onLoad' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
                 SI_GET_P_POST_TYPE => POST_NEWS,
                 SI_GET_P_LIMIT => 8,
@@ -47,15 +52,12 @@ if (isActiveCustomizer()) {
                 SI_GET_P_ORDER_BY => 'date',
             ]
         ],
-        // News Page 
-        'news-archive' => [
-            'terms' => [
-                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_T_TAXONOMIES => POST_NEWS.'_categories',
-                SI_GET_T_HIDE_EMPTY => false,
-                SI_GET_T_TAGS => SiUtils::get($_GET, SI_GET_T_TAGS, -1),
-            ],
-            'news' => [
+        // News Archive Page
+        SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
                 SI_GET_P_POST_TYPE => POST_NEWS,
                 SI_GET_P_LIMIT => SiUtils::get($_GET, SI_GET_P_LIMIT, 4),
@@ -64,7 +66,39 @@ if (isActiveCustomizer()) {
                 SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
                 SI_GET_P_TAGS => SiUtils::get($_GET, SI_GET_P_TAGS, -1),
                 SI_GET_P_YEAR => SiUtils::get($_GET, SI_GET_P_YEAR, ''),
-            ]
+            ],
+            'api' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_LIMIT => SiUtils::get($_GET, SI_GET_P_LIMIT, 2),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_TAGS => SiUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => SiUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ],
+            'terms' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_T_TAXONOMIES => POST_NEWS.'_categories',
+                SI_GET_T_HIDE_EMPTY => false,
+                SI_GET_T_TAGS => SiUtils::get($_GET, SI_GET_T_TAGS, -1),
+            ],
+        ],
+        // News Single Page
+        SI_PAGE_TYPE_SINGLE . SI_HYPHEN . 'news' => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_LIMIT => SiUtils::get($_GET, SI_GET_P_LIMIT, 4),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_TAGS => SiUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => SiUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ],
         ],
     ];
 

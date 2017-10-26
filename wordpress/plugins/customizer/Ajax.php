@@ -20,15 +20,29 @@ function add_my_ajaxurl() {
  */
 function getApiTemplate($template, $condition)
 {
+    global $post, $si_twig;
+
     if (isset($_GET[SI_GET_P_OFFSET]) && intval($_GET[SI_GET_P_OFFSET]) !== -1) {
         $condition[SI_GET_P_OFFSET] = intval($_GET[SI_GET_P_OFFSET]) +
             (($condition[SI_GET_P_PAGE] - 1) * $condition[SI_GET_P_LIMIT]);
     }
-    ob_clean();
-    ob_start();
-    $count_all = renderPosts($template, $condition);
-    $html = ob_get_contents();
-    ob_end_clean();
+
+    $condition = argsInitialize($condition);
+    $render_obj = getPostsForRender($condition);
+    $template_args = [];
+    foreach ($render_obj->posts as $post) {
+        $unique_values['link'] = $post->link;
+        $unique_values['index'] = $post->index;
+        $formatted_arg = formatForTemplate($post, true);
+        foreach ($unique_values as $key => $unique_value) {
+            $formatted_arg[$key] = $unique_value;
+        }
+        $template_args[] = $formatted_arg;
+    }
+    $html = $si_twig->render($template.SI_TEMPLATE_EXTENSION, [
+        'posts' => $template_args
+    ]);
+    $count_all = $render_obj->found_posts;
 
     // paging
     $posts_per_page = SiUtils::get($condition, SI_GET_P_LIMIT, 4);
@@ -49,7 +63,7 @@ function getApiTemplate($template, $condition)
  * 　
  * 　
  * 　【GETリクエスト例】
- *   http://localhost/wp-admin/admin-ajax.php?action=get_posts&conditions=news-archive,news&template=news-archive
+ *   http://localhost/wp-admin/admin-ajax.php?action=get_posts&conditions=_archive-news,api&template=news-archive
  *   
  * 　【リクエスト例の説明】
  * 　Wordpress特有のAPI実装方法です。
@@ -68,7 +82,7 @@ function getApiTemplate($template, $condition)
  * 
  * 　【パラメータ template について】
  * 　template-parts 内のファイル名を指定する。
- * 　"news-archive" を指定すると "template-parts/content-news-archive.php"が読み込まれる。
+ * 　"news-archive" を指定すると "template-parts/news-archive.twig"が読み込まれる。
  * 　
  * *******************************/
 add_action( 'wp_ajax_get_posts', 'getPostsApi');

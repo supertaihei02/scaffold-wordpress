@@ -176,6 +176,22 @@ class SiUtils
     {
         return str_replace($parent_key . SI_BOND, '', $child_key);
     }
+
+    static function isAjax()
+    {
+        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+            return true;
+        }
+        return false;
+    }
+
+    static function isWpAjax()
+    {
+        if (strpos(admin_url('admin-ajax.php'), $_SERVER['PHP_SELF']) !== false) {
+            return true;
+        }
+        return false;
+    }
 }
 
 function draw($text, $raw = false)
