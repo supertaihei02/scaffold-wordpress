@@ -158,7 +158,7 @@ define('SI_CUSTOM_POST_TYPES', [
                 ],
                 [
                     // グループID
-                    SI_KEY  => 'single-basic',
+                    SI_KEY  => 'single_basic',
                     // 項目のラベル
                     SI_NAME => '[詳細画面] 基本情報',
                     // 動的に増やせる項目なのかどうか
@@ -176,7 +176,7 @@ define('SI_CUSTOM_POST_TYPES', [
                 ],
                 [
                     // グループID
-                    SI_KEY  => 'single-options',
+                    SI_KEY  => 'single_options',
                     // 項目のラベル
                     SI_NAME => '[詳細画面] 記事情報',
                     // 動的に増やせる項目なのかどうか

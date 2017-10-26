@@ -494,7 +494,6 @@ function setCustoms($post_id)
         // 使いやすいようにデータをまとめる
         foreach ($custom_fields_data as $group_key => $field_values) {
             $group_conf = siGetFieldGroupConfig($post_type, $group_key);
-            $group_key = str_replace(SI_HYPHEN, SI_BOND, $group_key);
             if (!$group_conf[SI_IS_MULTIPLE]) {
                 foreach ($field_values as $field_key => $field_value) {
                     // 単一のグループならそのまま 
@@ -546,7 +545,7 @@ function getGroupAndFieldNames($post_type, $arg_group_key, $term_mode = false, $
             continue;
         }
         foreach ($field_group[SI_FIELDS] as $field) {
-            $names[] = $arg_group_key.SI_HYPHEN.$field[SI_KEY];
+            $names[] = $arg_group_key.SI_BOND.$field[SI_KEY];
         }
         break;
     }

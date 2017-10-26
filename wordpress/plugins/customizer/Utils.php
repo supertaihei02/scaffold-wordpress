@@ -174,8 +174,7 @@ class SiUtils
      */
     static function formatKey($parent_key, $child_key)
     {
-        $key = str_replace($parent_key . SI_BOND, '', $child_key);
-        return $key;
+        return str_replace($parent_key . SI_BOND, '', $child_key);
     }
 }
 

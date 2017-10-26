@@ -12,7 +12,7 @@ function siCustomFields() {
             $value_indexes = [0];
             if ($custom_field_group[SI_IS_MULTIPLE]) {
                 // 動的な項目の場合はValueIndex情報を更新する
-                $stored_serial = get_post_meta($post->ID, $custom_field_group[SI_KEY]. SI_HYPHEN .'serial', true);
+                $stored_serial = get_post_meta($post->ID, $custom_field_group[SI_KEY]. SI_BOND .'serial', true);
                 if (!empty($stored_serial)) {
                     $value_indexes = $stored_serial;
                 }
@@ -106,9 +106,9 @@ function siRender($post, $args, $term_mode = false) {
         <?php echo $serial_html; ?>
         <?php foreach ($fields as $field) :
             if ($term_mode) {
-                $value = empty($post) ? '' : get_term_meta($post, $group_key.SI_HYPHEN.$field[SI_KEY], true);
+                $value = empty($post) ? '' : get_term_meta($post, $group_key.SI_BOND.$field[SI_KEY], true);
             } else {
-                $value = empty($post) ? '' : get_post_meta($post->ID, $group_key.SI_HYPHEN.$field[SI_KEY], true);
+                $value = empty($post) ? '' : get_post_meta($post->ID, $group_key.SI_BOND.$field[SI_KEY], true);
             }
             if (!empty($value) && $group_info[SI_IS_MULTIPLE]) {
                 $value = $value[$array_idx];
@@ -151,8 +151,8 @@ function siRender($post, $args, $term_mode = false) {
 function siGetLabel($field_info, $group_key, $serial_number = '')
 {
     $label = '';
-    $id = $group_key .SI_HYPHEN. $field_info[SI_KEY];
-    $id = empty($serial_number) ? $id : $id.SI_HYPHEN.$serial_number;
+    $id = $group_key .SI_BOND. $field_info[SI_KEY];
+    $id = empty($serial_number) ? $id : $id.SI_BOND.$serial_number;
     $require = $field_info[SI_FIELD_IS_REQUIRE] ? '(必須)' : '(任意)';
     switch ($field_info[SI_FIELD_TYPE]) {
         case SI_FIELD_TYPE_TEXT:
@@ -185,9 +185,9 @@ function siGetInput($field_info, $group_key, $value, $serial_number = '', $multi
     $FILE_SELECT_STYLE = "width: 200px;";
     
     // ID, Nameの作成
-    $id = $group_key .SI_HYPHEN. $field_info[SI_KEY];
+    $id = $group_key .SI_BOND. $field_info[SI_KEY];
     $name = $id.$multiple_sign;
-    $id = empty($serial_number) ? $id : $id.SI_HYPHEN.$serial_number;
+    $id = empty($serial_number) ? $id : $id.SI_BOND.$serial_number;
     
     // Require判断(Multiの場合は常に無効)
     $require = $field_info[SI_FIELD_IS_REQUIRE] ? 'required' : '';
@@ -258,7 +258,7 @@ function siSaveCustomFields($post_id) {
                 $group_key = $custom_field_group[SI_KEY];
                 // 項目保存
                 foreach ($custom_field_group[SI_FIELDS] as $custom_field) {
-                    $data_key = $group_key.SI_HYPHEN.$custom_field[SI_KEY];
+                    $data_key = $group_key.SI_BOND.$custom_field[SI_KEY];
                     if (!isset($_POST[$data_key])) {
                         break;
                     }
@@ -272,7 +272,7 @@ function siSaveCustomFields($post_id) {
                 }
                 // multi対応なら、serialも保存する
                 if ($custom_field_group[SI_IS_MULTIPLE]) {
-                    $serial_key = $group_key. SI_HYPHEN.'serial';
+                    $serial_key = $group_key. SI_BOND.'serial';
                     if (!isset($_POST[$serial_key])) {
                         break; 
                     }
@@ -420,7 +420,7 @@ function editTerms($term_id) {
         $group_key = $custom_field_group[SI_KEY];
         // 項目保存
         foreach ($custom_field_group[SI_FIELDS] as $custom_field) {
-            $data_key = $group_key.SI_HYPHEN.$custom_field[SI_KEY];
+            $data_key = $group_key.SI_BOND.$custom_field[SI_KEY];
             if (!isset($_POST[$data_key])) {
                 break;
             }
@@ -432,7 +432,7 @@ function editTerms($term_id) {
         }
         // multi対応なら、serialも保存する
         if ($custom_field_group[SI_IS_MULTIPLE]) {
-            $serial_key = $group_key. SI_HYPHEN. 'serial';
+            $serial_key = $group_key. SI_BOND. 'serial';
             if (!isset($_POST[$serial_key])) {
                 break;
             }
@@ -543,7 +543,7 @@ function siTaxonomyFormRender($taxonomy, $slug = null)
                 return [0];
             }
             // 動的な項目の場合はValueIndex情報を更新する
-            $stored_serial = get_term_meta($term_id, $custom_field_group[SI_KEY]. SI_HYPHEN. 'serial', true);
+            $stored_serial = get_term_meta($term_id, $custom_field_group[SI_KEY]. SI_BOND. 'serial', true);
             if (empty($stored_serial)) {
                 return [0];
             }
