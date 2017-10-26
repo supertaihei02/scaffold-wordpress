@@ -229,30 +229,30 @@ function argsInitialize($args)
 }
 
 /**
- * 複数件の記事情報をTwig用の引数として返す
- * @param $args
- * @param null $customize
- * @return array
+ * 全件取得かどうかの判断
+ * @param $tags
+ * @return bool
  */
-function getPostsForTemplate($args, $customize = null)
+function isGetAllTags($tags)
 {
-    global $post;
-    $template_args = [];
-    $args = argsInitialize($args);
-    $render_obj = getPostsForRender($args, $customize);
-    foreach ($render_obj->posts as $post) {
-        $unique_values['link'] = $post->link;
-        $unique_values['index'] = $post->index;
-        $formatted_arg = formatForTemplate($post, true);
-        foreach ($unique_values as $key => $unique_value) {
-            $formatted_arg[$key] = $unique_value;
-        }
-        $template_args[] = $formatted_arg;
+    $result = false;
+    if (is_numeric($tags) && intval($tags) === -1) {
+        $result = true;
+    } else if ($tags === 'all') {
+        $result = true;
     }
 
-    return $template_args;
+    return $result;
 }
 
+/**
+ * プレビュー等を考慮した
+ * 複数件の記事取得
+ * 
+ * @param $args
+ * @param null $customize
+ * @return stdClass
+ */
 function getPostsForRender($args, $customize = null)
 {
     global $post;
@@ -283,7 +283,7 @@ function getPostsForRender($args, $customize = null)
             return $result;
         };
     }
-    
+
     $wp_query = new WP_Query($args);
     $simple_offset = 0;
     $post_contents = array();
@@ -298,7 +298,7 @@ function getPostsForRender($args, $customize = null)
             $post = $post_content;
             setup_postdata($post);
             $add_post = $post;
-            
+
             // カスタマイズ
             if (is_callable($customize)) {
                 $custom_post = $customize($args);
@@ -311,7 +311,7 @@ function getPostsForRender($args, $customize = null)
                     $ignore_draft_count++;
                 }
             }
-            
+
             if (!is_null($add_post)) {
                 $post_type = $post_content->post_type;
                 $post_id = $add_post->ID;
@@ -323,12 +323,12 @@ function getPostsForRender($args, $customize = null)
                 }
                 $reduced[] = $add_post;
             }
-            
+
             return $reduced;
         }, array());
 
         wp_reset_postdata();
-        
+
 
         // 単純に取得した投稿から数件無視する設定
         $simple_offset = 0;
@@ -345,8 +345,8 @@ function getPostsForRender($args, $customize = null)
         }
 
         // CustomizeとSIMPLE OFFSETで無視した件数を合算
-        $simple_offset += $ignore_draft_count; 
-        
+        $simple_offset += $ignore_draft_count;
+
         // 連番情報を出力したい場合のINDEXを付与
         $index = 1;
         foreach ($post_contents as &$post_content) {
@@ -358,7 +358,7 @@ function getPostsForRender($args, $customize = null)
     $std = new stdClass;
     $std->is_exist = $wp_query->have_posts();
     $std->found_posts = $wp_query->found_posts < $simple_offset
-        ? 0 
+        ? 0
         : $wp_query->found_posts - $simple_offset;
 
     $std->posts = $post_contents;
@@ -366,16 +366,29 @@ function getPostsForRender($args, $customize = null)
     return $std;
 }
 
-function isGetAllTags($tags)
+/**
+ * 複数件の記事情報をTwig用の引数として返す
+ * @param $args
+ * @param null $customize
+ * @return array
+ */
+function getPostsForTemplate($args, $customize = null)
 {
-    $result = false;
-    if (is_numeric($tags) && intval($tags) === -1) {
-        $result = true;
-    } else if ($tags === 'all') {
-        $result = true;
+    global $post;
+    $template_args = [];
+    $args = argsInitialize($args);
+    $render_obj = getPostsForRender($args, $customize);
+    foreach ($render_obj->posts as $post) {
+        $unique_values['link'] = $post->link;
+        $unique_values['index'] = $post->index;
+        $formatted_arg = formatForTemplate($post, true);
+        foreach ($unique_values as $key => $unique_value) {
+            $formatted_arg[$key] = $unique_value;
+        }
+        $template_args[] = $formatted_arg;
     }
 
-    return $result;
+    return $template_args;
 }
 
 /**
@@ -452,13 +465,21 @@ function formatForTemplate($post, $force_request = false)
     return $args;
 }
 
+/**
+ * グローバル変数のリセット
+ */
 function resetPostGlobal()
 {
-    global $si_posts, $si_customs;
-    $si_posts = [];
+    global $si_customs;
     $si_customs = [];
 }
 
+/**
+ * 1件の記事のカスタムフィールド情報を取得して
+ * $si_customsに保存
+ * 
+ * @param $post_id
+ */
 function setCustoms($post_id)
 {
     global $si_customs;
@@ -559,12 +580,6 @@ function getGroupAndFieldNames($post_type, $arg_group_key, $term_mode = false, $
     }
     
     return $names;
-}
-
-function setPosts($posts)
-{
-    global $si_posts;
-    $si_posts = $posts;
 }
 
 function filterForSentence($text)

@@ -54,7 +54,6 @@ require_once SI_BASE_PATH . '/Twig.php';
 
 // このプラグインで利用するグローバル変数
 $si_logger = new Logger();
-$si_posts = [];   // WP_Postクラスのリストが入る。使用後は空にする。
 $si_customs = []; // post_idをkeyにしたカスタムフィールドの値が入る。使用後は空にする。
 $si_terms = [];   // get_termsの結果が入る。使用後は空にする。
 $si_twig = CustomizerTwig::createEngine();  // テンプレートエンジン Twig
