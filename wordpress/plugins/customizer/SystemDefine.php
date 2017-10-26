@@ -109,6 +109,15 @@ define('SI_GET_T_HIDE_EMPTY',  'hide_empty');
 define('SI_GET_T_TAGS',  'tags');
 define('SI_GET_T_CUR_CLASS',  'current_class_name');
 
+// --- 以下 Routing系定数
+define('SI_PAGE_TYPE_404',  '_404');
+define('SI_PAGE_TYPE_HOME',  '_home');
+define('SI_PAGE_TYPE_ARCHIVE',  '_archive');
+define('SI_PAGE_TYPE_SINGLE',  '_single');
+define('SI_PAGE_TYPE_PAGE',  '_page');
+define('SI_PAGE_TYPE_SEARCH',  '_search');
+
+
 // デフォルトSEOフィールド
 define('SI_DEFAULT_SEO_FIELDS', [
     // グループID

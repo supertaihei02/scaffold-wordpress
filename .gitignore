@@ -154,6 +154,7 @@ $RECYCLE.BIN/
 /flow-typed
 /data
 /wordpress/themes/fl/**/*
+/wordpress/themes/fl/twig_cache/
 !/wordpress/themes/fl/template-parts/*.php
 !/wordpress/themes/fl/**/*.php
 !/wordpress/themes/fl/readme.txt

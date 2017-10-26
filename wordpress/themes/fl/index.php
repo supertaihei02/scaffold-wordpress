@@ -1,13 +1,9 @@
-<?php get_header(); ?>
-<section id="content" role="main">
-    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/boss.jpg">
+<?php
+/**
+ * @var $si_twig \Twig_Environment
+ */
+global $si_twig, $si_logger;
 
-<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
-    <?php get_template_part('entry'); ?>
-    <?php comments_template(); ?>
-<?php endwhile; endif; ?>
-
-<?php get_template_part('nav', 'below'); ?>
-</section>
-<?php get_sidebar(); ?>
-<?php get_footer(); ?>
+$current_page = CustomizerTwig::currentPage();
+get_header();
+$si_twig->display($current_page[0], $current_page[1]);

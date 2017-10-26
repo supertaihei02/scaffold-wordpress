@@ -120,6 +120,53 @@ class SiUtils
     {
         return $title . SI_TITLE_SEPARATOR . get_bloginfo('name');
     }
+
+    static function createDir($dir)
+    {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+    }
+
+    static function isFile($file_path)
+    {
+        clearstatcache();
+        if (is_file($file_path)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 現在のページの種別を返す
+     * @return string
+     */
+    static function getPageType()
+    {
+        $page_type = SI_PAGE_TYPE_404;
+        // Topページ
+        if (is_home()) {
+            $page_type = SI_PAGE_TYPE_HOME;
+        }
+        // なんらかの POST_TYPE の一覧ページ
+        else if (is_archive()) {
+            $page_type = SI_PAGE_TYPE_ARCHIVE;
+        }
+        // なんらかの POST_TYPE の詳細ページ
+        else if (is_single()) {
+            $page_type = SI_PAGE_TYPE_SINGLE;
+        }
+        // なんらかの 固定ページ
+        else if (is_page()) {
+            $page_type = SI_PAGE_TYPE_PAGE;
+        }
+        // 検索結果ページ
+        else if (is_search()) {
+            $page_type = SI_PAGE_TYPE_SEARCH;
+        }
+        return $page_type;
+    }
 }
 
 function draw($text, $raw = false)
