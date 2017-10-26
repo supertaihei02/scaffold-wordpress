@@ -1,4 +1,27 @@
 {% extends "default_frame.twig" %}
 {% block main %}
-  single news
+  <pre>
+  {{ dump(post) }}
+  </pre>
+  <dl>
+    <dt>タイトル</dt>
+    <dd>{{ post.title }}</dd>
+
+    <dt>本文</dt>
+    <dd>{{ post.content }}</dd>
+
+    <dt>メイン画像</dt>
+    <dd>{{ post.archive.archive-img }}</dd>
+
+    <dt>このページリンク</dt>
+    <dd><?php echo $link; ?></dd>
+
+    <dt>記事公開日付</dt>
+    <dd><?php echo $date; ?></dd>
+
+    <dt>タグ</dt>
+    <dd><?php echo $tag_html; ?></dd>
+
+    <?php echo $options_html; ?>
+  </dl>
 {% endblock main %}

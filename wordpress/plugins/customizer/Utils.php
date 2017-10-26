@@ -163,6 +163,20 @@ class SiUtils
         }
         return $page_type;
     }
+
+    /**
+     * Twigでは ハイフンをkeyにできないから
+     * ハイフンをアンダーバーに変換
+     * 
+     * @param $parent_key
+     * @param $child_key
+     * @return mixed
+     */
+    static function formatKey($parent_key, $child_key)
+    {
+        $key = str_replace($parent_key . SI_BOND, '', $child_key);
+        return $key;
+    }
 }
 
 function draw($text, $raw = false)

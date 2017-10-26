@@ -494,10 +494,11 @@ function setCustoms($post_id)
         // 使いやすいようにデータをまとめる
         foreach ($custom_fields_data as $group_key => $field_values) {
             $group_conf = siGetFieldGroupConfig($post_type, $group_key);
-
+            $group_key = str_replace(SI_HYPHEN, SI_BOND, $group_key);
             if (!$group_conf[SI_IS_MULTIPLE]) {
                 foreach ($field_values as $field_key => $field_value) {
                     // 単一のグループならそのまま 
+                    $field_key = SiUtils::formatKey($group_key, $field_key);
                     $si_customs[$post_id][$group_key][$field_key] = $field_value;
                     // 値が1つもないなら無視
                     if (empty($field_value)) {
@@ -510,7 +511,7 @@ function setCustoms($post_id)
                 $multi_data_set = [];
                 foreach ($field_values as $field_key => $field_multi_values) {
                     if (empty($field_multi_values)) { continue; }
-                    
+                    $field_key = SiUtils::formatKey($group_key, $field_key);
                     foreach ($field_multi_values as $idx => $field_multi_value) {
                         $converted_data_list[$idx][$field_key] = $field_multi_value;
                     }

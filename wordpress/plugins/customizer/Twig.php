@@ -132,8 +132,15 @@ class CustomizerTwig
                 break;
             case SI_PAGE_TYPE_SINGLE:
                 setCustoms($post->ID);
-                $args['post'] = $post;
-                $args['customs'] = $si_customs;
+                $args['post'] = [
+                    'title' => get_the_title(),
+                    'content' => get_the_content(),
+                    'link' => get_the_permalink(),
+                    'date' => get_the_date(),
+                ];
+                foreach ($si_customs[$post->ID] as $key => $custom) {
+                    $args['post'][$key] = $custom;
+                }
                 break;
             case SI_PAGE_TYPE_PAGE:
                 break;
