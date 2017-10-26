@@ -50,6 +50,7 @@ require_once SI_BASE_PATH . '/SystemDefine.php';
 require_once SI_BASE_PATH . '/Utils.php';
 require_once SI_BASE_PATH . '/Config.php';
 require_once SI_BASE_PATH . '/Logger.php';
+require_once SI_BASE_PATH . '/TwigExtension.php';
 require_once SI_BASE_PATH . '/Twig.php';
 
 // このプラグインで利用するグローバル変数

@@ -98,16 +98,7 @@ function getPostsApi()
         die('Parameter [ template ] is required.');
     }
 
-    $condition = (function ($conditions, $condition_keys) {
-        $condition = $conditions;
-        foreach (SiUtils::asArray($condition_keys) as $condition_key) {
-            if (!isset($condition[$condition_key])) {
-                break;
-            }
-            $condition = $condition[$condition_key];
-        }
-        return $condition;
-    })($conditions, $_GET['conditions']);
+    $condition = SiUtils::getCondition($_GET['conditions']);
     
     header('content-type: application/json; charset=utf-8');
     echo json_encode(getApiTemplate($_GET['template'], $condition));

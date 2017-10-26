@@ -192,6 +192,20 @@ class SiUtils
         }
         return false;
     }
+    
+    static function getCondition($condition_keys) 
+    {
+        global $conditions;    
+        $wk_condition = $conditions;
+        foreach (SiUtils::asArray($condition_keys) as $condition_key) {
+            if (!isset($wk_condition[$condition_key])) {
+                throw new Exception('Condition is not exist.');
+                break;
+            }
+            $wk_condition = $wk_condition[$condition_key];
+        }
+        return $wk_condition;
+    }
 }
 
 function draw($text, $raw = false)

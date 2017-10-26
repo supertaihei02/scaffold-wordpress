@@ -1,5 +1,8 @@
 {% extends "default_frame.twig" %}
 {% block main %}
-  <p>配列の中身</p>
+  {% set terms = getTerms(['_archive-news', 'terms']) %}
+  <p>配列[terms]の中身</p>
+  <pre>{{ dump(terms) }}</pre>
+  <p>配列[posts]の中身</p>
   <pre>{{ dump(posts) }}</pre>
 {% endblock main %}

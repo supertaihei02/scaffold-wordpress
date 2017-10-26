@@ -149,8 +149,3 @@ class CustomizerTwig
 
     
 }
-
-class CustomizerTwigExtension extends Twig_Extension
-{
-    
-}

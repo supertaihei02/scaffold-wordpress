@@ -596,72 +596,12 @@ function filterForSentence($text)
 /* *******************************
  *        Taxonomy関連
  * *******************************/
-function renderTerms($template_name, $args, $template_slug = SI_DEFAULT_TEMPLATE_SLUG,  $none_slug = 'template-parts/content', $none_name = 'none')
-{
-    // --- 取得 ---
-    // taxonomyの指定
-    $taxonomies = SiUtils::getRequire($args, SI_GET_T_TAXONOMIES);
-    unset($args[SI_GET_T_TAXONOMIES]);
-    
-    // --- 独自パラメータを取得しておく
-    // 指定のTermに印をつける
-    $current_terms = SiUtils::get($args, SI_GET_T_TAGS, -1);
-    $current_class = SiUtils::get($args, SI_GET_T_CUR_CLASS, 'cur');
-    unset($args[SI_GET_T_TAGS]);
-    unset($args[SI_GET_T_CUR_CLASS]);
-
-    // DBから取得
-    $terms = get_terms(SiUtils::asArray($taxonomies), $args);
-    
-    if (!empty($terms)) {
-        $custom_terms = [];
-        $plane = true;
-
-        if ($current_terms === -1) {
-            $current_terms = [];
-        } else {
-            $current_terms = SiUtils::asArray($current_terms);
-        }
-        
-        foreach ($terms as &$term) {
-            // タームのメタ情報を付与
-            $term->meta = getFormattedTermMeta($term);
-
-            // 指定中のtermには印をつけておく
-            if (in_array($term->slug, $current_terms)) {
-                $custom_terms[$term->slug][SI_GET_T_CUR_CLASS] = $current_class;
-                $plane = false;
-            } else {
-                $custom_terms[$term->slug][SI_GET_T_CUR_CLASS] = '';
-            }
-        }
-
-        $custom_terms[SI_TERMS] = $terms;
-        $custom_terms[SI_IS_PLANE] = $plane;
-        $custom_terms[SI_CUR_CLASS] = $current_class;
-        
-        setTerms($custom_terms);
-
-        get_template_part($template_slug, $template_name);
-
-        resetTermGlobal();
-    } else {
-        get_template_part($none_slug, $none_name);
-    }
-}
-
-function setTerms($terms)
-{
-    global $si_terms;
-    $si_terms = $terms;
-}
-
-function resetTermGlobal()
-{
-    global $si_terms;
-    $si_terms = [];
-}
-
+/**
+ * 投稿についているタクソノミーと
+ * そのカスタムフィールド情報を取得する
+ * @param $post_id
+ * @return array|false|WP_Error
+ */
 function getCustomTerms($post_id){
     // 投稿 ID から投稿オブジェクトを取得
     $post = get_post($post_id);
