@@ -51,8 +51,11 @@ function getApiTemplate($template, $condition)
     $next = $next_page > $page_total ? -1 : $next_page;
     return array(
         'html' => $html,
-        'count' => $count_all,
-        'next' => $next
+        'count' => intval($count_all),
+        'display_count' => intval($render_obj->display_count),
+        'max_page' => intval($page_total),
+        'current_page' => intval(SiUtils::get($condition, SI_GET_P_PAGE, 1)),
+        'next' => intval($next),
     );
 }
 /* *******************************
@@ -89,8 +92,6 @@ add_action( 'wp_ajax_get_posts', 'getPostsApi');
 add_action( 'wp_ajax_nopriv_get_posts', 'getPostsApi');
 function getPostsApi()
 {
-    global $conditions;
-
     if (!isset($_GET['conditions'])) {
         die('Parameter [ conditions ] are required.');
     }
@@ -102,5 +103,42 @@ function getPostsApi()
     
     header('content-type: application/json; charset=utf-8');
     echo json_encode(getApiTemplate($_GET['template'], $condition));
+    die();
+}
+
+/**
+ * サイト内検索ページング用API
+ */
+add_action( 'wp_ajax_get_search_result', 'getSearchResults');
+add_action( 'wp_ajax_nopriv_get_search_result', 'getSearchResults');
+function getSearchResults()
+{
+    $args = SiUtils::getCondition($_GET['conditions']);
+    $query = getSearchQuery($args);
+
+    $posts = array();
+    while ($query->have_posts()) {
+        $query->the_post();
+        $data = array();
+        $data['post_id'] = get_the_ID();
+        $data['title'] = strip_tags(get_the_title());
+        $data['link'] = get_the_permalink();
+        $posts[] = $data;
+    }
+    
+    // paging
+    $next_page = SiUtils::get($args, SI_GET_P_PAGE, 1) + 1;
+    $next = $next_page > $query->max_num_pages ? -1 : $next_page;
+    $results = array(
+        'posts' => $posts,
+        'search_word' => $args[SI_GET_P_SEARCH_KEYWORDS],
+        'count' => intval($query->found_posts),
+        'display_count' => intval($query->post_count),
+        'max_page' => intval($query->max_num_pages),
+        'current_page' => intval($args[SI_GET_P_PAGE]),
+        'next' => intval($next),
+    );
+
+    echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     die();
 }

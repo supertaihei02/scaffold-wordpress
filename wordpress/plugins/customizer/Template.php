@@ -219,7 +219,6 @@ function argsInitialize($args)
     }
     
     // get_postsに存在しない条件値を削除
-    unset($args[SI_GET_P_PAGE]);
     unset($args[SI_GET_P_TAGS]);
     unset($args[SI_GET_P_YEAR]);
     unset($args[SI_GET_P_MONTH]);
@@ -361,6 +360,7 @@ function getPostsForRender($args, $customize = null)
         ? 0
         : $wp_query->found_posts - $simple_offset;
 
+    $std->display_count = count($post_contents);
     $std->posts = $post_contents;
 
     return $std;
@@ -479,6 +479,7 @@ function resetPostGlobal()
  * $si_customsに保存
  * 
  * @param $post_id
+ * @return bool
  */
 function setCustoms($post_id)
 {
@@ -496,7 +497,11 @@ function setCustoms($post_id)
         $custom_fields_data = [];
         
         // Post Typeごとに値をまとめる
-        $this_type_conf = siGetPostTypeConfig($post_type)[SI_CUSTOM_FIELDS];
+        $conf = siGetPostTypeConfig($post_type, false);
+        if ($conf === false) {
+            return false;
+        }
+        $this_type_conf = $conf[SI_CUSTOM_FIELDS];
         foreach ($this_type_conf as $field_group) {
             $group_key = $field_group[SI_KEY];
             foreach ($custom_data_list as $group_and_field_key => $custom_data) {
@@ -559,6 +564,7 @@ function setCustoms($post_id)
         // この記事のTaxonomy情報を付与する
         $si_customs[$post_id][SI_TAGS] = getCustomTerms($post_id);
     }
+    return true;
 }
 
 function getGroupAndFieldNames($post_type, $arg_group_key, $term_mode = false, $term_key = null)
@@ -596,6 +602,62 @@ function filterForSentence($text)
 /* *******************************
  *        Taxonomy関連
  * *******************************/
+/**
+ * 指定条件のTermsを全部取得する
+ * @param $args
+ * @return array
+ */
+function getTerms($args)
+{
+    // --- 取得 ---
+    // taxonomyの指定
+    $taxonomies = SiUtils::getRequire($args, SI_GET_T_TAXONOMIES);
+    unset($args[SI_GET_T_TAXONOMIES]);
+
+    // --- 独自パラメータを取得しておく
+    // 指定のTermに印をつける
+    $current_terms = SiUtils::get($args, SI_GET_T_TAGS, -1);
+    $current_class = SiUtils::get($args, SI_GET_T_CUR_CLASS, 'cur');
+    unset($args[SI_GET_T_TAGS]);
+    unset($args[SI_GET_T_CUR_CLASS]);
+
+    // DBから取得
+    $terms = get_terms(SiUtils::asArray($taxonomies), $args);
+
+    if (empty($terms)) {
+        return [];
+    }
+
+    // Termsをカスタマイズ
+    $custom_terms = [];
+    $plane = true;
+
+    if ($current_terms === -1) {
+        $current_terms = [];
+    } else {
+        $current_terms = SiUtils::asArray($current_terms);
+    }
+
+    foreach ($terms as &$term) {
+        // タームのメタ情報を付与
+        $term->meta = getFormattedTermMeta($term);
+
+        // 指定中のtermには印をつけておく
+        if (in_array($term->slug, $current_terms)) {
+            $term->is_current = true;
+            $term->current_class = $current_class;
+            $plane = false;
+            $custom_terms[SI_CUR_CLASS] = $current_class;
+        } else {
+            $term->is_current = false;
+        }
+    }
+    $custom_terms[SI_TERMS] = $terms;
+    $custom_terms[SI_IS_PLANE] = $plane;
+
+    return $custom_terms;
+}
+
 /**
  * 投稿についているタクソノミーと
  * そのカスタムフィールド情報を取得する
@@ -703,15 +765,17 @@ function getFormattedTermMeta($term)
  *        Search 関連
  * *******************************/
 /**
- * @param $keyword
- * @param int $page
- * @param int $limit
+ * サイト内検索
+ * 投稿・固定ページ全てから検索
+ * 
+ * @param $args
  * @return WP_Query
  */
-function getSearchQuery($keyword, $page = 1, $limit = 10)
+function getSearchQuery($args)
 {
     global $wpdb;
-    $keyword = '%' . $wpdb->esc_like($keyword) . '%';
+    // POST_META, POSTSからサイト内検索
+    $keyword = '%' . $wpdb->esc_like($args[SI_GET_P_SEARCH_KEYWORDS]) . '%';
     $post_ids_meta = $wpdb->get_col($wpdb->prepare(
         "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE '%s'",
         $keyword
@@ -721,14 +785,7 @@ function getSearchQuery($keyword, $page = 1, $limit = 10)
         $keyword, $keyword)
     );
     $post_ids = array_merge($post_ids_meta, $post_ids_post);
-
-    $args = array(
-        'paged' => $page,
-        'posts_per_page' => $limit,
-        'post_type' => 'any',
-        'post_status' => 'publish',
-        'post__in' => $post_ids
-    );
+    $args[SI_GET_P_POST_IN] = $post_ids;
 
     // 検索した結果、マッチしなかったケースでは何もマッチさせない
     if ($keyword !== '%%' && empty($post_ids)) {
@@ -737,36 +794,28 @@ function getSearchQuery($keyword, $page = 1, $limit = 10)
     return new WP_Query($args);
 }
 
-add_action( 'wp_ajax_get_search_result', 'getSearchResults');
-add_action( 'wp_ajax_nopriv_get_search_result', 'getSearchResults');
-function getSearchResults()
+function getSearchForTemplate($args)
 {
-    $page = isset($_GET['page']) ? $_GET['page'] : 1;
-    $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
-    $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
-    $query = getSearchQuery($keyword, $page, $limit);
-
-    $posts = array();
-    while ($query->have_posts()) {
-        $query->the_post();
-        $data = array();
-        $data['post_id'] = get_the_ID();
-        $data['title'] = strip_tags(get_the_title());
-        $data['link'] = get_the_permalink();
-        $posts[] = $data;
+    global $post;
+    $posts = [];
+    $wp_query = getSearchQuery($args);
+    foreach ($wp_query->get_posts() as $post) {
+        $posts[] = formatForTemplate($post, true);
     }
 
-    $results = array(
-        'search_word' => $keyword,
-        'max_page' => $query->max_num_pages,
-        'current_page' => $page,
-        'found_count' => $query->found_posts,
-        'display_count' => $query->post_count,
-        'posts' => $posts
-    );
-
-    echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    die();
+    $next_page = SiUtils::get($args, SI_GET_P_PAGE, 1) + 1;
+    $page_total = ceil($wp_query->found_posts / $args[SI_GET_P_LIMIT]);
+    $next = $next_page > $page_total ? -1 : $next_page;
+    
+    return [
+        'posts' => $posts,
+        'search_word' => $args[SI_GET_P_SEARCH_KEYWORDS],
+        'count' => intval($wp_query->found_posts),
+        'display_count' => intval($wp_query->post_count),
+        'max_page' => intval($page_total),
+        'current_page' => intval($args[SI_GET_P_PAGE]),
+        'next' => intval($next),
+    ];
 }
 
 /* *******************************

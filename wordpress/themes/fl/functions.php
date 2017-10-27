@@ -52,6 +52,21 @@ if (isActiveCustomizer()) {
                 SI_GET_P_ORDER_BY => 'date',
             ]
         ],
+        // Search Page
+        SI_PAGE_TYPE_SEARCH => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_SEARCH_KEYWORDS => SiUtils::get($_GET, SI_GET_P_SEARCH_KEYWORDS),
+                SI_GET_P_PAGE => SiUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_POST_TYPE => SiUtils::get($_GET, SI_POST_TYPE, 'any'),
+                SI_GET_P_LIMIT => SiUtils::get($_GET, SI_GET_P_LIMIT, 15),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+            ]
+        ],
         // News Archive Page
         SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
             /*

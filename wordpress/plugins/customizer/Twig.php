@@ -128,6 +128,7 @@ class CustomizerTwig
         global $post, $conditions;
         
         $args = [];
+        $search_args = null;
 
         $page_type = SiUtils::getPageType();
         $key = self::getTemplateKey(
@@ -136,11 +137,22 @@ class CustomizerTwig
         
         // 各ページの onLoad 条件があれば記事取得する
         if (isset($conditions[$key]) && isset($conditions[$key]['onLoad']) && !empty($conditions[$key]['onLoad'])) {
-            $args['posts'] = getPostsForTemplate($conditions[$key]['onLoad']);
+            // 検索画面以外は投稿を取得
+            if ($page_type !== SI_PAGE_TYPE_SEARCH) {
+                $args['posts'] = getPostsForTemplate($conditions[$key]['onLoad']);
+            } 
+            // 検索画面では投稿取得ロジックが異なるので下で実行
+            else {
+                $search_args = $conditions[$key]['onLoad'];
+            }
         }
         
+        // 検索画面ではサイト内検索結果を取得する
+        if (!is_null($search_args)) {
+            $args['posts'] = getSearchForTemplate($search_args);
+        }
         // 詳細画面ではその記事情報を取得する
-        if ($page_type === SI_PAGE_TYPE_SINGLE) {
+        else if ($page_type === SI_PAGE_TYPE_SINGLE) {
             $args['post'] = getPostForTemplate($post->ID);
         }
         
