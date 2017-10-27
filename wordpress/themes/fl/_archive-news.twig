@@ -1,8 +1,12 @@
 {% extends "default_frame.twig" %}
+{#このページ特有のMETAタグ#}
+{% block metadatas %}{% endblock metadatas %}
+{#このページ特有のCSS#}
+{% block styles %}{% endblock styles %}
+{#このページ特有のJS#}
+{% block scripts %}{% endblock scripts %}
+{#bodyタグの中身#}
 {% block main %}
-  {% set terms = getTerms(['_archive-news', 'terms']) %}
-  <p>配列[terms]の中身</p>
-  <pre>{{ dump(terms) }}</pre>
-  <p>配列[posts]の中身</p>
-  <pre>{{ dump(posts) }}</pre>
+  {% include 'news-archive-terms.twig' %}
+  {% include 'news-archive.twig' %}
 {% endblock main %}
