@@ -1,0 +1,99 @@
+{% macro input(element) %}
+  {% import _self as builder %}
+
+  {# DefaultのTwigには Swich構文がないらしい #}
+  {% if element.input_type == constant('SI_FIELD_TYPE_TEXT') %}
+    {{ builder.text(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_CHECKBOX') %}
+    {{ builder.checkbox(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_HIDDEN') %}
+    {{ builder.hidden(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_FILE') %}
+    {{ builder.file(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_RADIO') %}
+    {{ builder.radio(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_SELECT') %}
+    {{ builder.select(element) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_NUMBER') %}
+    {{ builder.number(element) }}
+  {% endif %}
+{% endmacro input %}
+
+{% macro text(element) %}
+  <div class="input {{ element.input_type }}">
+    <label for="{{ element.id }}">{{ element.layer_name }}</label>
+    <input {{ easyAttrs(element, [], {
+      'type': element.input_type,
+      'value': element.value
+    }) }}>
+  </div>
+{% endmacro text %}
+
+{% macro textarea(element) %}
+  <div class="input {{ element.input_type }}">
+    <label for="{{ element.id }}">{{ element.layer_name }}</label>
+    <textarea {{ easyAttrs(element) }}>{{ element.value }}</textarea>
+  </div>
+{% endmacro textarea %}
+
+{% macro checkbox(element) %}
+  <div class="input {{ element.input_type }}">
+    <input name="{{ element.name }}" {{ renderAttributes(
+    element,
+    { 'type': 'hidden', 'value': 'none' }
+    ) }}>
+    {% for value,label in element.choice_values %}
+      <input name="{{ element.name }}" {{ renderAttributes(
+      element,
+      { 'type': element.input_type, 'value': value }
+      ) }}>{{ label }}
+    {% endfor %}
+  </div>
+{% endmacro checkbox %}
+
+{% macro hidden(element) %}
+  <div class="input {{ element.input_type }}">
+    <label for="{{ element.id }}">{{ element.layer_name }}</label>
+    <input {{ easyAttrs(element, [], {
+      'type': element.input_type,
+      'value': element.value 
+    }) }}>
+  </div>
+{% endmacro hidden %}
+
+{% macro file(element) %}
+{% endmacro file %}
+
+{% macro radio(element) %}
+  <div class="input {{ element.input_type }}">
+    {% for value,label in element.choice_values %}
+      <input name="{{ element.name }}" {{ renderAttributes(
+      element,
+      { 'type': element.input_type, 'value': value }
+      ) }}>{{ label }}
+    {% endfor %}
+  </div>
+{% endmacro radio %}
+
+{% macro select(element) %}
+  <div class="input {{ element.input_type }}">
+    <select name="{{ element.name }}">
+      {% for value,option_name in element.choice_values %}
+        <option {{ renderAttributes(
+        element,
+        { 'value': value }
+        ) }}>{{ option_name }}</option>
+      {% endfor %}  
+    </select>
+  </div>
+{% endmacro select %}
+
+{% macro number(element) %}
+  <div class="input {{ element.input_type }}">
+    <label for="{{ element.id }}">{{ element.layer_name }}</label>
+    <input {{ easyAttrs(element, [], {
+      'type': element.input_type,
+      'value': element.value 
+    }) }}>
+  </div>
+{% endmacro number %}
