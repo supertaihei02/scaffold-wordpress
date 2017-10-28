@@ -13,7 +13,8 @@ class CustomizerTwig
 
         $loader = new \Twig_Loader_Filesystem([
             SI_TWIG_TEMPLATE_DIR,
-            SI_TWIG_TEMPLATE_DIR . '/template-parts'
+            SI_TWIG_TEMPLATE_DIR . '/template-parts',
+            plugin_dir_path(__FILE__) . '/templates'
         ]);
         $twig = new \Twig_Environment($loader, [
             'debug' => SI_TWIG_DEBUG,

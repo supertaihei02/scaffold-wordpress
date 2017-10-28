@@ -24,6 +24,9 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// タイムゾーン
+date_default_timezone_set(get_option('timezone_string'));
+
 define('SI_BASE_PATH', __DIR__);
 // jsの読み込み
 function loadScript($hook)
@@ -48,6 +51,7 @@ require_once ABSPATH . '/vendor/autoload.php';
 // ベースファイルを読み込む
 require_once SI_BASE_PATH . '/SystemDefine.php';
 require_once SI_BASE_PATH . '/Utils.php';
+require_once SI_BASE_PATH . '/Setting.php';
 require_once SI_BASE_PATH . '/Config.php';
 require_once SI_BASE_PATH . '/Logger.php';
 require_once SI_BASE_PATH . '/TwigExtension.php';
@@ -65,6 +69,8 @@ require_once SI_BASE_PATH . '/CustomFields.php';
 require_once SI_BASE_PATH . '/ConsoleManager.php';
 require_once SI_BASE_PATH . '/Template.php';
 require_once SI_BASE_PATH . '/Ajax.php';
+require_once SI_BASE_PATH . '/Element.php';
+require_once SI_BASE_PATH . '/Form.php';
 
 // WP-Cronが効かない場合の回避策
 if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POWER) {

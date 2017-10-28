@@ -7,5 +7,7 @@
 {% block scripts %}{% endblock scripts %}
 {#bodyタグの中身#}
 {% block main %}
-  {% include 'news-archive.twig' %}
+  {#{% include 'news-archive.twig' %}#}
+  
+  {{ renderFormByConfig(constant('SI_SETTING_FORM_ALL')) }}
 {% endblock main %}

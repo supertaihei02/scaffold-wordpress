@@ -7,6 +7,8 @@ define('ROLE_SUPER_ADMIN',        'super_admin');    // [素のWordpressを触�
 define('ROLE_ADMIN',              'admin');          // [運用上最上位権限の人]
 define('ROLE_OPERATOR',           'operator');       // [権限が指定される人]
 
+define('DEFAULT_SUPER_USER',        'superuser');
+
 define('NONCE_NAME',  'n_nonce');
 
 define('SI_CRON_START',  'start');
@@ -56,6 +58,14 @@ define('SI_FIELD_TYPE_TEXTAREA',  'textarea');
 define('SI_FIELD_TYPE_CHECKBOX',  'checkbox');
 define('SI_FIELD_TYPE_HIDDEN',  'hidden');
 define('SI_FIELD_TYPE_FILE',  'file');
+define('SI_FIELD_TYPE_RADIO',  'radio');
+define('SI_FIELD_TYPE_SELECT',  'select');
+define('SI_FIELD_TYPE_NUMBER',  'number');
+
+define('SI_FIELD_CHOICE_VALUES',  'choice_values');
+define('SI_FIELD_CHOICE_TYPE_USERS',  'users');
+define('SI_FIELD_CHOICE_TYPE_POST_TYPES',  'post_types');
+
 
 define('SI_USE_ORIGINAL_ORDER',  'use_original_order');
 
@@ -128,6 +138,25 @@ define('SI_OGP_IMAGE',  'ogp_image');
 define('SI_OGP_URL',  'ogp_url');
 define('SI_OGP_SITE_NAME',  'ogp_site_name');
 
+// --- Form項目系
+define('SI_ELEM_TAG',  'tag');
+define('SI_ELEM_ID',  'id');
+define('SI_ELEM_NAME',  'name');
+define('SI_ELEM_VALUE',  'value');
+define('SI_ELEM_CLASSES',  'classes');
+define('SI_ELEM_CLASS',  'class');
+define('SI_ELEM_ATTRS',  'attrs');
+define('SI_ELEM_ATTR',  'attr');
+define('SI_ELEM_CHILDREN',  'children');
+
+// --- Config keys
+define('SI_SETTING_FORM_ALL',  'all');
+define('SI_SETTING_FORM_BACKBONE',  'backbone');
+define('SI_SETTING_FORM_SEO',  'seo');
+
+// --- 設定画面
+define('SI_SETTING_BACKBONE',  'backbone');
+
 // デフォルトSEOフィールド
 define('SI_DEFAULT_SEO_FIELDS', [
     // グループID
@@ -175,6 +204,89 @@ define('SI_DEFAULT_SEO_FIELDS', [
         ],
     ]
 ]);
+
+class CustomizerDefine
+{
+    static $DEFAULT_SEO_FIELDS = [
+        // グループID
+        SI_KEY  => 'seo',
+        // 項目のラベル
+        SI_NAME => 'SEO',
+        // 動的に増やせる項目なのかどうか
+        SI_IS_MULTIPLE => false,
+        // 入力項目リスト
+        SI_FIELDS => [
+            // 入力項目
+            [
+                // 項目ID(一意)
+                SI_KEY  => 'title',
+                // 項目のラベル
+                SI_NAME => 'タイトル[未入力時は記事タイトル]',
+                // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
+                SI_FIELD_IS_REQUIRE => false,
+                /*
+                 * 項目の Input Type
+                 * - text:         SI_FIELD_TYPE_TEXT
+                 * - textarea:     SI_FIELD_TYPE_TEXTAREA
+                 * - hidden:       SI_FIELD_TYPE_HIDDEN
+                 * - file:         SI_FIELD_TYPE_FILE
+                 */
+                SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+            ],
+            [
+                SI_KEY  => 'description',
+                SI_NAME => 'ディスクリプション',
+                SI_FIELD_IS_REQUIRE => false,
+                SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+            ],
+            [
+                SI_KEY  => 'keywords',
+                SI_NAME => 'キーワード[カンマ区切りで入力]',
+                SI_FIELD_IS_REQUIRE => false,
+                SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+            ],
+            [
+                SI_KEY  => 'img',
+                SI_NAME => 'OGPタグのIMAGE',
+                SI_FIELD_IS_REQUIRE => false,
+                SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+            ],
+        ]
+    ];
+    
+    static $ADMIN_PAGE_TYPES = [
+        'index.php' => 'ダッシュボード', 
+        'edit-comments.php' => 'コメント', 
+        'plugins.php' => 'プラグイン', 
+        'users.php' => 'ユーザー', 
+        'themes.php' => '外観', 
+        'options-general.php' => '設定', 
+        'tools.php' => 'ツール', 
+        'upload.php' => 'メディア', 
+        'edit-tags.php' => '分類', 
+    ];
+
+    static $DEFAULT_ADMIN_ENABLE_PAGES = [
+        'index.php',                // ダッシュボード
+        'edit-comments.php',        // コメント
+        'users.php',                // ユーザー
+        'themes.php',               // 外観
+        'options-general.php',      // 設定
+        'tools.php',                // ツール
+        'upload.php',               // メディア
+        'edit-tags.php',            // 分類
+    ];
+    
+    static $DEFAULT_WORKER_ENABLE_PAGES = [
+        'upload.php',               // メディア
+        'edit-tags.php',            // 分類
+    ];
+
+    static $POST_TYPES = [
+        5  => '(デフォルトの)投稿',
+        20 => '固定ページ'
+    ];
+}
 
 /* *******************************
  *          共通関数

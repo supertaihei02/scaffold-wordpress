@@ -1,10 +1,5 @@
 <?php
 /* *******************************
- *       タイムゾーン
- * *******************************/
-date_default_timezone_set('Asia/Tokyo');
-
-/* *******************************
  *       テンプレートエンジン Twig
  * *******************************/
 define('SI_TWIG_DEBUG', true);
@@ -29,12 +24,6 @@ define('SI_DEFAULT_DESCRIPTION', 'default description');
 define('SI_DEFAULT_KEYWORDS', 'default,keywords');
 define('SI_DEFAULT_OGP_IMAGE', '/wp-content/themes/fl/images/ogp.png');
 define('SI_GOOGLE_ANALYTICS_ID', 'XXXXX');
-
-/* *******************************
- *       管理画面ログイン(改修予定)
- * *******************************/
-//define('LOGIN_KEY_PASSWORD', 'framelunch');
-//define('LOGIN_PAGE', '/wp-console/');
 
 /* *******************************
  *       WP CRONの有効化設定
@@ -267,7 +256,409 @@ define('SI_CUSTOM_POST_TYPES', [
  *            描画関連
  *    プラグインコア機能には無関与
  * *******************************/
-// テンプレートパートディレクトリ(基本は変更不要)
-define('SI_DEFAULT_TEMPLATE_SLUG', 'template-parts/content');
 // 複数のPOST TYPEをまたぐ時の投稿取得件数
 define('SI_DEFAULT_GET_COUNT', 10);
+
+class CustomizerConfig
+{
+    /* *******************************
+     *          Form 設定
+     * *******************************/
+    static function getFormSetting($key)
+    {
+        switch ($key) {
+            case SI_SETTING_FORM_BACKBONE:
+                $setting = [
+                    SI_SETTING_FORM_BACKBONE => self::backbone()
+                ];
+                break;
+            case SI_SETTING_FORM_SEO:
+                $setting = [
+                    SI_SETTING_FORM_SEO => self::seo()
+                ];
+                break;
+            case SI_SETTING_FORM_ALL:
+                $setting = [
+                    'test' => self::test(),
+                    SI_SETTING_FORM_BACKBONE => self::backbone(),
+                    SI_SETTING_FORM_SEO => self::seo(),
+                ];
+                break;
+            default:
+                throw new Exception("{$key} is no exist.");
+                break;
+        }
+        
+        return $setting;
+    }
+
+    static function test()
+    {
+        return [
+            SI_KEY => 'test',
+            SI_NAME => '全種類テスト',
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'single',
+                    SI_NAME => 'シングル',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'text',
+                            SI_NAME => 'テキスト',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => ['length' => 20],
+                            SI_ELEM_CLASSES => ['test', 'text'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'textarea',
+                            SI_NAME => 'テキストエリア',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'textarea'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'checkbox',
+                            SI_NAME => 'チェックボックス',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_CHECKBOX,
+                            SI_DEFAULT => ['banana', 'orange'],
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'apple' => 'りんご', 'banana' => 'バナナ', 'orange' => 'オレンジ'
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'hidden',
+                            SI_NAME => '見えない',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_HIDDEN,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'hidden'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'file',
+                            SI_NAME => 'ファイル',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'file'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'radio',
+                            SI_NAME => 'ラジオボタン',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'on',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'on' => 'オン', 'off' => 'オフ',
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'select',
+                            SI_NAME => 'セレクトボックス',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => 'orange',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'apple' => 'りんご', 'banana' => 'バナナ', 'orange' => 'オレンジ'
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'number',
+                            SI_NAME => 'ナンバー',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 5,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'multi',
+                    SI_NAME => 'マルチ',
+                    SI_IS_MULTIPLE => true,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'text',
+                            SI_NAME => 'テキスト',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => ['length' => 20],
+                            SI_ELEM_CLASSES => ['test', 'text'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'textarea',
+                            SI_NAME => 'テキストエリア',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'textarea'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'checkbox',
+                            SI_NAME => 'チェックボックス',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_CHECKBOX,
+                            SI_DEFAULT => ['banana', 'orange'],
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'apple' => 'りんご', 'banana' => 'バナナ', 'orange' => 'オレンジ'
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'hidden',
+                            SI_NAME => '見えない',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_HIDDEN,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'hidden'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'file',
+                            SI_NAME => 'ファイル',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'file'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'radio',
+                            SI_NAME => 'ラジオボタン',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'on',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'on' => 'オン', 'off' => 'オフ',
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'select',
+                            SI_NAME => 'セレクトボックス',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => 'orange',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'apple' => 'りんご', 'banana' => 'バナナ', 'orange' => 'オレンジ'
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'number',
+                            SI_NAME => 'ナンバー',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 5,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    static function backbone()
+    {
+        return [
+            SI_KEY => 'backbone',
+            SI_NAME => '基幹設定',
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'log',
+                    SI_NAME => 'ログ',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'output_dir',
+                            SI_NAME => 'ログ出力先ディレクトリ',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => __DIR__ . '/log',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'log_level',
+                            SI_NAME => 'ログレベル',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 1,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'log_include_time',
+                            SI_NAME => 'ログに時間情報を含めるかどうか',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'on',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'on' => 'オン', 'off' => 'オフ',
+                            ],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'template',
+                    SI_NAME => 'テンプレートエンジン',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'debug_mode',
+                            SI_NAME => 'デバッグモード',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'off',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'on' => 'オン', 'off' => 'オフ',
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'theme_template_dir',
+                            SI_NAME => 'テンプレートファイル置き場',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => get_template_directory(),
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'theme_template_cache_dir',
+                            SI_NAME => 'テンプレートキャッシュ場所',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => get_template_directory(),
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'cron',
+                    SI_NAME => 'Cron',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'use_alternative_cron',
+                            SI_NAME => 'WP_Cronが動かない時の代替策',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'off',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                'on' => 'オン', 'off' => 'オフ',
+                            ],
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    static function seo()
+    {
+        return [
+            SI_KEY => 'seo',
+            SI_NAME => 'SEO基本設定',
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'base',
+                    SI_NAME => 'SEO METAタグ',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'title_separator',
+                            SI_NAME => 'タイトル分割記号',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => ' | ',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'default_description',
+                            SI_NAME => 'Description',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'default_keywords',
+                            SI_NAME => 'Keywords',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'default_ogp_image',
+                            SI_NAME => 'OG:image',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                        [
+                            SI_KEY => 'google_analytics_key',
+                            SI_NAME => 'Google Analytics Key',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                        ],
+                    ]
+                ],
+            ]
+        ];
+    }
+}

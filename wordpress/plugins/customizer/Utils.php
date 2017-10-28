@@ -38,7 +38,7 @@ class SiUtils
         );
     }
 
-    static function asArray($value, $separator = ',')
+    static function asArray($value, $accept_associative = true, $separator = ',')
     {
         // 空なら、空の配列を返す
         if ($value !== 0 && empty($value)) {
@@ -60,12 +60,26 @@ class SiUtils
             $result = $value;
         }
 
+        // 連想配列の場合はそれを配列に包んで返す(デフォルト無効)
+        if (is_array($result) && !self::is_vector($result) && !$accept_associative) {
+            $result = array($result);
+        }
+        
         // そのままでは配列じゃないなら、配列として返す
         if (!is_array($result)){
             $result = array($result);
         }
 
         return $result;
+    }
+
+    /**
+     * 純粋な配列(not 連想配列)かどうか
+     * @param array $arr
+     * @return bool
+     */
+    static function is_vector(array $arr) {
+        return array_values($arr) === $arr;
     }
 
     static function isJson($json) {
@@ -196,20 +210,19 @@ class SiUtils
     static function getCondition($condition_keys) 
     {
         global $conditions;    
-        $wk_condition = $conditions;
-        foreach (SiUtils::asArray($condition_keys) as $condition_key) {
-            if (!isset($wk_condition[$condition_key])) {
-                throw new Exception('Condition is not exist.');
+        return self::getConfig($conditions, $condition_keys);
+    }
+
+    static function getConfig($config, $keys)
+    {
+        $wk_config = $config;
+        foreach (SiUtils::asArray($keys) as $config_key) {
+            if (!isset($wk_config[$config_key])) {
+                throw new Exception("[{$config_key}] is not exist.");
                 break;
             }
-            $wk_condition = $wk_condition[$condition_key];
+            $wk_config = $wk_config[$config_key];
         }
-        return $wk_condition;
+        return $wk_config;
     }
-}
-
-function draw($text, $raw = false)
-{
-    $value = $raw ? htmlspecialchars($text) : $text;
-    echo $value;
 }
