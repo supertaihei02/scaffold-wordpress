@@ -45,8 +45,8 @@ function getApiTemplate($template, $condition)
     $count_all = $render_obj->found_posts;
 
     // paging
-    $posts_per_page = SiUtils::get($condition, SI_GET_P_LIMIT, 4);
-    $next_page = SiUtils::get($condition, SI_GET_P_PAGE, 1) + 1;
+    $posts_per_page = CustomizerUtils::get($condition, SI_GET_P_LIMIT, 4);
+    $next_page = CustomizerUtils::get($condition, SI_GET_P_PAGE, 1) + 1;
     $page_total = ceil($count_all / $posts_per_page);
     $next = $next_page > $page_total ? -1 : $next_page;
     return array(
@@ -54,7 +54,7 @@ function getApiTemplate($template, $condition)
         'count' => intval($count_all),
         'display_count' => intval($render_obj->display_count),
         'max_page' => intval($page_total),
-        'current_page' => intval(SiUtils::get($condition, SI_GET_P_PAGE, 1)),
+        'current_page' => intval(CustomizerUtils::get($condition, SI_GET_P_PAGE, 1)),
         'next' => intval($next),
     );
 }
@@ -99,7 +99,7 @@ function getPostsApi()
         die('Parameter [ template ] is required.');
     }
 
-    $condition = SiUtils::getCondition($_GET['conditions']);
+    $condition = CustomizerUtils::getCondition($_GET['conditions']);
     
     header('content-type: application/json; charset=utf-8');
     echo json_encode(getApiTemplate($_GET['template'], $condition));
@@ -113,7 +113,7 @@ add_action( 'wp_ajax_get_search_result', 'getSearchResults');
 add_action( 'wp_ajax_nopriv_get_search_result', 'getSearchResults');
 function getSearchResults()
 {
-    $args = SiUtils::getCondition($_GET['conditions']);
+    $args = CustomizerUtils::getCondition($_GET['conditions']);
     $query = getSearchQuery($args);
 
     $posts = array();
@@ -127,7 +127,7 @@ function getSearchResults()
     }
     
     // paging
-    $next_page = SiUtils::get($args, SI_GET_P_PAGE, 1) + 1;
+    $next_page = CustomizerUtils::get($args, SI_GET_P_PAGE, 1) + 1;
     $next = $next_page > $query->max_num_pages ? -1 : $next_page;
     $results = array(
         'posts' => $posts,

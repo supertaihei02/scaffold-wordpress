@@ -19,6 +19,9 @@
   {% endif %}
 {% endmacro input %}
 
+{# ####################################
+ #               text
+ #################################### #}
 {% macro text(element) %}
   <div class="input {{ element.input_type }}">
     <label for="{{ element.id }}">{{ element.layer_name }}</label>
@@ -29,6 +32,9 @@
   </div>
 {% endmacro text %}
 
+{# ####################################
+ #             textarea
+ #################################### #}
 {% macro textarea(element) %}
   <div class="input {{ element.input_type }}">
     <label for="{{ element.id }}">{{ element.layer_name }}</label>
@@ -36,64 +42,84 @@
   </div>
 {% endmacro textarea %}
 
+{# ####################################
+ #             checkbox
+ #################################### #}
 {% macro checkbox(element) %}
   <div class="input {{ element.input_type }}">
+    {# 値がないケースのためにhiddenを仕込む #}
     <input name="{{ element.name }}" {{ renderAttributes(
     element,
     { 'type': 'hidden', 'value': 'none' }
     ) }}>
-    {% for value,label in element.choice_values %}
-      <input name="{{ element.name }}" {{ renderAttributes(
-      element,
-      { 'type': element.input_type, 'value': value }
-      ) }}>{{ label }}
+    {# 要素分Checkbox作成 #}
+    {% for choice_value in element.choice_values %}
+      <input {{ choice_value.selected }}
+      name="{{ element.name }}" {{ 
+      renderAttributes(element, { 'type': element.input_type, 'value': choice_value.key }) }}
+      >{{ choice_value.name }}
     {% endfor %}
   </div>
 {% endmacro checkbox %}
 
+{# ####################################
+ #             hidden
+ #################################### #}
 {% macro hidden(element) %}
   <div class="input {{ element.input_type }}">
     <label for="{{ element.id }}">{{ element.layer_name }}</label>
     <input {{ easyAttrs(element, [], {
       'type': element.input_type,
-      'value': element.value 
+      'value': element.value
     }) }}>
   </div>
 {% endmacro hidden %}
 
+{# ####################################
+ #             file
+ #################################### #}
 {% macro file(element) %}
 {% endmacro file %}
 
+{# ####################################
+ #             radio
+ #################################### #}
 {% macro radio(element) %}
   <div class="input {{ element.input_type }}">
-    {% for value,label in element.choice_values %}
-      <input name="{{ element.name }}" {{ renderAttributes(
-      element,
-      { 'type': element.input_type, 'value': value }
-      ) }}>{{ label }}
+    {% for choice_value in element.choice_values %}
+      <input {{ choice_value.selected }} name="{{ element.name }}" {{ renderAttributes(
+    element,
+    { 'type': element.input_type, 'value': choice_value.key }
+    ) }}>{{ choice_value.name }}
     {% endfor %}
   </div>
 {% endmacro radio %}
 
+{# ####################################
+ #             select
+ #################################### #}
 {% macro select(element) %}
   <div class="input {{ element.input_type }}">
     <select name="{{ element.name }}">
-      {% for value,option_name in element.choice_values %}
-        <option {{ renderAttributes(
+      {% for choice_value in element.choice_values %}
+        <option {{ choice_value.selected }} {{ renderAttributes(
         element,
-        { 'value': value }
-        ) }}>{{ option_name }}</option>
-      {% endfor %}  
+        { 'value': choice_value.key }
+        ) }}>{{ choice_value.name }}</option>
+      {% endfor %}
     </select>
   </div>
 {% endmacro select %}
 
+{# ####################################
+ #             number
+ #################################### #}
 {% macro number(element) %}
   <div class="input {{ element.input_type }}">
     <label for="{{ element.id }}">{{ element.layer_name }}</label>
     <input {{ easyAttrs(element, [], {
       'type': element.input_type,
-      'value': element.value 
+      'value': element.value
     }) }}>
   </div>
 {% endmacro number %}

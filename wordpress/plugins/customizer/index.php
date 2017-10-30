@@ -24,59 +24,32 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// タイムゾーン
+// Timezone
 date_default_timezone_set(get_option('timezone_string'));
-
 define('SI_BASE_PATH', __DIR__);
-// jsの読み込み
-function loadScript($hook)
-{
-    $targets = [
-        'post.php', 'post-new.php',
-        'edit-tags.php', 'term.php'
-    ];
-    if (in_array($hook, $targets)) {
-        wp_enqueue_media();
-        wp_enqueue_script('customFields', plugins_url('js/customFields.js', __FILE__));
-    }
-}
-add_action( 'admin_enqueue_scripts', 'loadScript' );
 
-// vendorを読み込む
+// Modules
 if (!is_file(ABSPATH . '/vendor/autoload.php')) {
     die('Wordpressインストールディレクトリで次のコマンドを実行してください `composer install` ');
 }
-require_once ABSPATH . '/vendor/autoload.php';
+require ABSPATH . '/vendor/autoload.php';
+require SI_BASE_PATH . '/ClassLoader.php';
 
-// ベースファイルを読み込む
-require_once SI_BASE_PATH . '/SystemDefine.php';
-require_once SI_BASE_PATH . '/Utils.php';
-require_once SI_BASE_PATH . '/Setting.php';
-require_once SI_BASE_PATH . '/Config.php';
-require_once SI_BASE_PATH . '/Logger.php';
-require_once SI_BASE_PATH . '/TwigExtension.php';
-require_once SI_BASE_PATH . '/Twig.php';
+// Install
+add_action('plugins_loaded', 'CustomizerInstall::updateDb');
+register_uninstall_hook(__FILE__, 'CustomizerInstall::uninstall');
+add_action('admin_enqueue_scripts', 'CustomizerInstall::loadScript');
 
-// このプラグインで利用するグローバル変数
+// Globals
 $si_logger = new Logger();
 $si_customs = []; // post_idをkeyにしたカスタムフィールドの値が入る。使用後は空にする。
 $si_terms = [];   // get_termsの結果が入る。使用後は空にする。
 $si_twig = CustomizerTwig::createEngine();  // テンプレートエンジン Twig
-
-// phpの読み込み
-require_once SI_BASE_PATH . '/CustomPostTypes.php';
-require_once SI_BASE_PATH . '/CustomFields.php';
-require_once SI_BASE_PATH . '/ConsoleManager.php';
-require_once SI_BASE_PATH . '/Template.php';
-require_once SI_BASE_PATH . '/Ajax.php';
-require_once SI_BASE_PATH . '/Element.php';
-require_once SI_BASE_PATH . '/Form.php';
 
 // WP-Cronが効かない場合の回避策
 if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POWER) {
     if (!defined('ALTERNATE_WP_CRON')) {
         define('ALTERNATE_WP_CRON', true);
     }
-    require_once SI_BASE_PATH . '/Cron.php';
     new CustomizerCron();
 }

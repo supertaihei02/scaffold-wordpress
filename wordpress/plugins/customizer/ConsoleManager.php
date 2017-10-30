@@ -75,7 +75,7 @@ function redirect_dashboard()
     };
 
     // Ajax通信の場合は画面は無関係なので無視
-    if (SiUtils::isWpAjax()) {
+    if (CustomizerUtils::isWpAjax()) {
         return true;
     }
     
@@ -122,17 +122,17 @@ function admin_preview_css_custom()
     // = = = Page単位で隠す項目 = = =
     $base_name = basename($_SERVER["REQUEST_URI"]);
     // タクソノミー編集画面
-    if (SiUtils::strposArray($base_name, ['edit-tags.php', 'term.php']) !== false) {
+    if (CustomizerUtils::strposArray($base_name, ['edit-tags.php', 'term.php']) !== false) {
         // Descriptionは要らないから隠す
         $html .= ' .term-description-wrap { display:none; !important; }';
         // SI_TAX_USE_HIERARCHICAL_PARENT がfalseなら「親カテゴリ」を隠す
-        $term_conf = siSearchTaxonomyConfig(SiUtils::get($_GET, 'taxonomy', array()));
-        if (!SiUtils::get($term_conf, SI_TAX_USE_HIERARCHICAL_PARENT, false)) {
+        $term_conf = siSearchTaxonomyConfig(CustomizerUtils::get($_GET, 'taxonomy', array()));
+        if (!CustomizerUtils::get($term_conf, SI_TAX_USE_HIERARCHICAL_PARENT, false)) {
             $html .= ' .term-parent-wrap { display:none; !important; }';
         }
     } 
     // 記事編集画面
-    else if (SiUtils::strposArray($base_name, ['post-new', 'post.php']) !== false) {
+    else if (CustomizerUtils::strposArray($base_name, ['post-new', 'post.php']) !== false) {
         // 管理画面記事編集ページにある「タグ追加ボタン」を非表示にする(タグ追加は MENU画面から行う)
         $html .= ' div[id$="-adder"] { display:none; !important; }';
     }
@@ -390,7 +390,7 @@ function getPreviewPostLink ($url)
     $preview_url = $url;
     $post_type = get_post_type();
     $conf = siGetPostTypeConfig($post_type, false);
-    if (SiUtils::get($conf, SI_ARCHIVE_PREVIEW, false)) {
+    if (CustomizerUtils::get($conf, SI_ARCHIVE_PREVIEW, false)) {
         $post_id = get_the_ID();
         $add_query = array(
             'preview' => true,

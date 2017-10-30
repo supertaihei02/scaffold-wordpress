@@ -22,7 +22,7 @@
 
 <article class="wrap">
   <h2>Custom Form</h2>
-  <form method="post" action="options.php">
+  <form method="post" action="{{ getFormAction() }}">
     {{ formSettingForOptions(keys) }}
 
     {% for element in elements %}
@@ -54,6 +54,7 @@
       {% endif %}
       {# END: 第一層 FORM GROUP #}
     {% endfor %}
-
+    
+    <input type="submit" value="登録">
   </form>
 </article>

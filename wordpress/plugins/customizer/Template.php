@@ -185,7 +185,7 @@ function argsInitialize($args)
                 $args[SI_GET_P_TAX_QUERY][] = [
                     SI_GET_P_TAX_QUERY_FIELD => 'slug',
                     SI_GET_P_TAX_QUERY_TX => $post_type.SI_BOND.$taxonomy[SI_KEY],
-                    SI_GET_P_TAX_QUERY_TERMS => SiUtils::asArray($args[SI_GET_P_TAGS])
+                    SI_GET_P_TAX_QUERY_TERMS => CustomizerUtils::asArray($args[SI_GET_P_TAGS])
                 ];
             }
         }
@@ -197,13 +197,13 @@ function argsInitialize($args)
     }
 
     // Previewモードのパラメータセット
-    if (SiUtils::get($_GET, SI_GET_P_IS_PREVIEW, false) && is_numeric(SiUtils::get($_GET, SI_GET_P_POST_ID, false))) {
+    if (CustomizerUtils::get($_GET, SI_GET_P_IS_PREVIEW, false) && is_numeric(CustomizerUtils::get($_GET, SI_GET_P_POST_ID, false))) {
         // Previewモードセット
         $args[SI_GET_P_IS_PREVIEW] = true;
         // Preview対象のpost_idをセット
-        $args[SI_GET_P_POST_ID] = SiUtils::get($_GET, SI_GET_P_POST_ID, 0);
+        $args[SI_GET_P_POST_ID] = CustomizerUtils::get($_GET, SI_GET_P_POST_ID, 0);
         // Previewなので取得対象に下書きも加える
-        $args[SI_GET_P_STATUS] = SiUtils::asArray($args[SI_GET_P_STATUS]);
+        $args[SI_GET_P_STATUS] = CustomizerUtils::asArray($args[SI_GET_P_STATUS]);
         $args[SI_GET_P_STATUS][] = SI_GET_P_STATUS_DRAFT;
     }
     
@@ -257,14 +257,14 @@ function getPostsForRender($args, $customize = null)
     global $post;
 
     // もしもPreviewモードで、$customizeが指定されていない場合はデフォルトをセット
-    if (is_null($customize) && SiUtils::get($args, SI_GET_P_IS_PREVIEW, false) && is_numeric(SiUtils::get($args, SI_GET_P_POST_ID, false))) {
+    if (is_null($customize) && CustomizerUtils::get($args, SI_GET_P_IS_PREVIEW, false) && is_numeric(CustomizerUtils::get($args, SI_GET_P_POST_ID, false))) {
         $customize = function ($args) {
-            if (get_the_ID() === intval(SiUtils::get($args, SI_GET_P_POST_ID, false))) {
+            if (get_the_ID() === intval(CustomizerUtils::get($args, SI_GET_P_POST_ID, false))) {
 
                 $result = true;
                 $posts = get_posts([
                     SI_GET_P_STATUS => 'any',
-                    SI_GET_P_POST_PARENT => intval(SiUtils::get($args, SI_GET_P_POST_ID, 0)),
+                    SI_GET_P_POST_PARENT => intval(CustomizerUtils::get($args, SI_GET_P_POST_ID, 0)),
                     SI_POST_TYPE => 'revision',
                     SI_GET_P_LIMIT => 1,
                     'sort_column' => 'ID',
@@ -401,8 +401,8 @@ function getPostForTemplate($post_id)
     global $post;
 
     // Preview対応
-    $preview = SiUtils::get($_GET, 'preview', false);
-    $preview_id = SiUtils::get($_GET, 'preview_id', false);
+    $preview = CustomizerUtils::get($_GET, 'preview', false);
+    $preview_id = CustomizerUtils::get($_GET, 'preview_id', false);
 
     if ($preview !== false && intval($preview_id) === $post_id) {
         $post = (function ($post_id) {
@@ -531,7 +531,7 @@ function setCustoms($post_id)
             if (!$group_conf[SI_IS_MULTIPLE]) {
                 foreach ($field_values as $field_key => $field_value) {
                     // 単一のグループならそのまま 
-                    $field_key = SiUtils::formatKey($group_key, $field_key);
+                    $field_key = CustomizerUtils::formatKey($group_key, $field_key);
                     $si_customs[$post_id][$group_key][$field_key] = $field_value;
                     // 値が1つもないなら無視
                     if (empty($field_value)) {
@@ -544,7 +544,7 @@ function setCustoms($post_id)
                 $multi_data_set = [];
                 foreach ($field_values as $field_key => $field_multi_values) {
                     if (empty($field_multi_values)) { continue; }
-                    $field_key = SiUtils::formatKey($group_key, $field_key);
+                    $field_key = CustomizerUtils::formatKey($group_key, $field_key);
                     foreach ($field_multi_values as $idx => $field_multi_value) {
                         $converted_data_list[$idx][$field_key] = $field_multi_value;
                     }
@@ -552,7 +552,7 @@ function setCustoms($post_id)
                 
                 foreach ($converted_data_list as $data_set) {
                     // 値が1つもないなら無視
-                    if (SiUtils::isAllEmpty($data_set)) {
+                    if (CustomizerUtils::isAllEmpty($data_set)) {
                         continue;
                     }
                     $multi_data_set[] = $data_set;
@@ -611,18 +611,18 @@ function getTerms($args)
 {
     // --- 取得 ---
     // taxonomyの指定
-    $taxonomies = SiUtils::getRequire($args, SI_GET_T_TAXONOMIES);
+    $taxonomies = CustomizerUtils::getRequire($args, SI_GET_T_TAXONOMIES);
     unset($args[SI_GET_T_TAXONOMIES]);
 
     // --- 独自パラメータを取得しておく
     // 指定のTermに印をつける
-    $current_terms = SiUtils::get($args, SI_GET_T_TAGS, -1);
-    $current_class = SiUtils::get($args, SI_GET_T_CUR_CLASS, 'cur');
+    $current_terms = CustomizerUtils::get($args, SI_GET_T_TAGS, -1);
+    $current_class = CustomizerUtils::get($args, SI_GET_T_CUR_CLASS, 'cur');
     unset($args[SI_GET_T_TAGS]);
     unset($args[SI_GET_T_CUR_CLASS]);
 
     // DBから取得
-    $terms = get_terms(SiUtils::asArray($taxonomies), $args);
+    $terms = get_terms(CustomizerUtils::asArray($taxonomies), $args);
 
     if (empty($terms)) {
         return [];
@@ -635,7 +635,7 @@ function getTerms($args)
     if ($current_terms === -1) {
         $current_terms = [];
     } else {
-        $current_terms = SiUtils::asArray($current_terms);
+        $current_terms = CustomizerUtils::asArray($current_terms);
     }
 
     foreach ($terms as &$term) {
@@ -731,7 +731,7 @@ function getFormattedTermMeta($term)
             $group_conf = siGetTaxonomyFieldGroupConfig($term->taxonomy, $group_key);
             if (!$group_conf[SI_IS_MULTIPLE]) {
                 // 値が1つもないなら無視
-                if (SiUtils::isAllEmpty($field_values)) {
+                if (CustomizerUtils::isAllEmpty($field_values)) {
                     continue;
                 }
                 // 単一のグループならそのまま 
@@ -748,7 +748,7 @@ function getFormattedTermMeta($term)
 
                 foreach ($converted_data_list as $data_set) {
                     // 値が1つもないなら無視
-                    if (SiUtils::isAllEmpty($data_set)) {
+                    if (CustomizerUtils::isAllEmpty($data_set)) {
                         continue;
                     }
                     $multi_data_set[] = $data_set;
@@ -803,7 +803,7 @@ function getSearchForTemplate($args)
         $posts[] = formatForTemplate($post, true);
     }
 
-    $next_page = SiUtils::get($args, SI_GET_P_PAGE, 1) + 1;
+    $next_page = CustomizerUtils::get($args, SI_GET_P_PAGE, 1) + 1;
     $page_total = ceil($wp_query->found_posts / $args[SI_GET_P_LIMIT]);
     $next = $next_page > $page_total ? -1 : $next_page;
     
@@ -856,22 +856,22 @@ function getSeoMeta($key)
     /*
      * 記事詳細画面のページのメタ情報を取得
      */
-    if (!empty($post) && SiUtils::isCustomizeSingle($post->post_type)) {
+    if (!empty($post) && CustomizerUtils::isCustomizeSingle($post->post_type)) {
         // Custom Fieldsの値を取得
         setCustoms($post->ID);
-        $custom = SiUtils::get($si_customs, $post->ID, []);
+        $custom = CustomizerUtils::get($si_customs, $post->ID, []);
         list($title, $description, $keywords, $ogp_image) = (function ($seo) use ($defaults) {
-            $title = SiUtils::get($seo, 'seo-title', $defaults[SI_TITLE]);
-            $description = SiUtils::get($seo, 'seo-description', $defaults[SI_DESCRIPTION]);
-            $keywords = SiUtils::get($seo, 'seo-keywords', $defaults[SI_KEYWORDS]);
-            $ogp_image = SiUtils::get($seo, 'seo-img', $defaults[SI_OGP_IMAGE]);
+            $title = CustomizerUtils::get($seo, 'seo-title', $defaults[SI_TITLE]);
+            $description = CustomizerUtils::get($seo, 'seo-description', $defaults[SI_DESCRIPTION]);
+            $keywords = CustomizerUtils::get($seo, 'seo-keywords', $defaults[SI_KEYWORDS]);
+            $ogp_image = CustomizerUtils::get($seo, 'seo-img', $defaults[SI_OGP_IMAGE]);
             
             // 個別ページで設定していない場合はデフォルトをセット
             $description = empty($description) ? $defaults[SI_DESCRIPTION] : $description;
             $keywords = empty($keywords) ? $defaults[SI_KEYWORDS] : $keywords;
             $ogp_image = empty($ogp_image) ? $defaults[SI_OGP_IMAGE] : $ogp_image;
             return [$title, $description, $keywords, $ogp_image];
-        })(SiUtils::get($custom, 'seo', []));
+        })(CustomizerUtils::get($custom, 'seo', []));
     }
     /*
      * 記事詳細画面 "以外の" ページのメタ情報を取得
@@ -879,10 +879,10 @@ function getSeoMeta($key)
      */
     else if (isset($seo_meta[$key])) {
         $seo = $seo_meta[$key];
-        $title = SiUtils::get($seo, SI_TITLE, $defaults[SI_TITLE]);
-        $description = SiUtils::get($seo, SI_DESCRIPTION, $defaults[SI_DESCRIPTION]);
-        $keywords = SiUtils::get($seo, SI_KEYWORDS, $defaults[SI_KEYWORDS]);
-        $ogp_image = SiUtils::get($seo, SI_OGP_IMAGE, $defaults[SI_OGP_IMAGE]);
+        $title = CustomizerUtils::get($seo, SI_TITLE, $defaults[SI_TITLE]);
+        $description = CustomizerUtils::get($seo, SI_DESCRIPTION, $defaults[SI_DESCRIPTION]);
+        $keywords = CustomizerUtils::get($seo, SI_KEYWORDS, $defaults[SI_KEYWORDS]);
+        $ogp_image = CustomizerUtils::get($seo, SI_OGP_IMAGE, $defaults[SI_OGP_IMAGE]);
     }
     /*
      * $seo_meta に定義されていないページはデフォルトを出力
@@ -895,7 +895,7 @@ function getSeoMeta($key)
     }
     
     return [
-        SI_TITLE => SiUtils::title($title),
+        SI_TITLE => CustomizerUtils::title($title),
         SI_DESCRIPTION => $description,
         SI_KEYWORDS => $keywords,
         SI_OGP_IMAGE => $ogp_image,

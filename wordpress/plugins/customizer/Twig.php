@@ -8,8 +8,8 @@ class CustomizerTwig
      */
     static function createEngine()
     {
-        SiUtils::createDir(SI_TWIG_TEMPLATE_DIR);
-        SiUtils::createDir(SI_TWIG_CACHE_DIR);
+        CustomizerUtils::createDir(SI_TWIG_TEMPLATE_DIR);
+        CustomizerUtils::createDir(SI_TWIG_CACHE_DIR);
 
         $loader = new \Twig_Loader_Filesystem([
             SI_TWIG_TEMPLATE_DIR,
@@ -35,7 +35,7 @@ class CustomizerTwig
     {
         global $si_twig, $si_logger;
         $key = CustomizerTwig::getTemplateKey(
-            SiUtils::getPageType(), get_post_type()
+            CustomizerUtils::getPageType(), get_post_type()
         );
         $si_twig->addGlobal('seo', getSeoMeta($key));
         $si_twig->addGlobal('basic', getBasicInfo());
@@ -69,7 +69,7 @@ class CustomizerTwig
     static function defaultRoutingLogic()
     {
         return self::buildFileName(
-            SiUtils::getPageType(), get_post_type()
+            CustomizerUtils::getPageType(), get_post_type()
         );
     }
 
@@ -131,7 +131,7 @@ class CustomizerTwig
         $args = [];
         $search_args = null;
 
-        $page_type = SiUtils::getPageType();
+        $page_type = CustomizerUtils::getPageType();
         $key = self::getTemplateKey(
             $page_type, get_post_type()
         );

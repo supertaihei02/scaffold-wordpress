@@ -5,6 +5,7 @@ class CustomizerTwigExtension extends Twig_Extension
     function getFunctions()
     {
         return [
+            new Twig_Function('getFormAction', [$this, 'getFormAction']),
             new Twig_Function('getTerms', [$this, 'getTerms']),
             new Twig_Function('getPosts', [$this, 'getPosts']),
             new Twig_Function('formSettingForOptions', [$this, 'formSettingForOptions']),
@@ -23,7 +24,7 @@ class CustomizerTwigExtension extends Twig_Extension
      */
     function getTerms($condition_path)
     {
-        return getTerms(SiUtils::getCondition($condition_path));
+        return getTerms(CustomizerUtils::getCondition($condition_path));
     }
 
     /**
@@ -33,20 +34,36 @@ class CustomizerTwigExtension extends Twig_Extension
      */
     function getPosts($condition_path)
     {
-        return getPostsForTemplate(SiUtils::getCondition($condition_path));
+        return getPostsForTemplate(CustomizerUtils::getCondition($condition_path));
+    }
+
+    function getFormAction()
+    {
+        return plugin_dir_url(__FILE__) . 'Form.php';
     }
     
     /* *******************************
      *        Options Form設定
      * *******************************/
-    function formSettingForOptions($option_group_keys)
+    function formSettingForOptions($option_group_keys, $success_url = null, $failure_url = null)
     {
-        if (function_exists('settings_fields')) {
-            foreach (SiUtils::asArray($option_group_keys) as $option_group) {
-                settings_fields($option_group);
-                do_settings_sections($option_group);
-            }    
+        $key = 'update_option_with_sequence_';
+        foreach (CustomizerUtils::asArray($option_group_keys) as $option_group) {
+            $escaped = esc_attr($option_group);
+            echo "<input type='hidden' name='option_groups[]' value='" . $escaped . "' />";
+            $key .= $escaped;
         }
+
+        if (is_null($success_url)) {
+            $here = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+            $success_url = $here . '?success';
+            $failure_url = $here . '?failure';
+        }
+        
+        echo '<input type="hidden" name="action" value="update" />';
+        echo "<input type=\"hidden\" name=\"success_url\" value=\"{$success_url}\" />";
+        echo "<input type=\"hidden\" name=\"failure_url\" value=\"{$failure_url}\" />";
+        wp_nonce_field($key, $key);
     }
     
     /* *******************************
@@ -56,13 +73,14 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         global $si_twig;
         $config = CustomizerConfig::getFormSetting($option);
-        $config = SiUtils::getConfig($config, $keys);
+        $config = CustomizerUtils::getConfig($config, $keys);
         $keys = array_keys($config);
 
+        $elements = CustomizerForm::configToElements($config);
         $si_twig->display(
             'FormForAdmin.twig', [
                 'keys' => $keys,
-                'elements' => CustomizerForm::configToElements($config),
+                'elements' => CustomizerForm::applyInputValues($elements),
             ]
         );
     }
@@ -79,8 +97,8 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         $render = "id={$element->id} ";
         $render .= "name={$element->name} ";
-        $render .= $this->renderClasses($element, ...SiUtils::asArray($classes));
-        $render .= $this->renderAttributes($element, SiUtils::asArray($attrs));
+        $render .= $this->renderClasses($element, ...CustomizerUtils::asArray($classes));
+        $render .= $this->renderAttributes($element, CustomizerUtils::asArray($attrs));
         
         return $render;
     }
@@ -98,7 +116,7 @@ class CustomizerTwigExtension extends Twig_Extension
                 // required, readonly等の valueがないケース
                 $render .= " {$key}";
             } else {
-                $values = SiUtils::asArray($values);
+                $values = CustomizerUtils::asArray($values);
                 $values_string = implode(' ', $values);
                 $render .= " {$key}={$values_string}";    
             }

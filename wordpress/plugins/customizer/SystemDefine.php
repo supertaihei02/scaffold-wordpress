@@ -19,6 +19,7 @@ define('SI_HYPHEN',  '-');
 
 define('SI_KEY',  'key');
 define('SI_NAME',  'name');
+define('SI_SELECTED',  'selected');
 define('SI_DEFAULT',  'default');
 define('SI_POST_TYPE',  'post_type');
 define('SI_POST_TYPES',  'post_types');
@@ -66,6 +67,7 @@ define('SI_FIELD_CHOICE_VALUES',  'choice_values');
 define('SI_FIELD_CHOICE_TYPE_USERS',  'users');
 define('SI_FIELD_CHOICE_TYPE_POST_TYPES',  'post_types');
 
+define('SI_FIELD_OPTION_AUTOLOAD',  'autoload');
 
 define('SI_USE_ORIGINAL_ORDER',  'use_original_order');
 

@@ -1,5 +1,5 @@
 <?php
-class SiUtils
+class CustomizerUtils
 {
     static function isAllEmpty($values)
     {
@@ -216,7 +216,7 @@ class SiUtils
     static function getConfig($config, $keys)
     {
         $wk_config = $config;
-        foreach (SiUtils::asArray($keys) as $config_key) {
+        foreach (CustomizerUtils::asArray($keys) as $config_key) {
             if (!isset($wk_config[$config_key])) {
                 throw new Exception("[{$config_key}] is not exist.");
                 break;
