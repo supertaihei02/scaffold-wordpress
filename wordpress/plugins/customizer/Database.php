@@ -176,8 +176,13 @@ class CustomizerDatabase
 
                     if (!empty($options)) {
                         wp_cache_add($option, $options, self::$CACHE_GROUP_KEY);
+                        $value = $options;
+//                        global $si_logger; $si_logger->develop(
+//                            [$option, $value], null,
+//                            'CACHE'
+//                        );
                     } else {
-                        // Optionが見つからなかったら見つからなかった情報を保存
+                        // Optionが見つからなかったら、見つからなかったという情報を保存
                         if (!is_array($not_options)) {
                             $not_options = array();
                         }
@@ -203,7 +208,16 @@ class CustomizerDatabase
             }
         }
 
-        return maybe_unserialize($value);
+        if (is_array($value)) {
+            $value = array_reduce($value, function ($reduced, $one) {
+                $reduced[] = maybe_unserialize($one);
+                return $reduced;
+            }, []);
+        } else {
+            $value = maybe_unserialize($value);
+        }
+
+        return $value;
     }
 
     /**
@@ -242,9 +256,10 @@ class CustomizerDatabase
      * @param mixed $value
      * @param mixed $sequence
      * @param string $autoload
+     * @param bool $force
      * @return bool
      */
-    static function addOption($key, $value = '', $sequence = null, $autoload = 'yes')
+    static function addOption($key, $value = '', $sequence = null, $autoload = 'yes', $force = false)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table;
@@ -254,8 +269,13 @@ class CustomizerDatabase
 
         if (is_object($value)) { $value = clone $value; }
 
+        /*
+         * [ 存在チェック ]
+         * 存在していたら追加しない
+         * ただし、 $force フラグが trueなら更新する
+         */
         $not_options = wp_cache_get(self::$CACHE_NO_EXIST_KEY, self::$CACHE_GROUP_KEY);
-        if (!is_array($not_options) || !isset($not_options[$option])) {
+        if (!$force && (!is_array($not_options) || !isset($not_options[$option]))) {
             if (false !== self::getOption($option)) {
                 return false;
             }

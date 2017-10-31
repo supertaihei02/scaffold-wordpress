@@ -233,7 +233,6 @@ class CustomizerForm
      */
     static function update($args)
     {
-        global $si_logger; $si_logger->json_develop($args);
         if ($args['action'] !== 'update') { die('不正なページ遷移です'); }
         
         $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
@@ -273,8 +272,6 @@ class CustomizerForm
         /*
          * 保存処理
          */
-        global $si_logger; $si_logger->develop($args);
-
         $post_keys = array_keys($args);
         foreach ($save_targets as $option_group => $input_list) {
             foreach ($input_list as $save_target) {
@@ -286,11 +283,13 @@ class CustomizerForm
 
                 foreach ($save_keys as $save_key) {
                     list($option_key, $sequence) = explode('-', $save_key);
+                    // すべて強制的に更新 or 追加する
                     CustomizerDatabase::addOption(
                         $option_key,
                         $args[$save_key],
                         $sequence,
-                        $save_target->autoload
+                        $save_target->autoload,
+                        true
                     );
                 }
             }

@@ -55,7 +55,7 @@
     {# 要素分Checkbox作成 #}
     {% for choice_value in element.choice_values %}
       <input {{ choice_value.selected }}
-      name="{{ element.name }}" {{ 
+      name="{{ element.name }}[]" {{ 
       renderAttributes(element, { 'type': element.input_type, 'value': choice_value.key }) }}
       >{{ choice_value.name }}
     {% endfor %}
