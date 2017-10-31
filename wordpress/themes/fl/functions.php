@@ -132,6 +132,17 @@ if (isActiveCustomizer()) {
                     SI_IS_MULTIPLE => false,
                     SI_FIELDS => [
                         [
+                            SI_KEY => 'name',
+                            SI_NAME => 'お名前',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
                             SI_KEY => 'mail',
                             SI_NAME => 'メールアドレス',
                             SI_FIELD_IS_REQUIRE => true,

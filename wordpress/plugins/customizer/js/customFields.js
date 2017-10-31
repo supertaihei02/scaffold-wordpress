@@ -61,11 +61,14 @@ document.addEventListener('DOMContentLoaded', function()
 
     }
 
-    function disableSort() {
+    function disableSort() 
+    {
         // ここだけ JQuery使っていて恥ずかしい
-        jQuery('.meta-box-sortables').sortable({
-            disabled: true
-        });
+        if (jQuery('.meta-box-sortables').sortable) {
+            jQuery('.meta-box-sortables').sortable({
+                disabled: true
+            });
+        }
     }
 
     // ====================
@@ -206,13 +209,38 @@ document.addEventListener('DOMContentLoaded', function()
             var attachment = customMedia.state().get('selection').first().toJSON(),
                 parent_url_input = document.querySelector('#' + args["data-url-input"]['nodeValue']),
                 url_input = parent_url_input.querySelector('input'),
-                url_img = parent_url_input.querySelector('img')
+                url_name = parent_url_input.querySelector('p'),
+                url_img = parent_url_input.querySelector('img'),
+                split = attachment.url.split('.'),
+                ext = split[split.length - 1].toLowerCase(),
+                img_extensions = ['png', 'jpg', 'jpeg', 'gif', 'ico']
             ;
+            if (img_extensions.some(function(v){ return v === ext })) {
+                if (!url_img) {
+                    url_img = document.createElement('img');
+                    parent_url_input.insertBefore(url_img, parent_url_input.firstChild);    
+                }
+                url_img.src = attachment.url;
+            } else {
+                if (!url_name) {
+                    url_name = document.createElement('p');
+                    parent_url_input.insertBefore(url_name, parent_url_input.firstChild);
+                }
+                url_name.textContent = baseName(attachment.url);  
+            }
+            
             url_input.value = attachment.url;
-            url_img.src = attachment.url;
         });
 
         customMedia.open();
+    }
+
+    function baseName(str)
+    {
+        var base = new String(str).substring(str.lastIndexOf('/') + 1);
+        if(base.lastIndexOf('.') != -1)
+           base = base.substring(0, base.lastIndexOf('.'));
+        return base;
     }
 
     function clearSelectedImage(e) {
@@ -220,10 +248,15 @@ document.addEventListener('DOMContentLoaded', function()
         var args = e.currentTarget.attributes,
             parent_url_input = document.querySelector('#' + args["data-url-input"]['nodeValue']),
             url_input = parent_url_input.querySelector('input'),
-            url_img = parent_url_input.querySelector('img')
-            ;
+            url_img = parent_url_input.querySelector('img'),
+            url_name = parent_url_input.querySelector('p')
+        ;
         url_input.value = "";
-        url_img.src = "";
+        if (url_img) {
+          url_img.remove();
+        } else if (url_name) {
+          url_name.remove();
+        }
     }
 
     

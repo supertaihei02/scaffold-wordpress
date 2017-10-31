@@ -19,6 +19,7 @@ class CustomizerTwigExtension extends Twig_Extension
             new Twig_Function('renderChild', [$this, 'renderChild']),
             new Twig_Function('isImage', [$this, 'isImage']),
             new Twig_Function('basename', [$this, 'basename']),
+            new Twig_Function('isAdmin', [$this, 'isAdmin']),
         ];
     }
 
@@ -89,6 +90,14 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         return basename($file_path);
     }
+
+    /**
+     * 管理画面かどうかを返す
+     */
+    static function isAdmin()
+    {
+        return is_admin();
+    }
     
     /* *******************************
      *        Options Form設定
@@ -110,8 +119,6 @@ class CustomizerTwigExtension extends Twig_Extension
             if (strpos($here, '?') !== false) {
                 $query_sign = '&';
             }
-            // TODO 既に ? が付いていたら & をつける！！！ 
-            
             $success_url = "{$here}{$query_sign}success";
             $failure_url = "{$here}{$query_sign}failure";
         }
@@ -146,6 +153,12 @@ class CustomizerTwigExtension extends Twig_Extension
     static function renderFormByConfig($template, $option, $keys)
     {
         global $si_twig, $forms;
+
+        if (is_admin()) {
+            wp_enqueue_media();
+            wp_enqueue_script('customFields', plugins_url('js/customFields.js', __FILE__));
+        }
+        
         if (isset($forms[$option])) {
             $config = [$option => $forms[$option]];
         } else {
@@ -168,14 +181,24 @@ class CustomizerTwigExtension extends Twig_Extension
      * @param CustomizerElement $element
      * @param array $attrs
      * @param array $classes
+     * @param array $ignore
      * @return string
      */
-    static function easyAttrs(CustomizerElement $element, $classes = [], $attrs = [])
+    static function easyAttrs(CustomizerElement $element, $classes = [], $attrs = [], $ignore = [])
     {
-        $render = "id={$element->id} ";
-        $render .= "name={$element->name} ";
-        $render .= self::renderClasses($element, ...CustomizerUtils::asArray($classes));
-        $render .= self::renderAttributes($element, CustomizerUtils::asArray($attrs));
+        $render = '';
+        if (!in_array('id', $ignore)) {
+            $render .= "id={$element->id} ";
+        }
+        if (!in_array('name', $ignore)) {
+            $render .= "name={$element->name} ";
+        }
+        if (!in_array('class', $ignore)) {
+            $render .= self::renderClasses($element, ...CustomizerUtils::asArray($classes));
+        }
+        if (!in_array('attr', $ignore)) {
+            $render .= self::renderAttributes($element, CustomizerUtils::asArray($attrs));
+        }
         
         return $render;
     }

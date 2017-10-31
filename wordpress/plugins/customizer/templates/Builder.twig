@@ -7,7 +7,7 @@
   {% if attributes is empty %}
     {% set attributes = [] %}
   {% endif %}
-  
+
   {# DefaultのTwigには Swich構文がないらしい #}
   {% if element.input_type == constant('SI_FIELD_TYPE_TEXT') %}
     {{ builder.text(element, classes, attributes) }}
@@ -58,8 +58,8 @@
   {% for choice_value in element.choice_values %}
     <input {{ choice_value.selected }}
     name="{{ element.name }}[]" {{ renderAttributes(element,
-    attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
-    ) }}
+  attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
+  ) }}
     >{{ choice_value.name }}
   {% endfor %}
 {% endmacro checkbox %}
@@ -78,20 +78,29 @@
  #             file
  #################################### #}
 {% macro file(element, classes, attributes) %}
-  {% if element.value is not empty %}
-    {% if isImage(element.value) %}
-      <img src="{{ element.value }}" alt="選択中の画像">
-    {% else %}
-      <p>{{ basename(element.value) }}</p>
+  <div id="{{ element.id }}">
+    {% if element.value is not empty %}
+      {% if isImage(element.value) %}
+        <img src="{{ element.value }}" alt="選択中の画像">
+      {% else %}
+        <p>{{ basename(element.value) }}</p>
+      {% endif %}
     {% endif %}
-  {% else %}
-    <p>ファイルが選択されていません</p>
-  {% endif %}
-  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
-    'type': element.input_type,
-    'value': element.value
-  })) }}>
-
+    {% if isAdmin() %}
+      <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+        'type': 'hidden',
+        'value': element.value
+      }), ['id']) }}>
+      <a href="javascript:void(0);" data-url-input="{{ element.id }}" id="{{ element.id }}-img"
+         class="button upload-btn">ファイル選択</a>
+      <a href="javascript:void(0);" data-url-input="{{ element.id }}" class="upload-clear-btn">削除</a>
+    {% else %}
+      <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+        'type': element.input_type,
+        'value': element.value
+      })) }}>
+    {% endif %}
+  </div>
 {% endmacro file %}
 
 {# ####################################

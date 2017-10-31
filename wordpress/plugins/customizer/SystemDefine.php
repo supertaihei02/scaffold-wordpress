@@ -211,7 +211,7 @@ define('SI_DEFAULT_SEO_FIELDS', [
 class CustomizerDefine
 {
     static $IMAGE_EXTENSIONS = [
-        '.png', '.jpg', '.jpeg', '.gif', '.ico'
+        'png', 'jpg', 'jpeg', 'gif', 'ico'
     ];
     
     static $DEFAULT_SEO_FIELDS = [
