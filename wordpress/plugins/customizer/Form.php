@@ -112,16 +112,8 @@ class CustomizerForm
             /**
              * @var $element CustomizerElement
              */
-            if ($element->isInput()) {
-                $wrap = new CustomizerElement('dummy');
-                $wrap->addChildren(self::recursiveApplyInputValues($element));
-                foreach ($wrap->children as $child) {
-                    $reduced[] = $child;
-                }
-            } else {
-                foreach (self::recursiveApplyInputValues($element) as $one_element) {
-                    $reduced[] = $one_element;
-                }
+            foreach (self::recursiveApplyInputValues($element) as $one_element) {
+                $reduced[] = $one_element;
             }
             return $reduced;
         }, []);

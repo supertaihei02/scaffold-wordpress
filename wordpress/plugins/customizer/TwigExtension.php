@@ -6,14 +6,19 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         return [
             new Twig_Function('getFormAction', [$this, 'getFormAction']),
+            new Twig_Function('putSubmitButton', [$this, 'putSubmitButton']),
             new Twig_Function('getTerms', [$this, 'getTerms']),
             new Twig_Function('getPosts', [$this, 'getPosts']),
             new Twig_Function('formSettingForOptions', [$this, 'formSettingForOptions']),
             new Twig_Function('easyAttrs', [$this, 'easyAttrs']),
+            new Twig_Function('renderFormAdmin', [$this, 'renderFormAdmin']),
+            new Twig_Function('renderFormFront', [$this, 'renderFormFront']),
             new Twig_Function('renderFormByConfig', [$this, 'renderFormByConfig']),
             new Twig_Function('renderClasses', [$this, 'renderClasses']),
             new Twig_Function('renderAttributes', [$this, 'renderAttributes']),
             new Twig_Function('renderChild', [$this, 'renderChild']),
+            new Twig_Function('isImage', [$this, 'isImage']),
+            new Twig_Function('basename', [$this, 'basename']),
         ];
     }
 
@@ -22,7 +27,7 @@ class CustomizerTwigExtension extends Twig_Extension
      * @param $condition_path
      * @return array
      */
-    function getTerms($condition_path)
+    static function getTerms($condition_path)
     {
         return getTerms(CustomizerUtils::getCondition($condition_path));
     }
@@ -32,20 +37,63 @@ class CustomizerTwigExtension extends Twig_Extension
      * @param $condition_path
      * @return array
      */
-    function getPosts($condition_path)
+    static function getPosts($condition_path)
     {
         return getPostsForTemplate(CustomizerUtils::getCondition($condition_path));
     }
 
-    function getFormAction()
+    /**
+     * Formの保存ロジックURL
+     * @return string
+     */
+    static function getFormAction()
     {
         return plugin_dir_url(__FILE__) . 'Form.php';
+    }
+
+    /**
+     * submit 配置
+     * @param null $text
+     * @param string $type
+     * @param string $name
+     * @param bool $wrap
+     * @param null $other_attributes
+     * @return string
+     */
+    static function putSubmitButton($text = null, $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null)
+    {
+        return get_submit_button( $text, $type, $name, $wrap, $other_attributes );
+    }
+    
+    /**
+     * 画像判定
+     * @param $file_path
+     * @return bool
+     */
+    static function isImage($file_path)
+    {
+        $result = false;
+        $ext = pathinfo($file_path, PATHINFO_EXTENSION);
+        if (in_array($ext, CustomizerDefine::$IMAGE_EXTENSIONS)) {
+            $result = true;
+        }
+        return $result;
+    }
+
+    /**
+     * ファイル名取得
+     * @param $file_path
+     * @return string
+     */
+    static function basename($file_path)
+    {
+        return basename($file_path);
     }
     
     /* *******************************
      *        Options Form設定
      * *******************************/
-    function formSettingForOptions($option_group_keys, $success_url = null, $failure_url = null)
+    static function formSettingForOptions($option_group_keys, $success_url = null, $failure_url = null)
     {
         $key = 'update_option_with_sequence_';
         foreach (CustomizerUtils::asArray($option_group_keys) as $option_group) {
@@ -57,8 +105,15 @@ class CustomizerTwigExtension extends Twig_Extension
         if (is_null($success_url)) {
             $here = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $here = str_replace(['?success', 'success', '?failure', 'failure'], '', $here);
-            $success_url = $here . '?success';
-            $failure_url = $here . '?failure';
+
+            $query_sign = '?';
+            if (strpos($here, '?') !== false) {
+                $query_sign = '&';
+            }
+            // TODO 既に ? が付いていたら & をつける！！！ 
+            
+            $success_url = "{$here}{$query_sign}success";
+            $failure_url = "{$here}{$query_sign}failure";
         }
         
         echo '<input type="hidden" name="action" value="update" />';
@@ -70,7 +125,17 @@ class CustomizerTwigExtension extends Twig_Extension
     /* *******************************
      *        HTML自動生成系
      * *******************************/
-    function renderFormByConfig($option, ...$keys)
+    static function renderFormAdmin($option, ...$keys)
+    {
+        self::renderFormByConfig('FormForAdmin.twig', $option, $keys);
+    }
+
+    static function renderFormFront($option, ...$keys)
+    {
+        self::renderFormByConfig('FormForFront.twig', $option, $keys);
+    }
+    
+    static function renderFormByConfig($template, $option, $keys)
     {
         global $si_twig;
         $config = CustomizerConfig::getFormSetting($option);
@@ -78,12 +143,11 @@ class CustomizerTwigExtension extends Twig_Extension
         $keys = array_keys($config);
 
         $elements = CustomizerForm::configToElements($config);
-        $si_twig->display(
-            'FormForAdmin.twig', [
-                'keys' => $keys,
-                'elements' => CustomizerForm::applyInputValues($elements),
-            ]
-        );
+        $elements = CustomizerForm::applyInputValues($elements);
+        $si_twig->display($template, [
+            'keys' => $keys,
+            'elements' => $elements,
+        ]);
     }
 
     /**
@@ -94,12 +158,12 @@ class CustomizerTwigExtension extends Twig_Extension
      * @param array $classes
      * @return string
      */
-    function easyAttrs(CustomizerElement $element, $classes = [], $attrs = [])
+    static function easyAttrs(CustomizerElement $element, $classes = [], $attrs = [])
     {
         $render = "id={$element->id} ";
         $render .= "name={$element->name} ";
-        $render .= $this->renderClasses($element, ...CustomizerUtils::asArray($classes));
-        $render .= $this->renderAttributes($element, CustomizerUtils::asArray($attrs));
+        $render .= self::renderClasses($element, ...CustomizerUtils::asArray($classes));
+        $render .= self::renderAttributes($element, CustomizerUtils::asArray($attrs));
         
         return $render;
     }
@@ -108,7 +172,7 @@ class CustomizerTwigExtension extends Twig_Extension
     // --------------
     // - Attributes -
     // --------------
-    function renderAttributes(CustomizerElement $element, $attributes)
+    static function renderAttributes(CustomizerElement $element, $attributes)
     {
         $render = '';
         $render_attributes = $element->getRenderAttributes($attributes);
@@ -128,12 +192,15 @@ class CustomizerTwigExtension extends Twig_Extension
     // -----------
     // - Classes -
     // -----------
-    function renderClasses(CustomizerElement $element, ...$classes)
+    static function renderClasses(CustomizerElement $element, ...$classes)
     {
         $render = '';
-        $class_string = implode(' ', $element->getRenderClasses($classes));
+        $classes = $element->getRenderClasses($classes);
+        $class_string = implode(' ', $classes);
         if (!empty($class_string)) {
-            $render = "class=\"{$class_string}\"";
+            $render = count($classes) > 1 ?
+                "class=\"{$class_string}\"" :
+                "class={$class_string}"; 
         }
         return $render;
     }

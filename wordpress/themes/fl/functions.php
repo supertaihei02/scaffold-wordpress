@@ -1,6 +1,7 @@
 <?php
 $seo_meta = [];
 $conditions = [];
+$forms = [];
 if (isActiveCustomizer()) {
     /* *******************************
      * TDKをページごとにまとめて指定する
@@ -117,6 +118,80 @@ if (isActiveCustomizer()) {
         ],
     ];
 
+    /* *******************************
+     *          Form内容設定
+     * *******************************/
+    $forms = [
+        'contact' => [
+            SI_KEY => 'seo',
+            SI_NAME => 'SEO基本設定',
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'base',
+                    SI_NAME => 'SEO METAタグ',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'title_separator',
+                            SI_NAME => 'タイトル分割記号',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => ' | ',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                        ],
+                        [
+                            SI_KEY => 'default_description',
+                            SI_NAME => 'Description',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                        ],
+                        [
+                            SI_KEY => 'default_keywords',
+                            SI_NAME => 'Keywords',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                        ],
+                        [
+                            SI_KEY => 'default_ogp_image',
+                            SI_NAME => 'OG:image',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                        ],
+                        [
+                            SI_KEY => 'google_analytics_key',
+                            SI_NAME => 'Google Analytics Key',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                        ],
+                    ]
+                ],
+            ]
+        ]
+    ];
+    
     /* *******************************
      * タイトルタグを自動生成する機能を削除
      * *******************************/

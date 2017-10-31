@@ -284,7 +284,7 @@ class CustomizerConfig
                 break;
             case SI_SETTING_FORM_ALL:
                 $setting = [
-                    'test' => self::test(),
+                    // 'test' => self::test(),
                     SI_SETTING_FORM_BACKBONE => self::backbone(),
                     SI_SETTING_FORM_SEO => self::seo(),
                 ];
@@ -764,7 +764,7 @@ class CustomizerConfig
                             SI_KEY => 'google_analytics_key',
                             SI_NAME => 'Google Analytics Key',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
                             SI_DEFAULT => '',
                             SI_ELEM_ATTRS => [],
                             SI_ELEM_CLASSES => [],

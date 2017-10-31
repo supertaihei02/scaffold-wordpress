@@ -405,3 +405,8 @@ function getPreviewPostLink ($url)
     return $preview_url;
 }
 add_filter('preview_post_link', 'getPreviewPostLink');
+
+/* *******************************
+ *  設定画面の作成
+ * *******************************/
+add_action('admin_menu', 'CustomizerSetting::initialize');

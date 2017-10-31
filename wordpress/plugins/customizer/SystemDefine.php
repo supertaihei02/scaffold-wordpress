@@ -158,6 +158,7 @@ define('SI_SETTING_FORM_SEO',  'seo');
 
 // --- 設定画面
 define('SI_SETTING_BACKBONE',  'backbone');
+define('SI_SETTING_SEO',  'seo');
 
 // デフォルトSEOフィールド
 define('SI_DEFAULT_SEO_FIELDS', [
@@ -209,6 +210,10 @@ define('SI_DEFAULT_SEO_FIELDS', [
 
 class CustomizerDefine
 {
+    static $IMAGE_EXTENSIONS = [
+        '.png', '.jpg', '.jpeg', '.gif', '.ico'
+    ];
+    
     static $DEFAULT_SEO_FIELDS = [
         // グループID
         SI_KEY  => 'seo',

@@ -1,60 +1,56 @@
 {% macro render(element, index) %}
-  <div id="detail{{ index }}" class="detail">
+  {% if element.isInput() %}
+    {% import 'Builder.twig' as builder %}
+    <tr>
+      <th scope="row"><label for="{{ element.id }}">{{ element.layer_name }}</label></th>
+      <td>{{ builder.input(element, ['regular-text'], []) }}</td>
+    </tr>
+  {% else %}
+    {{ element.layer_name }}
+  {% endif %}
 
-    {% if element.isInput() %}
-      {% import 'Builder.twig' as builder %}
-      {{ builder.input(element) }}
-    {% else %}
-      {{ element.layer_name }}
-    {% endif %}
-
-    {# START: 子ノードがいる場合再帰的に描画 #}
-    {% if element.hasChild() %}
-      {% import _self as recursive %}
-      {% for child in element.children %}
-        {{ recursive.render(child, loop.index) }}
-      {% endfor %}
-    {% endif %}
-    {# END: 子ノードがいる場合再帰的に描画 #}
-    
-  </div>
+  {# START: 子ノードがいる場合再帰的に描画 #}
+  {% if element.hasChild() %}
+    {% import _self as recursive %}
+    {% for child in element.children %}
+      {{ recursive.render(child, loop.index) }}
+    {% endfor %}
+  {% endif %}
+  {# END: 子ノードがいる場合再帰的に描画 #}
 {% endmacro render %}
 
-<article class="wrap">
-  <h2>Custom Form</h2>
+<div class="wrap">
   <form method="post" action="{{ getFormAction() }}">
     {{ formSettingForOptions(keys) }}
-
     {% for element in elements %}
-      <hr>
       {# START: 第一層 FORM GROUP #}
       {% if element.hasChild() %}
-        <article {{ easyAttrs(element, 'group')|raw }}>
-          <h3>{{ element.layer_name }}</h3>
+        <h2>{{ element.layer_name }}</h2>
+        <table {{ easyAttrs(element, ['group', 'form-table'])|raw }}>
+          <tbody>
+
           {% for block in element.children %}
-
             {# START: 第二層 FORM BLOCK #}
-            <section {{ easyAttrs(block, 'block')|raw }}>
-              <h4>{{ block.layer_name }}</h4>
-
-              {# START: 第三層以降 子ノードがいる場合再帰的に描画 #}
-              {% if block.hasChild() %}
-                {% import _self as recursive %}
-                {% for child in block.children %}
-                  {{ recursive.render(child, loop.index) }}
-                {% endfor %}
-              {% endif %}
-              {# END: 第三層以降 子ノードがいる場合再帰的に描画 #}
-
-            </section>
+            <tr {{ easyAttrs(block, 'block')|raw }}>
+              <th scope="row"><hr><h3>{{ block.layer_name }}</h3></th>
+            </tr>
+            {# START: 第三層以降 子ノードがいる場合再帰的に描画 #}
+            {% if block.hasChild() %}
+              {% import _self as recursive %}
+              {% for child in block.children %}
+                {{ recursive.render(child, loop.index) }}
+              {% endfor %}
+            {% endif %}
+            {# END: 第三層以降 子ノードがいる場合再帰的に描画 #}
             {# END: 第二層 FORM BLOCK #}
-
           {% endfor %}
-        </article>
+          </tbody>
+        </table>
       {% endif %}
       {# END: 第一層 FORM GROUP #}
     {% endfor %}
-    
-    <input type="submit" value="登録">
+
+    {{ putSubmitButton()|raw }}
   </form>
+</div>
 </article>

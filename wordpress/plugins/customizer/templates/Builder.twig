@@ -1,125 +1,133 @@
-{% macro input(element) %}
+{% macro input(element, classes, attributes) %}
   {% import _self as builder %}
 
+  {% if classes is empty %}
+    {% set classes = [] %}
+  {% endif %}
+  {% if attributes is empty %}
+    {% set attributes = [] %}
+  {% endif %}
+  
   {# DefaultのTwigには Swich構文がないらしい #}
   {% if element.input_type == constant('SI_FIELD_TYPE_TEXT') %}
-    {{ builder.text(element) }}
+    {{ builder.text(element, classes, attributes) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_TEXTAREA') %}
+    {{ builder.textarea(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_CHECKBOX') %}
-    {{ builder.checkbox(element) }}
+    {{ builder.checkbox(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_HIDDEN') %}
-    {{ builder.hidden(element) }}
+    {{ builder.hidden(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_FILE') %}
-    {{ builder.file(element) }}
+    {{ builder.file(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_RADIO') %}
-    {{ builder.radio(element) }}
+    {{ builder.radio(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_SELECT') %}
-    {{ builder.select(element) }}
+    {{ builder.select(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_NUMBER') %}
-    {{ builder.number(element) }}
+    {{ builder.number(element, classes, attributes) }}
   {% endif %}
 {% endmacro input %}
 
 {# ####################################
  #               text
  #################################### #}
-{% macro text(element) %}
-  <div class="input {{ element.input_type }}">
-    <label for="{{ element.id }}">{{ element.layer_name }}</label>
-    <input {{ easyAttrs(element, [], {
-      'type': element.input_type,
-      'value': element.value
-    }) }}>
-  </div>
+{% macro text(element, classes, attributes) %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  })) }}>
 {% endmacro text %}
 
 {# ####################################
  #             textarea
  #################################### #}
-{% macro textarea(element) %}
-  <div class="input {{ element.input_type }}">
-    <label for="{{ element.id }}">{{ element.layer_name }}</label>
-    <textarea {{ easyAttrs(element) }}>{{ element.value }}</textarea>
-  </div>
+{% macro textarea(element, classes, attributes) %}
+  <textarea {{ easyAttrs(element, classes|merge([]), attributes|merge([])) }}>{{ 
+    element.value }}
+  </textarea>
 {% endmacro textarea %}
 
 {# ####################################
  #             checkbox
  #################################### #}
-{% macro checkbox(element) %}
-  <div class="input {{ element.input_type }}">
-    {# 値がないケースのためにhiddenを仕込む #}
-    <input name="{{ element.name }}" {{ renderAttributes(
-    element,
-    { 'type': 'hidden', 'value': 'none' }
-    ) }}>
-    {# 要素分Checkbox作成 #}
-    {% for choice_value in element.choice_values %}
-      <input {{ choice_value.selected }}
-      name="{{ element.name }}[]" {{ 
-      renderAttributes(element, { 'type': element.input_type, 'value': choice_value.key }) }}
-      >{{ choice_value.name }}
-    {% endfor %}
-  </div>
+{% macro checkbox(element, classes, attributes) %}
+  {# 値がないケースのためにhiddenを仕込む #}
+  <input name="{{ element.name }}" {{ renderAttributes(
+  element,
+  attributes|merge({ 'type': 'hidden', 'value': 'none' })
+  ) }}>
+  {# 要素分Checkbox作成 #}
+  {% for choice_value in element.choice_values %}
+    <input {{ choice_value.selected }}
+    name="{{ element.name }}[]" {{ renderAttributes(element,
+    attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
+    ) }}
+    >{{ choice_value.name }}
+  {% endfor %}
 {% endmacro checkbox %}
 
 {# ####################################
  #             hidden
  #################################### #}
-{% macro hidden(element) %}
-  <div class="input {{ element.input_type }}">
-    <label for="{{ element.id }}">{{ element.layer_name }}</label>
-    <input {{ easyAttrs(element, [], {
-      'type': element.input_type,
-      'value': element.value
-    }) }}>
-  </div>
+{% macro hidden(element, classes, attributes) %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  })) }}>
 {% endmacro hidden %}
 
 {# ####################################
  #             file
  #################################### #}
-{% macro file(element) %}
+{% macro file(element, classes, attributes) %}
+  {% if element.value is not empty %}
+    {% if isImage(element.value) %}
+      <img src="{{ element.value }}" alt="選択中の画像">
+    {% else %}
+      <p>{{ basename(element.value) }}</p>
+    {% endif %}
+  {% else %}
+    <p>ファイルが選択されていません</p>
+  {% endif %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  })) }}>
+
 {% endmacro file %}
 
 {# ####################################
  #             radio
  #################################### #}
-{% macro radio(element) %}
-  <div class="input {{ element.input_type }}">
-    {% for choice_value in element.choice_values %}
-      <input {{ choice_value.selected }} name="{{ element.name }}" {{ renderAttributes(
-    element,
-    { 'type': element.input_type, 'value': choice_value.key }
-    ) }}>{{ choice_value.name }}
-    {% endfor %}
-  </div>
+{% macro radio(element, classes, attributes) %}
+  {% for choice_value in element.choice_values %}
+    <input {{ choice_value.selected }} name="{{ element.name }}" {{ renderAttributes(
+  element,
+  attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
+  ) }}>{{ choice_value.name }}
+  {% endfor %}
 {% endmacro radio %}
 
 {# ####################################
  #             select
  #################################### #}
-{% macro select(element) %}
-  <div class="input {{ element.input_type }}">
-    <select name="{{ element.name }}">
-      {% for choice_value in element.choice_values %}
-        <option {{ choice_value.selected }} {{ renderAttributes(
-        element,
-        { 'value': choice_value.key }
-        ) }}>{{ choice_value.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
+{% macro select(element, classes, attributes) %}
+  <select name="{{ element.name }}">
+    {% for choice_value in element.choice_values %}
+      <option {{ choice_value.selected }} {{ renderAttributes(
+      element,
+      attributes|merge({ 'value': choice_value.key })
+      ) }}>{{ choice_value.name }}</option>
+    {% endfor %}
+  </select>
 {% endmacro select %}
 
 {# ####################################
  #             number
  #################################### #}
-{% macro number(element) %}
-  <div class="input {{ element.input_type }}">
-    <label for="{{ element.id }}">{{ element.layer_name }}</label>
-    <input {{ easyAttrs(element, [], {
-      'type': element.input_type,
-      'value': element.value
-    }) }}>
-  </div>
+{% macro number(element, classes, attributes) %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  })) }}>
 {% endmacro number %}
