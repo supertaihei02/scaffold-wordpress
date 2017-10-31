@@ -225,11 +225,13 @@ class CustomizerForm
      */
     static function update($args)
     {
+        global $forms;
         if ($args['action'] !== 'update') { die('不正なページ遷移です'); }
         
         $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
         $success_url = CustomizerUtils::getRequire($args, 'success_url');
         $failure_url = CustomizerUtils::getRequire($args, 'failure_url');
+        $page_type = CustomizerUtils::getRequire($args, 'page_type');
         
         
         /*
@@ -239,7 +241,7 @@ class CustomizerForm
         foreach ($option_groups as $option_group) {
             $nonce_key .= $option_group;
         }
-        $nonce_key = "update_option_with_sequence_{$nonce_key}";
+        $nonce_key = "update_option_with_sequence_{$nonce_key}_{$page_type}";
         $nonce_value = CustomizerUtils::getRequire($args, $nonce_key);
         
         if (!wp_verify_nonce($nonce_value, $nonce_key)) {
@@ -252,7 +254,11 @@ class CustomizerForm
          */
         $save_targets = [];
         foreach ($option_groups as $option_group) {
-            $form_info = CustomizerConfig::getFormSetting($option_group, false);
+            if (isset($forms[$option_group])) {
+                $form_info = [$option_group => $forms[$option_group]];
+            } else {
+                $form_info = CustomizerConfig::getFormSetting($option_group, false);
+            }
             if ($form_info === false) {
                 wp_redirect($failure_url);
                 exit();

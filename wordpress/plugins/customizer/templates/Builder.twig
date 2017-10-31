@@ -42,9 +42,7 @@
  #             textarea
  #################################### #}
 {% macro textarea(element, classes, attributes) %}
-  <textarea {{ easyAttrs(element, classes|merge([]), attributes|merge([])) }}>{{ 
-    element.value }}
-  </textarea>
+  <textarea {{ easyAttrs(element, classes|merge([]), attributes|merge([])) }}>{{ element.value }}</textarea>
 {% endmacro textarea %}
 
 {# ####################################

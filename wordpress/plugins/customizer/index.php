@@ -53,3 +53,6 @@ if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POW
     }
     new CustomizerCron();
 }
+
+// タイトルタグを自動生成する機能を削除 (きっとあとで移動する)
+remove_action('wp_head', '_wp_render_title_tag', 1);

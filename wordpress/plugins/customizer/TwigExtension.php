@@ -119,6 +119,14 @@ class CustomizerTwigExtension extends Twig_Extension
         echo '<input type="hidden" name="action" value="update" />';
         echo "<input type=\"hidden\" name=\"success_url\" value=\"{$success_url}\" />";
         echo "<input type=\"hidden\" name=\"failure_url\" value=\"{$failure_url}\" />";
+
+        if (is_admin()) {
+            echo "<input type=\"hidden\" name=\"page_type\" value=\"admin\" />";
+            $key .= '_admin';
+        } else {
+            echo "<input type=\"hidden\" name=\"page_type\" value=\"front\" />";
+            $key .= '_front';
+        }
         wp_nonce_field($key, $key);
     }
     
@@ -137,8 +145,12 @@ class CustomizerTwigExtension extends Twig_Extension
     
     static function renderFormByConfig($template, $option, $keys)
     {
-        global $si_twig;
-        $config = CustomizerConfig::getFormSetting($option);
+        global $si_twig, $forms;
+        if (isset($forms[$option])) {
+            $config = [$option => $forms[$option]];
+        } else {
+            $config = CustomizerConfig::getFormSetting($option);
+        }
         $config = CustomizerUtils::getConfig($config, $keys);
         $keys = array_keys($config);
 

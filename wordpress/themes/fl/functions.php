@@ -119,83 +119,80 @@ if (isActiveCustomizer()) {
     ];
 
     /* *******************************
-     *          Form内容設定
+     * Form内容設定
      * *******************************/
     $forms = [
         'contact' => [
-            SI_KEY => 'seo',
-            SI_NAME => 'SEO基本設定',
+            SI_KEY => 'contact',
+            SI_NAME => 'お問い合わせ内容',
             SI_CUSTOM_FIELDS => [
                 [
-                    SI_KEY => 'base',
-                    SI_NAME => 'SEO METAタグ',
+                    SI_KEY => 'client',
+                    SI_NAME => 'お客様情報',
                     SI_IS_MULTIPLE => false,
                     SI_FIELDS => [
                         [
-                            SI_KEY => 'title_separator',
-                            SI_NAME => 'タイトル分割記号',
-                            SI_FIELD_IS_REQUIRE => false,
+                            SI_KEY => 'mail',
+                            SI_NAME => 'メールアドレス',
+                            SI_FIELD_IS_REQUIRE => true,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => ' | ',
+                            SI_DEFAULT => '',
                             SI_ELEM_ATTRS => [],
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'question',
+                    SI_NAME => 'お問い合わせ内容',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'type',
+                            SI_NAME => '種別',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => 'none',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'none',
+                                    SI_NAME => '未選択'
+                                ],
+                                [
+                                    SI_KEY => 'business',
+                                    SI_NAME => '仕事のご依頼'
+                                ],
+                                [
+                                    SI_KEY => 'recruit',
+                                    SI_NAME => '採用に関して'
+                                ],
+                                [
+                                    SI_KEY => 'other',
+                                    SI_NAME => 'その他'
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ],
                         [
-                            SI_KEY => 'default_description',
-                            SI_NAME => 'Description',
+                            SI_KEY => 'content',
+                            SI_NAME => '本文',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
                             SI_DEFAULT => '',
                             SI_ELEM_ATTRS => [],
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
-                        ],
-                        [
-                            SI_KEY => 'default_keywords',
-                            SI_NAME => 'Keywords',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => '',
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
-                        ],
-                        [
-                            SI_KEY => 'default_ogp_image',
-                            SI_NAME => 'OG:image',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
-                            SI_DEFAULT => '',
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
-                        ],
-                        [
-                            SI_KEY => 'google_analytics_key',
-                            SI_NAME => 'Google Analytics Key',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => '',
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ],
                     ]
                 ],
             ]
         ]
     ];
-    
-    /* *******************************
-     * タイトルタグを自動生成する機能を削除
-     * *******************************/
-    remove_action('wp_head', '_wp_render_title_tag', 1);
 }
 
 /**
