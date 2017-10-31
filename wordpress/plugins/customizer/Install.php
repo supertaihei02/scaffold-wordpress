@@ -11,6 +11,9 @@ class CustomizerInstall
         if ($installed_version !== $option_with_sequence_db_version) {
             self::install();
         }
+        
+        // Optionをメモリ上にLOAD
+        CustomizerDatabase::loadAllOptions();
     }
 
     static function install()

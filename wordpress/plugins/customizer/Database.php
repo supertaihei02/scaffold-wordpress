@@ -177,10 +177,6 @@ class CustomizerDatabase
                     if (!empty($options)) {
                         wp_cache_add($option, $options, self::$CACHE_GROUP_KEY);
                         $value = $options;
-//                        global $si_logger; $si_logger->develop(
-//                            [$option, $value], null,
-//                            'CACHE'
-//                        );
                     } else {
                         // Optionが見つからなかったら、見つからなかったという情報を保存
                         if (!is_array($not_options)) {
@@ -243,8 +239,9 @@ class CustomizerDatabase
             foreach ((array)$all_options_db as $o) {
                 $all_options[$o->option_key][$o->option_sequence] = $o->option_value;
             }
-            if (!wp_installing() || !is_multisite())
+            if (!wp_installing() || !is_multisite()) {
                 wp_cache_add(self::$CACHE_ALL_KEY, $all_options, self::$CACHE_GROUP_KEY);
+            }
         }
 
         return $all_options;

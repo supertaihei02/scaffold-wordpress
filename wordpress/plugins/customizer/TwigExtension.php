@@ -56,6 +56,7 @@ class CustomizerTwigExtension extends Twig_Extension
 
         if (is_null($success_url)) {
             $here = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+            $here = str_replace(['?success', 'success', '?failure', 'failure'], '', $here);
             $success_url = $here . '?success';
             $failure_url = $here . '?failure';
         }
