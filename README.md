@@ -75,6 +75,92 @@ make export
 使っているツール周りは基本的に[scaffold-frontend](https://github.com/framelunch/scaffold-frontend)と同じです。
 一部使ってないツールや設定(JSからのCSS読み込み)が混じってますが、どうしようか決めかねてます。
 
+##### 投稿内容へのスタイルあて
+
+以下を参考に、利用者が投稿したコンテンツに対してスタイルを当てておく必要がある。  
+これでだいたいWISIWYGで付与されるスタイルは一通り当たってるはず。
+
+```css
+/* このクラスは適当 */
+.post {
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-weight: var(--fontWeight-bold);
+        margin: 0.5em 0;
+    }
+
+    h1 {
+        font-size: 2.4em;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+
+    h3 {
+        font-size: 1.8em;
+    }
+
+    h4 {
+        font-size: 1.6em;
+    }
+
+    h5 {
+        font-size: 1.4em;
+    }
+
+    h6 {
+        font-size: 1.2em;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    strong {
+        font-weight: var(--fontWeight-bold);
+    }
+
+    ul,
+    ol {
+        margin: 20px 0 20px 1em;
+    }
+
+    ul li {
+        list-style-type: disc;
+    }
+
+    ol li {
+        list-style-type: decimal;
+    }
+
+    blockquote {
+        background: rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        padding: 20px 30px;
+        font-size: 1.1em;
+    }
+
+    a {
+        color: var(--color-brand);
+    }
+
+    img {
+        margin: 20px 0;
+    }
+
+    p {
+        word-break: break-all;
+    }
+
+    hr {
+        margin: 1rem 0;
+    }
+}
+```
+
 #### いじりどころ
 
 共通っぽいファイルは端折った
