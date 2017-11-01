@@ -98,7 +98,7 @@
       <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
         'type': element.input_type,
         'value': element.value
-      })) }}>
+      }), ['id'])  }}>
     {% endif %}
   </div>
 {% endmacro file %}

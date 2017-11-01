@@ -33,7 +33,7 @@ class CustomizerTwig
 
     static function prepare()
     {
-        global $si_twig, $si_logger;
+        global $si_twig;
         $key = CustomizerTwig::getTemplateKey(
             CustomizerUtils::getPageType(), get_post_type()
         );

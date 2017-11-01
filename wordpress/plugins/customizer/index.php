@@ -38,7 +38,6 @@ require SI_BASE_PATH . '/ClassLoader.php';
 // Install
 add_action('plugins_loaded', 'CustomizerInstall::updateDb');
 register_uninstall_hook(__FILE__, 'CustomizerInstall::uninstall');
-add_action('admin_enqueue_scripts', 'CustomizerInstall::loadScript');
 
 // Globals
 $si_logger = new Logger();

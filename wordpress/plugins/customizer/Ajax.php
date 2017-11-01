@@ -1,16 +1,28 @@
 <?php
 
 /**
- * API実行用URLをJavascriptから読めるように出力
+ * API実行用URL等を
+ * Javascriptから読めるように出力
  */
-add_action('wp_enqueue_scripts', 'add_my_ajaxurl', 1);
-function add_my_ajaxurl() {
-    ?>
-    <script>
-      var ajaxurl = '<?php echo admin_url( 'admin-ajax.php'); ?>';
-    </script>
-    <?php
+function addAjaxInfo() 
+{
+    wp_enqueue_script('customizer-fields', 
+        plugin_dir_url( __FILE__ ) . 'js/customFields.js');
+
+    $data = array(
+        'upload_url' => admin_url('async-upload.php'),
+        'ajax_url'   => admin_url('admin-ajax.php'),
+        'nonce'      => wp_create_nonce('media-form'),
+        'is_admin'   => is_admin()
+    );
+
+    wp_localize_script(
+        'customizer-fields',
+        'customizer',
+        $data
+    );
 }
+add_action('wp_enqueue_scripts', 'addAjaxInfo', 1);
 
 /**
  * GET系のテンプレ

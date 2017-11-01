@@ -156,7 +156,9 @@ class CustomizerTwigExtension extends Twig_Extension
 
         if (is_admin()) {
             wp_enqueue_media();
-            wp_enqueue_script('customFields', plugins_url('js/customFields.js', __FILE__));
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
+        } else {
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
         }
         
         if (isset($forms[$option])) {

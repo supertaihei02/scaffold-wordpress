@@ -29,19 +29,5 @@ class CustomizerInstall
 
         delete_option('option_with_sequence_db_version');
     }
-
-    // jsの読み込み
-    static function loadScript($hook)
-    {
-        $targets = [
-            'post.php', 'post-new.php',
-            'edit-tags.php', 'term.php'
-        ];
-        if (in_array($hook, $targets)) {
-            wp_enqueue_media();
-            wp_enqueue_script('customFields', plugins_url('js/customFields.js', __FILE__));
-        }
-    }
-
 }
 
