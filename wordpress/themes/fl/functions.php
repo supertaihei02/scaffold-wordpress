@@ -158,7 +158,7 @@ if (isActiveCustomizer()) {
                 [
                     SI_KEY => 'question',
                     SI_NAME => 'お問い合わせ内容',
-                    SI_IS_MULTIPLE => false,
+                    SI_IS_MULTIPLE => true,
                     SI_FIELDS => [
                         [
                             SI_KEY => 'type',
@@ -193,17 +193,6 @@ if (isActiveCustomizer()) {
                             SI_NAME => '本文',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
-                            SI_DEFAULT => '',
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => false,
-                        ],
-                        [
-                            SI_KEY => 'upload_test',
-                            SI_NAME => 'ファイル',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
                             SI_DEFAULT => '',
                             SI_ELEM_ATTRS => [],
                             SI_ELEM_CLASSES => [],

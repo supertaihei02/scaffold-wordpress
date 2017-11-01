@@ -95,10 +95,14 @@
          class="button upload-btn">ファイル選択</a>
       <a href="javascript:void(0);" data-url-input="{{ element.id }}" class="upload-clear-btn">削除</a>
     {% else %}
+      <p><b>未実装。async-upload.php を利用して実装したい。<br>けどログインしていないUserで可能なのか？</b></p>
       <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
         'type': element.input_type,
         'value': element.value
       }), ['id'])  }}>
+      <input type="file" name="async-upload" class="image-file" accept="image/*" required>
+      <input type="hidden" name="image_id">
+      <input type="hidden" name="action" value="image_submission">
     {% endif %}
   </div>
 {% endmacro file %}
