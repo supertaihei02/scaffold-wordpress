@@ -12,20 +12,26 @@ class CustomizerSetting
             'SEO設定', 'SEO設定', 'manage_options',
             SI_SETTING_SEO, 'CustomizerSetting::seo'
         );
+        add_options_page(
+            'TEST', 'TEST', 'manage_options',
+            'test', 'CustomizerSetting::test'
+        );
     }
     
     static function backbone()
     {
-        CustomizerTwigExtension::renderFormAdmin(SI_SETTING_BACKBONE);
+        CustomizerTwigExtension::displayFormAdmin(SI_SETTING_BACKBONE);
     }
 
     static function seo()
     {
-        CustomizerTwigExtension::renderFormAdmin(SI_SETTING_SEO);
+        CustomizerTwigExtension::displayFormAdmin(SI_SETTING_SEO);
+    }
+
+    static function test()
+    {
+        $keys = ["test","custom_fields",2,"fields"];
+//        CustomizerTwigExtension::displayForm('CallAdminFormInput.twig', $keys);
+        CustomizerTwigExtension::displayFormAdmin('test');
     }
 }
-
-//function register_setting_keys() {
-//    register_setting( SI_SETTING_BACKBONE, 'twig_debug_mode' );
-//}
-

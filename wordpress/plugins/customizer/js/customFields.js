@@ -56,30 +56,24 @@ document.addEventListener('DOMContentLoaded', function()
     {
         var target = e.currentTarget,
             args = target.attributes,
-            post_type     = args["data-post-type"]['nodeValue'],
-            field_group   = args["data-field-group"]['nodeValue'],
-            next_serial   = args["data-next-serial"]['nodeValue'],
-            append_target = args["data-append-target"]['nodeValue']
+            path = args['data-config-path']['nodeValue'],
+            sequence = args['data-current-sequence']['nodeValue'],
+            append_target = args['data-append-target']['nodeValue']
         ;
         // 1回クリックしたら隠す
         target.classList.add('hidden');
-        renderNextFieldGroup(post_type, field_group, next_serial, target, append_target);
+        renderNextFieldGroup(path, sequence, target, append_target);
     }
     
-    function renderNextFieldGroup(post_type, field_group, next_serial, target, append_target)
+    function renderNextFieldGroup(path, sequence, target, append_target)
     {
-        var action = 'siBuildEmptyGroup';
+        var action = 'get_form_group_html';
         var element = 'div';
-        if (location.pathname.indexOf('edit-tags.php') !== -1 || 
-          location.pathname.indexOf('term.php') !== -1) {
-          action = 'siBuildEmptyGroupForTerm';
-          element = 'tbody';
-        }
         var data = {
             action:      action,
-            post_type:   post_type,
-            field_group: field_group,
-            next_serial: next_serial,
+            template:    'CallAdminFormForApi.twig',
+            path:        path,
+            sequence:    sequence,
             group_id:    append_target
         };
         var request = new XMLHttpRequest();
@@ -88,16 +82,21 @@ document.addEventListener('DOMContentLoaded', function()
                 if (request.status === 200) {
                     // 追加したいHTML NODE情報を作成
                     var $element = document.createElement(element);
-                    $element.innerHTML = request.responseText.trim();
-                    $element = $element.firstChild;
-                    
-                    // 追加対象
-                    var $click_target = document.querySelector('#' + append_target);
-                    var $append_target = $click_target.parentNode;
-                    $append_target.insertBefore($element, $click_target.nextSibling);
-                    
-                    // イベントを改めて付与
-                    bindEvent();
+                    var response = JSON.parse(request.responseText.trim());
+                    if (response.success) {
+                      $element.innerHTML = response.html.trim();
+                      $element = $element.firstChild;
+
+                      // 追加対象
+                      var $click_target = document.querySelector('#' + append_target);
+                      var $append_target = $click_target.parentNode;
+                      $append_target.insertBefore($element, $click_target.nextSibling);
+
+                      // イベントを改めて付与
+                      bindEvent();  
+                    } else {
+                      console.log(response.error);  
+                    }
                 } else {
                     // 失敗したら追加ボタンを再表示
                     target.classList.remove('hidden');

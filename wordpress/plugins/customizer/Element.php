@@ -8,6 +8,7 @@ class CustomizerElement
     public $classes = [];
     public $attributes = [];
     public $children = [];
+    public $config_path = [];
 
     // input要素のみ利用
     public $input_type = null;
@@ -15,8 +16,9 @@ class CustomizerElement
     public $choice_values = [];
     public $multiple = false;
     public $autoload = false;
+    public $sequence = 0;
 
-    function __construct($key, $name = null, $args = [])
+    function __construct($key, $name = null, $args = [], $config_path = [])
     {
         $this->id = $key;
         $this->name = $key;
@@ -25,6 +27,7 @@ class CustomizerElement
         $this->classes = CustomizerUtils::get($args, SI_ELEM_CLASSES, []);
         $this->attributes = CustomizerUtils::get($args, SI_ELEM_ATTRS, []);
         $this->children = CustomizerUtils::get($args, SI_ELEM_CHILDREN, []);
+        $this->config_path = $config_path;
     }
 
     function isInput()

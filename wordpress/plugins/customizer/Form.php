@@ -7,13 +7,23 @@ class CustomizerForm
      * *******************************/
     /**
      * @param $config
+     * @param $path
      * @return array
      */
-    static function configToElements($config)
+    static function configToElements($config, $path = [])
     {
         $elements = [];
-        foreach ($config as $field_group) {
-            $elements[] = CustomizerForm::buildInputGroup($field_group);
+        if (count($path) <= 1) { $path = []; }
+        foreach ($config as $index => $field_group) {
+            $wk_path = $path;
+            $wk_path[] = $index;
+            if (isset($field_group[SI_CUSTOM_FIELDS])) {
+                $elements[] = CustomizerForm::buildInputGroup($field_group, [], [], [], $wk_path);
+            } else if (isset($field_group[SI_FIELDS])) {
+                $elements[] = self::buildInputBlock(self::getKey($wk_path), $field_group, [], [], $wk_path);
+            } else {
+                $elements[] = self::buildInputParts(self::getKey($wk_path), $field_group, [], $wk_path);
+            }
         }
         return $elements;
     }
@@ -23,58 +33,65 @@ class CustomizerForm
      * @param array $args
      * @param array $block_args
      * @param array $field_args
+     * @param $path
      * @return CustomizerElement
      */
-    static function buildInputGroup($group, $args = [], $block_args = [], $field_args = [])
+    static function buildInputGroup($group, $args = [], $block_args = [], $field_args = [], $path = [])
     {
         $key = CustomizerUtils::getRequire($group, SI_KEY);
         $name = CustomizerUtils::getRequire($group, SI_NAME);
         $groups = CustomizerUtils::getRequire($group, SI_CUSTOM_FIELDS);
-
-        $elem = new CustomizerElement($key, $name, $args);
-        foreach ($groups as $group) {
-            $elem->addChildren(self::buildInputBlock($key, $group, $block_args, $field_args));
+        $path[] = SI_CUSTOM_FIELDS;
+        $elem = new CustomizerElement($key, $name, $args, $path);
+        foreach ($groups as $index => $group) {
+            $wk_path = $path;
+            $wk_path[] = $index;
+            $elem->addChildren(self::buildInputBlock(self::bond($key, $group[SI_KEY]), $group, $block_args, $field_args, $wk_path));
         }
         return $elem;
     }
 
     /**
-     * @param $parent_key
+     * @param $key
      * @param $block
      * @param array $args
      * @param array $field_args
+     * @param $path
      * @return CustomizerElement
      */
-    static function buildInputBlock($parent_key, $block, $args = [], $field_args = [])
+    static function buildInputBlock($key, $block, $args = [], $field_args = [], $path = [])
     {
-        $key = self::bond($parent_key, CustomizerUtils::getRequire($block, SI_KEY));
         $name = CustomizerUtils::getRequire($block, SI_NAME);
         $fields = CustomizerUtils::getRequire($block, SI_FIELDS);
+        $path[] = SI_FIELDS;
 
-        $elem = new CustomizerElement($key, $name, $args);
-        foreach ($fields as $field) {
-            $field_args[SI_IS_MULTIPLE] = CustomizerUtils::get($block, SI_IS_MULTIPLE, false);
-            $elem->addChildren(self::buildInputParts($key, $field, $field_args));
+        $elem = new CustomizerElement($key, $name, $args, $path);
+        $elem->multiple = CustomizerUtils::get($block, SI_IS_MULTIPLE, false);
+        foreach ($fields as $index => $field) {
+            $wk_path = $path;
+            $wk_path[] = $index;
+            $field_args[SI_IS_MULTIPLE] = $elem->multiple;
+            $elem->addChildren(self::buildInputParts(self::bond($key, $field[SI_KEY]), $field, $field_args, $wk_path));
         }
 
         return $elem;
     }
 
     /**
-     * @param $parent_key
+     * @param $key
      * @param $field
      * @param array $args
+     * @param $path
      * @return CustomizerElement
      */
-    static function buildInputParts($parent_key, $field, $args = [])
+    static function buildInputParts($key, $field, $args = [], $path = [])
     {
         $input_type = CustomizerUtils::getRequire($field, SI_FIELD_TYPE);
         $choice_values = CustomizerUtils::get($field, SI_FIELD_CHOICE_VALUES, []);
 
-        $key = self::bond($parent_key, CustomizerUtils::getRequire($field, SI_KEY));
         $name = CustomizerUtils::getRequire($field, SI_NAME);
 
-        $elem = new CustomizerElement($key, $name, $args);
+        $elem = new CustomizerElement($key, $name, $args, $path);
         $elem->multiple = CustomizerUtils::get($args, SI_IS_MULTIPLE, false);
         $elem->autoload = CustomizerUtils::get($field, SI_FIELD_OPTION_AUTOLOAD, false);
 
@@ -95,7 +112,6 @@ class CustomizerForm
         $elem->input_type = $input_type;
         $elem->default_value = CustomizerUtils::get($field, SI_DEFAULT, null);
         $elem->choice_values = $choice_values;
-
         return $elem;
     }
 
@@ -130,17 +146,21 @@ class CustomizerForm
         if ($element->isInput()) {
             $values = CustomizerDatabase::getOption($element->id);
             if ($values === false) {
-                $element->name .= SI_HYPHEN . '0';
+                $element->id .= SI_HYPHEN . $element->sequence;
+                $element->name .= SI_HYPHEN . $element->sequence;
                 $element->value = $element->default_value;
                 $elements[] = self::customElement($element);
             } else {
                 foreach ($values as $sequence => $value) {
                     $one_element = clone $element;
-                    $one_element->name .= SI_HYPHEN . $sequence;
+                    $one_element->sequence = $sequence;
+                    $one_element->id .= SI_HYPHEN . $one_element->sequence;
+                    $one_element->name .= SI_HYPHEN . $one_element->sequence;
                     $one_element->value = $value;
                     $elements[] = self::customElement($one_element);
-
                 }
+                global $si_logger; $si_logger->develop($element->id, null, '$one_element->id');
+                global $si_logger; $si_logger->develop($values);
             }
         } else {
             $elements[] = self::customElement($element);
@@ -155,6 +175,57 @@ class CustomizerForm
             }, []);
         }
 
+        return $elements;
+    }
+
+    /**
+     * @param $sequence
+     * @param $elements
+     * @return mixed
+     */
+    static function changeSequenceInfo($sequence, $elements)
+    {
+        return array_reduce($elements, function ($reduced, $element) use ($sequence) {
+            /**
+             * @var $element CustomizerElement
+             */
+            foreach (self::recursiveChangeInputKeys($sequence, $element) as $one_element) {
+                $reduced[] = $one_element;
+            }
+            return $reduced;
+        }, []);
+    }
+    
+    static function recursiveChangeInputKeys($sequence, CustomizerElement $element, $is_set_default = true)
+    {
+        $elements = [];
+        
+        $element->sequence = $sequence;
+        if ($element->isInput()) {
+            if ($pos = strrpos($element->id, SI_HYPHEN) !== false) {
+                $element->id = substr($element->id, 0, $pos);    
+            }
+            if ($pos = strrpos($element->name, SI_HYPHEN) !== false) {
+                $element->name = substr($element->name, 0, $pos);
+            }
+            $element->id .= SI_HYPHEN . $element->sequence;
+            $element->name .= SI_HYPHEN . $element->sequence;
+
+            if ($is_set_default) {
+                $element->value = $element->default_value;
+            }
+        }
+        
+        if ($element->hasChild()) {
+            $element->children = array_reduce($element->children, function ($reduced, $child) use ($sequence) {
+                foreach (self::recursiveChangeInputKeys($sequence, $child) as $one_element) {
+                    $reduced[] = $one_element;
+                }
+                return $reduced;
+            }, []);
+        }
+        
+        $elements[] = self::customElement($element);
         return $elements;
     }
 
@@ -217,6 +288,21 @@ class CustomizerForm
         return $key1 . SI_BOND . $key2;
     }
 
+    static function getKey($paths)
+    {
+        $root = reset($paths);
+        $key_track = [$root];
+        $setting = CustomizerConfig::getFormSetting($root);
+        foreach ($paths as $path) {
+            $setting = $setting[$path];
+            if (is_numeric($path)) {
+                $key_track[] = $setting[SI_KEY];
+            }
+        }
+        
+        return implode(SI_BOND, $key_track);
+    }
+
     /* *******************************
      *          保存処理
      * *******************************/
@@ -225,7 +311,6 @@ class CustomizerForm
      */
     static function update($args)
     {
-        global $forms;
         if ($args['action'] !== 'update') { die('不正なページ遷移です'); }
         
         $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
@@ -254,11 +339,7 @@ class CustomizerForm
          */
         $save_targets = [];
         foreach ($option_groups as $option_group) {
-            if (isset($forms[$option_group])) {
-                $form_info = [$option_group => $forms[$option_group]];
-            } else {
-                $form_info = CustomizerConfig::getFormSetting($option_group, false);
-            }
+            $form_info = CustomizerConfig::getFormSetting($option_group, false);
             if ($form_info === false) {
                 wp_redirect($failure_url);
                 exit();

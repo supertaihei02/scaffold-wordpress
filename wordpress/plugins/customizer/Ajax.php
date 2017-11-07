@@ -10,9 +10,9 @@ function addAjaxInfo()
         plugin_dir_url( __FILE__ ) . 'js/customFields.js');
 
     $data = array(
-        'upload_url' => admin_url('async-upload.php'),
+//        'upload_url' => admin_url('async-upload.php'),
         'ajax_url'   => admin_url('admin-ajax.php'),
-        'nonce'      => wp_create_nonce('media-form'),
+//        'nonce'      => wp_create_nonce('media-form'),
         'is_admin'   => is_admin()
     );
 
@@ -23,6 +23,7 @@ function addAjaxInfo()
     );
 }
 add_action('wp_enqueue_scripts', 'addAjaxInfo', 1);
+add_action('admin_enqueue_scripts', 'addAjaxInfo', 1);
 
 /**
  * GET系のテンプレ
@@ -100,8 +101,6 @@ function getApiTemplate($template, $condition)
  * 　"news-archive" を指定すると "template-parts/news-archive.twig"が読み込まれる。
  * 　
  * *******************************/
-add_action( 'wp_ajax_get_posts', 'getPostsApi');
-add_action( 'wp_ajax_nopriv_get_posts', 'getPostsApi');
 function getPostsApi()
 {
     if (!isset($_GET['conditions'])) {
@@ -117,12 +116,12 @@ function getPostsApi()
     echo json_encode(getApiTemplate($_GET['template'], $condition));
     die();
 }
+add_action( 'wp_ajax_get_posts', 'getPostsApi');
+add_action( 'wp_ajax_nopriv_get_posts', 'getPostsApi');
 
 /**
  * サイト内検索ページング用API
  */
-add_action( 'wp_ajax_get_search_result', 'getSearchResults');
-add_action( 'wp_ajax_nopriv_get_search_result', 'getSearchResults');
 function getSearchResults()
 {
     $args = CustomizerUtils::getCondition($_GET['conditions']);
@@ -151,6 +150,56 @@ function getSearchResults()
         'next' => intval($next),
     );
 
+    header('content-type: application/json; charset=utf-8');
     echo json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     die();
 }
+add_action('wp_ajax_get_search_result', 'getSearchResults');
+add_action('wp_ajax_nopriv_get_search_result', 'getSearchResults');
+
+/**
+ * マルチ要素のHTMLを追加する際に利用するAPI
+ */
+function getFormGroupHtml()
+{
+    global $si_twig;
+    $result = [ 'success' => false ];
+    
+    $template = CustomizerUtils::getRequire($_GET, 'template');
+    $target_path = CustomizerUtils::asArray(str_replace("\\", '', CustomizerUtils::getRequire($_GET, 'path')));
+    $group_id = CustomizerUtils::getRequire($_GET, 'group_id');
+    $current_max_sequence = CustomizerUtils::getRequire($_GET, 'sequence');
+    $next_sequence = $current_max_sequence + 1;
+    $next_id = CustomizerForm::bond($group_id, $next_sequence);
+    
+    if (!$si_twig->getLoader()->exists($template)) {
+        $result['error'] = "{$template} is not exist.";
+        echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    try {
+        $config = CustomizerTwigExtension::getConfig($target_path);
+        $elements = CustomizerForm::configToElements($config, $target_path);
+        $elements = CustomizerForm::changeSequenceInfo($next_sequence, $elements);
+        $new_block = new CustomizerElement($next_id, $next_id, [], $target_path);
+        $new_block->multiple = true;
+        $new_block->addChildren($elements);
+        $new_block->layer_name = null;
+        
+        $result['html'] = $si_twig->render($template, [
+            'element' => $new_block,
+            'beforeElementId' => $group_id,
+            'currentMaxSequence' => $next_sequence,
+        ]);
+        $result['success'] = true;
+    } catch (Exception $e) {
+        $result['error'] = $e->getMessage() . PHP_EOL . $e->getTraceAsString();
+    }
+
+    header('content-type: application/json; charset=utf-8');
+    echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    die();
+}
+add_action( 'wp_ajax_get_form_group_html', 'getFormGroupHtml');
+add_action( 'wp_ajax_nopriv_get_form_group_html', 'getFormGroupHtml');

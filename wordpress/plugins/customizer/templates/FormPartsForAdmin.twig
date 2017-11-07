@@ -1,0 +1,96 @@
+{# #################################### 
+    自分以下のelementを再帰的に出力 
+#################################### #}
+{% macro render(element, currentSequence) %}
+  {% if element.isInput() and element.input_type != 'hidden' %}
+    {% set element = updateSequence(element, currentSequence) %}
+    {% import 'Builder.twig' as builder %}
+    <tr>
+      <th scope="row"><label for="{{ element.id }}">{{ element.layer_name }}</label></th>
+      <td>{{ builder.input(element, ['regular-text'], []) }}</td>
+    </tr>
+  {% endif %}
+
+  {# START: 子ノードがいる場合再帰的に描画 #}
+  {% if element.hasChild() %}
+    {% import _self as recursive %}
+    {% for child in element.children %}
+      {{ recursive.render(child, loop.index) }}
+    {% endfor %}
+  {% endif %}
+  {# END: 子ノードがいる場合再帰的に描画 #}
+{% endmacro render %}
+
+{# #################################### 
+          Block要素以下を出力
+  要素を動的に追加される場合には単独で利用
+#################################### #}
+{% macro block(element, beforeElementId, currentMaxSequence) %}
+  {% if currentMaxSequence is empty %}
+    {% set currentMaxSequence = getCurrentMaxSequence(element.children) %}
+  {% endif %}
+  
+  {# START: 第二層 FORM BLOCK #}
+  <div {{ easyAttrs(element, 'block')|raw }}>
+    {% if element.layer_name is not empty %}
+      <h3>{{ element.layer_name }}</h3>
+    {% else %}
+      <hr>
+    {% endif %}
+    <table>
+      <tbody>
+      {# START: 第三層以降 子ノードがいる場合再帰的に描画 #}
+      {% if element.hasChild() %}
+        {% import _self as recursive %}
+        {% for child in element.children %}
+          {{ recursive.render(child) }}
+        {% endfor %}
+      {% endif %}
+      {# END: 第三層以降 子ノードがいる場合再帰的に描画 #}
+      </tbody>
+    </table>
+    {% if element.multiple %}
+      <div class="button-group">
+        {# 削除ボタン #}
+        <div data-group-key="{{ element.id }}"
+             data-bf-group-id="{{ beforeElementId }}"
+             data-delete-target="{{ element.id }}"
+             class="field-del-button button">削除
+        </div>
+        {# 追加ボタン #}
+        <div data-template="BlockForAdmin.twig"
+             data-append-target="{{ element.id }}"
+             data-current-sequence="{{ currentMaxSequence }}"
+             data-config-path="{{ element.config_path|json_encode() }}"
+             class="field-add-button button button-primary">追加
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  {# END: 第二層 FORM BLOCK #}
+{% endmacro %}
+
+{# #################################### 
+           Form全体を出力
+#################################### #}
+{% macro form(root, elements) %}
+  <div class="wrap">
+    <form method="post" action="{{ getFormAction() }}">
+      {{ formSettingForOptions(root) }}
+      {% for element in elements %}
+        {# START: 第一層 FORM GROUP #}
+        {% if element.hasChild() %}
+          <h2>{{ element.layer_name }}</h2>
+          {% set beforeElementId = null %}
+          {% for block in element.children %}
+            {% import _self as self %}
+            {{ self.block(block, beforeElementId) }}
+            {% set beforeElementId = block.id %}
+          {% endfor %}
+        {% endif %}
+        {# END: 第一層 FORM GROUP #}
+      {% endfor %}
+      {{ putSubmitButton()|raw }}
+    </form>
+  </div>
+{% endmacro %}

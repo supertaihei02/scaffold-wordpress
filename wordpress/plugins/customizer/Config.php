@@ -266,6 +266,12 @@ class CustomizerConfig
      * *******************************/
     static function getFormSetting($key, $throw = true)
     {
+        global $forms;
+
+        if (isset($forms[$key])) {
+            return [$key => $forms[$key]];
+        }
+        
         switch ($key) {
             case 'test':
                 $setting = [
@@ -439,6 +445,136 @@ class CustomizerConfig
                 [
                     SI_KEY => 'multi',
                     SI_NAME => 'マルチ',
+                    SI_IS_MULTIPLE => true,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'text',
+                            SI_NAME => 'テキスト',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => ['length' => 20],
+                            SI_ELEM_CLASSES => ['test', 'text'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'textarea',
+                            SI_NAME => 'テキストエリア',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'textarea'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'checkbox',
+                            SI_NAME => 'チェックボックス',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_CHECKBOX,
+                            SI_DEFAULT => ['banana', 'orange'],
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'apple',
+                                    SI_NAME => 'りんご',
+                                ],
+                                [
+                                    SI_KEY => 'banana',
+                                    SI_NAME => 'バナナ',
+                                ],
+                                [
+                                    SI_KEY => 'orange',
+                                    SI_NAME => 'オレンジ',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'hidden',
+                            SI_NAME => '見えない',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_HIDDEN,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'hidden'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'file',
+                            SI_NAME => 'ファイル',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => '',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'file'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'radio',
+                            SI_NAME => 'ラジオボタン',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'on',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'on',
+                                    SI_NAME => 'オン',
+                                ],
+                                [
+                                    SI_KEY => 'off',
+                                    SI_NAME => 'オフ',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'select',
+                            SI_NAME => 'セレクトボックス',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => 'orange',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'apple',
+                                    SI_NAME => 'りんご',
+                                ],
+                                [
+                                    SI_KEY => 'banana',
+                                    SI_NAME => 'バナナ',
+                                ],
+                                [
+                                    SI_KEY => 'orange',
+                                    SI_NAME => 'オレンジ',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                        [
+                            SI_KEY => 'number',
+                            SI_NAME => 'ナンバー',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 5,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'multi2',
+                    SI_NAME => 'マルチ2',
                     SI_IS_MULTIPLE => true,
                     SI_FIELDS => [
                         [

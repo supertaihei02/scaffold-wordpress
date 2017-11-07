@@ -577,3 +577,10 @@ function siTaxonomyFormRender($taxonomy, $slug = null)
     }
     echo '</tbody></table>';
 }
+
+function hiddenField()
+{
+    echo "<style> .hidden { display: none !important; } </style>";
+}
+add_action('wp_enqueue_scripts', 'hiddenField');
+add_action('admin_enqueue_scripts', 'hiddenField');

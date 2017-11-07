@@ -35,14 +35,14 @@
   <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
     'type': element.input_type,
     'value': element.value
-  })) }}>
+  }))|raw }}>
 {% endmacro text %}
 
 {# ####################################
  #             textarea
  #################################### #}
 {% macro textarea(element, classes, attributes) %}
-  <textarea {{ easyAttrs(element, classes|merge([]), attributes|merge([])) }}>{{ element.value }}</textarea>
+  <textarea {{ easyAttrs(element, classes|merge([]), attributes|merge([]))|raw }}>{{ element.value }}</textarea>
 {% endmacro textarea %}
 
 {# ####################################
@@ -53,13 +53,13 @@
   <input name="{{ element.name }}" {{ renderAttributes(
   element,
   attributes|merge({ 'type': 'hidden', 'value': 'none' })
-  ) }}>
+  )|raw }}>
   {# 要素分Checkbox作成 #}
   {% for choice_value in element.choice_values %}
     <input {{ choice_value.selected }}
     name="{{ element.name }}[]" {{ renderAttributes(element,
   attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
-  ) }}
+  )|raw }}
     >{{ choice_value.name }}
   {% endfor %}
 {% endmacro checkbox %}
@@ -71,7 +71,7 @@
   <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
     'type': element.input_type,
     'value': element.value
-  })) }}>
+  }))|raw }}>
 {% endmacro hidden %}
 
 {# ####################################
@@ -90,7 +90,7 @@
       <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
         'type': 'hidden',
         'value': element.value
-      }), ['id']) }}>
+      }), ['id'])|raw }}>
       <a href="javascript:void(0);" data-url-input="{{ element.id }}" id="{{ element.id }}-img"
          class="button upload-btn">ファイル選択</a>
       <a href="javascript:void(0);" data-url-input="{{ element.id }}" class="upload-clear-btn">削除</a>
@@ -99,7 +99,7 @@
       <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
         'type': element.input_type,
         'value': element.value
-      }), ['id'])  }}>
+      }), ['id'])|raw  }}>
       <input type="file" name="async-upload" class="image-file" accept="image/*" required>
       <input type="hidden" name="image_id">
       <input type="hidden" name="action" value="image_submission">
@@ -115,7 +115,7 @@
     <input {{ choice_value.selected }} name="{{ element.name }}" {{ renderAttributes(
   element,
   attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
-  ) }}>{{ choice_value.name }}
+  )|raw }}>{{ choice_value.name }}
   {% endfor %}
 {% endmacro radio %}
 
@@ -128,7 +128,7 @@
       <option {{ choice_value.selected }} {{ renderAttributes(
       element,
       attributes|merge({ 'value': choice_value.key })
-      ) }}>{{ choice_value.name }}</option>
+      )|raw }}>{{ choice_value.name }}</option>
     {% endfor %}
   </select>
 {% endmacro select %}
@@ -140,5 +140,5 @@
   <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
     'type': element.input_type,
     'value': element.value
-  })) }}>
+  }))|raw }}>
 {% endmacro number %}

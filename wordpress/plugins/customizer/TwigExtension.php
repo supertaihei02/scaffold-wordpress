@@ -11,12 +11,14 @@ class CustomizerTwigExtension extends Twig_Extension
             new Twig_Function('getPosts', [$this, 'getPosts']),
             new Twig_Function('formSettingForOptions', [$this, 'formSettingForOptions']),
             new Twig_Function('easyAttrs', [$this, 'easyAttrs']),
-            new Twig_Function('renderFormAdmin', [$this, 'renderFormAdmin']),
-            new Twig_Function('renderFormFront', [$this, 'renderFormFront']),
-            new Twig_Function('renderFormByConfig', [$this, 'renderFormByConfig']),
+            new Twig_Function('displayFormAdmin', [$this, 'displayFormAdmin']),
+            new Twig_Function('displayFormFront', [$this, 'displayFormFront']),
+            new Twig_Function('displayFormByConfig', [$this, 'displayFormByConfig']),
             new Twig_Function('renderClasses', [$this, 'renderClasses']),
             new Twig_Function('renderAttributes', [$this, 'renderAttributes']),
             new Twig_Function('renderChild', [$this, 'renderChild']),
+            new Twig_Function('getCurrentMaxSequence', [$this, 'getCurrentMaxSequence']),
+            new Twig_Function('updateSequence', [$this, 'updateSequence']),
             new Twig_Function('isImage', [$this, 'isImage']),
             new Twig_Function('basename', [$this, 'basename']),
             new Twig_Function('isAdmin', [$this, 'isAdmin']),
@@ -140,20 +142,19 @@ class CustomizerTwigExtension extends Twig_Extension
     /* *******************************
      *        HTML自動生成系
      * *******************************/
-    static function renderFormAdmin($option, ...$keys)
+    static function displayFormAdmin(...$paths)
     {
-        self::renderFormByConfig('FormForAdmin.twig', $option, $keys);
+        self::displayForm('CallAdminForm.twig', $paths);
     }
 
-    static function renderFormFront($option, ...$keys)
+    static function displayFormFront(...$paths)
     {
-        self::renderFormByConfig('FormForFront.twig', $option, $keys);
+        self::displayForm('CallFrontForm.twig', $paths);
     }
     
-    static function renderFormByConfig($template, $option, $keys)
+    static function displayForm($template, $paths)
     {
-        global $si_twig, $forms;
-
+        global $si_twig;
         if (is_admin()) {
             wp_enqueue_media();
             wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
@@ -161,20 +162,41 @@ class CustomizerTwigExtension extends Twig_Extension
             wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
         }
         
-        if (isset($forms[$option])) {
-            $config = [$option => $forms[$option]];
-        } else {
-            $config = CustomizerConfig::getFormSetting($option);
-        }
-        $config = CustomizerUtils::getConfig($config, $keys);
-        $keys = array_keys($config);
-
-        $elements = CustomizerForm::configToElements($config);
-        $elements = CustomizerForm::applyInputValues($elements);
+        $config = self::getConfig($paths);
         $si_twig->display($template, [
-            'keys' => $keys,
-            'elements' => $elements,
+            'root' => reset($paths),
+            'elements' => self::getRenderElements($config, $paths),
         ]);
+    }
+
+    static function renderForm($template, $paths)
+    {
+        global $si_twig;
+
+        $config = self::getConfig($paths);
+        return $si_twig->render($template, [
+            'root' => reset($paths),
+            'elements' => self::getRenderElements($config, $paths),
+        ]);
+    }
+
+    /**
+     * Form設定取得
+     * @param $paths
+     * @return mixed
+     */
+    static function getConfig($paths)
+    {
+        $paths = CustomizerUtils::asArray($paths);
+        $root = count($paths) <= 1 ? array_shift($paths) : reset($paths);
+        $config = CustomizerConfig::getFormSetting($root);
+        return CustomizerUtils::getConfig($config, $paths);   
+    }
+
+    static function getRenderElements($config, $paths = [])
+    {
+        $elements = CustomizerForm::configToElements($config, $paths);
+        return CustomizerForm::applyInputValues($elements);
     }
 
     /**
@@ -223,6 +245,7 @@ class CustomizerTwigExtension extends Twig_Extension
                 $render .= " {$key}={$values_string}";    
             }
         }
+        $render = htmlspecialchars($render);
         return $render;
     }
     
@@ -235,11 +258,34 @@ class CustomizerTwigExtension extends Twig_Extension
         $classes = $element->getRenderClasses($classes);
         $class_string = implode(' ', $classes);
         if (!empty($class_string)) {
-            $render = count($classes) > 1 ?
-                "class=\"{$class_string}\"" :
-                "class={$class_string}"; 
+            $class_string = htmlspecialchars($class_string);
+            $render = " class=\"{$class_string}\""; 
         }
         return $render;
     }
-    
+
+    // ------------
+    // - Children -
+    // ------------
+    static function getCurrentMaxSequence($children)
+    {
+        $max_sequence = 0;
+        /**
+         * @var $child CustomizerElement
+         */
+        foreach ($children as $child) {
+            $max_sequence = $child->sequence > $max_sequence ? 
+                $child->sequence : $max_sequence;
+        }
+        
+        return $max_sequence;
+    }
+
+    static function updateSequence(CustomizerElement $element, $sequence)
+    {
+        if (!empty($sequence)) {
+            $element->sequence = $sequence;
+        }
+        return $element;
+    }
 }
