@@ -3,7 +3,7 @@
 
     {% if element.isInput() and element.input_type != 'hidden' %}
       {% import 'Builder.twig' as builder %}
-      <div class="input {{ element.input_type }}">
+      <div class="{{ element.input_type }}">
         <label for="{{ element.id }}">{{ element.layer_name }}</label>
         {{ builder.input(element) }}
       </div>
@@ -26,7 +26,7 @@
   {% endif %}
   
   {# START: 第二層 FORM BLOCK #}
-  <section {{ easyAttrs(element, 'block')|raw }}>
+  <section {{ easyAttrs(element, ['block', element.multiple_common_id])|raw }}>
     {% if element.layer_name is not empty %}
       <h4>{{ element.layer_name }}</h4>
     {% else %}
@@ -47,6 +47,7 @@
         <div data-group-key="{{ element.multiple_common_id }}"
              data-bf-group-id="{{ element.before_block_id }}"
              data-delete-target="{{ element.id }}"
+             data-delete-sequence="{{ element.sequence }}"
              class="field-del-button button">削除
         </div>
         {# 追加ボタン #}
@@ -88,7 +89,7 @@
         {# END: 第一層 FORM GROUP #}
       {% endfor %}
 
-      {{ putSubmitButton(null, 'primary', 'submit', true, {'id': 'submit'})|raw }}
+      {{ putSubmitButton('更新')|raw }}
     </form>
   </article>
 {% endmacro %}
