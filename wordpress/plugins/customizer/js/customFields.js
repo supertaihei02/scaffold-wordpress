@@ -135,24 +135,23 @@ document.addEventListener('DOMContentLoaded', function()
         if (bf_group_id !== "") {
             bf_group = document.querySelector('#' + bf_group_id);
             bf_add_button = bf_group.querySelector('.field-add-button');
+        } else {
+            can_remove = false;
+            alert("最後の要素は削除できません。");
+            return false;
         }
         
         // 削除対象が見えない追加ボタンを持っていなかったら
         // その前の追加ボタンを見えるようにする
-        if (!$delete_target.querySelector('.field-add-button.hidden')) {
-            if (bf_add_button) {
-                bf_add_button.classList.remove('hidden');
-            } else {
-                can_remove = false;
-                alert("最後の要素は削除できません。");
-            }
+        if (bf_add_button && !$delete_target.querySelector('.field-add-button.hidden')) {
+            bf_add_button.classList.remove('hidden');
         }
         
         // 自分の次の要素があったら
         // その要素の"data-bf-group-id"を更新する
         var $next_element = $delete_target.nextElementSibling;
         if ($next_element) {
-            if ($next_element.querySelector('.' + group_key)) {
+            if ($next_element.classList.contains(group_key)) {
                 var next_del = $next_element.querySelector('.field-del-button');
                 next_del.setAttribute('data-bf-group-id', bf_group_id);
             }
@@ -161,6 +160,8 @@ document.addEventListener('DOMContentLoaded', function()
         if (can_remove) {
             $delete_target.remove();
         }
+        
+        return true;
     }
 
     // ====================

@@ -25,13 +25,13 @@
           Block要素以下を出力
   要素を動的に追加される場合には単独で利用
 #################################### #}
-{% macro block(element, beforeElementId, currentMaxSequence) %}
+{% macro block(element, currentMaxSequence) %}
   {% if currentMaxSequence is empty %}
     {% set currentMaxSequence = getCurrentMaxSequence(element.children) %}
   {% endif %}
   
   {# START: 第二層 FORM BLOCK #}
-  <div {{ easyAttrs(element, 'block')|raw }}>
+  <div {{ easyAttrs(element, ['block', element.multiple_common_id])|raw }}>
     {% if element.layer_name is not empty %}
       <h3>{{ element.layer_name }}</h3>
     {% else %}
@@ -52,17 +52,21 @@
     {% if element.multiple %}
       <div class="button-group">
         {# 削除ボタン #}
-        <div data-group-key="{{ element.id }}"
-             data-bf-group-id="{{ beforeElementId }}"
+        <div data-group-key="{{ element.multiple_common_id }}"
+             data-bf-group-id="{{ element.before_block_id }}"
              data-delete-target="{{ element.id }}"
              class="field-del-button button">削除
         </div>
         {# 追加ボタン #}
+        {% set hidden = 'hidden' %}
+        {% if element.multiple_last_block %}
+          {% set hidden = '' %}
+        {% endif %}
         <div data-template="BlockForAdmin.twig"
              data-append-target="{{ element.id }}"
              data-current-sequence="{{ currentMaxSequence }}"
              data-config-path="{{ element.config_path|json_encode() }}"
-             class="field-add-button button button-primary">追加
+             class="field-add-button button button-primary {{ hidden }}">追加
         </div>
       </div>
     {% endif %}
@@ -81,11 +85,9 @@
         {# START: 第一層 FORM GROUP #}
         {% if element.hasChild() %}
           <h2>{{ element.layer_name }}</h2>
-          {% set beforeElementId = null %}
           {% for block in element.children %}
             {% import _self as self %}
-            {{ self.block(block, beforeElementId) }}
-            {% set beforeElementId = block.id %}
+            {{ self.block(block) }}
           {% endfor %}
         {% endif %}
         {# END: 第一層 FORM GROUP #}

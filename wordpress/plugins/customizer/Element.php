@@ -15,6 +15,9 @@ class CustomizerElement
     public $default_value = null;
     public $choice_values = [];
     public $multiple = false;
+    public $multiple_common_id = '';
+    public $multiple_last_block = false;
+    public $before_block_id = '';
     public $autoload = false;
     public $sequence = 0;
 
@@ -22,6 +25,7 @@ class CustomizerElement
     {
         $this->id = $key;
         $this->name = $key;
+        $this->multiple_common_id = $key;
         $this->layer_name = $name;
         $this->value = CustomizerUtils::get($args, SI_ELEM_VALUE, null);
         $this->classes = CustomizerUtils::get($args, SI_ELEM_CLASSES, []);

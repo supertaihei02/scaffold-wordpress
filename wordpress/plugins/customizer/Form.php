@@ -136,43 +136,103 @@ class CustomizerForm
     }
 
     /**
+     * @param $value
+     * @param $sequence
      * @param CustomizerElement $element
      * @return array
      */
-    static function recursiveApplyInputValues(CustomizerElement $element)
+    static function recursiveApplyInputValues(CustomizerElement $element, $sequence = null, $value = null)
     {
         $elements = [];
 
         if ($element->isInput()) {
-            $values = CustomizerDatabase::getOption($element->id);
-            if ($values === false) {
-                $element->id .= SI_HYPHEN . $element->sequence;
-                $element->name .= SI_HYPHEN . $element->sequence;
-                $element->value = $element->default_value;
-                $elements[] = self::customElement($element);
-            } else {
-                foreach ($values as $sequence => $value) {
-                    $one_element = clone $element;
-                    $one_element->sequence = $sequence;
-                    $one_element->id .= SI_HYPHEN . $one_element->sequence;
-                    $one_element->name .= SI_HYPHEN . $one_element->sequence;
-                    $one_element->value = $value;
-                    $elements[] = self::customElement($one_element);
+            if (is_null($sequence) && is_null($value)) {
+                $value = CustomizerDatabase::getOption($element->id);
+                if ($value === false) {
+                    $value = $element->default_value;
+                } else {
+                    $value = array_shift($value);
                 }
-                global $si_logger; $si_logger->develop($element->id, null, '$one_element->id');
-                global $si_logger; $si_logger->develop($values);
             }
-        } else {
+            
+            $element = self::changeSequence($element, $sequence, $value);
             $elements[] = self::customElement($element);
         }
-
-        if ($element->hasChild()) {
+        /*
+         * Input要素でなく multiple なら Block要素である
+         * multiple要素の場合は Block Elementごと増やす
+         */
+        else if ($element->multiple && $element->hasChild()) {
+            // --- 子Inputに保存されている値の階層数分 Blockを増やす ---
+            // 子要素をサンプリングして値の階層数を取得
+            $sequences = (function ($element) {
+                $sample = reset($element->children);
+                $sample_values = CustomizerDatabase::getOption($sample->id);
+                return array_keys($sample_values);
+            })($element);
+            
+            // 子要素数分Blockを複製
+            $before_block_id = '';
+            $last_sequence = end($sequences);
+            $blocks = array_reduce($sequences, function ($reduced, $sequence) use ($element, $last_sequence, &$before_block_id) {
+                $block = clone $element;
+                // ID, nameの値変更
+                $block = self::changeSequence($block, $sequence);
+                // 子要素はこれから追加するから一旦クリア
+                $block->children = [];
+                // 2つ目以降は layer_name不要
+                if (!empty($reduced)) {
+                    $block->layer_name = null;
+                }
+                // 1つ前のblock情報を保持
+                $block->before_block_id = $before_block_id;
+                // 一番最後のには印をつける
+                if ($sequence === $last_sequence && $block->multiple) {
+                    $block->multiple_last_block = true;
+                }
+                $reduced[$sequence] = $block;
+                
+                // 次に保存するblock_idの保持
+                $before_block_id = $block->id;
+                return $reduced;
+            }, []);
+            
+            // 値の入った子要素をsequenceごとにBlockに追加
+            foreach ($element->children as $child) {
+                $child_values = CustomizerDatabase::getOption($child->id);
+                foreach ($child_values as $child_sequence => $child_value) {
+                    $grandson = clone $child;
+                    $grandson = self::changeSequence($grandson, $child_sequence, $child_value);
+                    $blocks[$child_sequence]->addChildren(
+                        self::recursiveApplyInputValues(
+                            $grandson, $child_sequence, $child_value
+                        )
+                    );
+                }
+            }
+            // Block要素を追加
+            $elements = array_reduce($blocks, function ($reduced, $block) {
+                $reduced[] = $block;
+                return $reduced;
+            }, $elements);
+        }
+        /*
+         * 単純に子要素を持つElement
+         */
+        else if ($element->hasChild()) {
             $element->children = array_reduce($element->children, function ($reduced, $child) {
                 foreach (self::recursiveApplyInputValues($child) as $one_element) {
                     $reduced[] = $one_element;
                 }
                 return $reduced;
             }, []);
+            $elements[] = self::customElement($element);
+        } 
+        /*
+         * 最下層
+         */
+        else {
+            $elements[] = self::customElement($element);
         }
 
         return $elements;
@@ -200,21 +260,8 @@ class CustomizerForm
     {
         $elements = [];
         
-        $element->sequence = $sequence;
-        if ($element->isInput()) {
-            if ($pos = strrpos($element->id, SI_HYPHEN) !== false) {
-                $element->id = substr($element->id, 0, $pos);    
-            }
-            if ($pos = strrpos($element->name, SI_HYPHEN) !== false) {
-                $element->name = substr($element->name, 0, $pos);
-            }
-            $element->id .= SI_HYPHEN . $element->sequence;
-            $element->name .= SI_HYPHEN . $element->sequence;
-
-            if ($is_set_default) {
-                $element->value = $element->default_value;
-            }
-        }
+        $value = $is_set_default ? $element->default_value : null;
+        $element = self::changeSequence($element, $sequence, $value);
         
         if ($element->hasChild()) {
             $element->children = array_reduce($element->children, function ($reduced, $child) use ($sequence) {
@@ -227,6 +274,32 @@ class CustomizerForm
         
         $elements[] = self::customElement($element);
         return $elements;
+    }
+
+    static function changeSequence(CustomizerElement $element, $sequence, $value = null)
+    {
+        if (is_numeric($sequence)) {
+            $element->sequence = $sequence;
+        }
+
+        if (($pos = strrpos($element->id, SI_HYPHEN)) !== false) {
+            $element->id = substr($element->id, 0, $pos);
+        }
+        if (($pos = strrpos($element->name, SI_HYPHEN)) !== false) {
+            $element->name = substr($element->name, 0, $pos);
+        }
+        $element->id .= SI_HYPHEN . $element->sequence;
+        $element->name .= SI_HYPHEN . $element->sequence;
+
+        if ($element->isInput()) {
+            if (is_null($value)) {
+                $element->value = $element->default_value;
+            } else {
+                $element->value = $value;
+            }
+        }
+        
+        return $element;
     }
 
     /**

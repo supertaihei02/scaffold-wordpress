@@ -184,12 +184,12 @@ function getFormGroupHtml()
         $elements = CustomizerForm::changeSequenceInfo($next_sequence, $elements);
         $new_block = new CustomizerElement($next_id, $next_id, [], $target_path);
         $new_block->multiple = true;
-        $new_block->addChildren($elements);
+        $new_block->multiple_last_block = true;
         $new_block->layer_name = null;
+        $new_block->addChildren($elements);
         
         $result['html'] = $si_twig->render($template, [
             'element' => $new_block,
-            'beforeElementId' => $group_id,
             'currentMaxSequence' => $next_sequence,
         ]);
         $result['success'] = true;

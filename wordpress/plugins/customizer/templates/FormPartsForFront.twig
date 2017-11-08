@@ -20,7 +20,11 @@
   </div>
 {% endmacro render %}
 
-{% macro block(element) %}
+{% macro block(element, currentMaxSequence) %}
+  {% if currentMaxSequence is empty %}
+    {% set currentMaxSequence = getCurrentMaxSequence(element.children) %}
+  {% endif %}
+  
   {# START: 第二層 FORM BLOCK #}
   <section {{ easyAttrs(element, 'block')|raw }}>
     {% if element.layer_name is not empty %}
@@ -36,6 +40,28 @@
       {% endfor %}
     {% endif %}
     {# END: 第三層以降 子ノードがいる場合再帰的に描画 #}
+
+    {% if element.multiple %}
+      <div class="button-group">
+        {# 削除ボタン #}
+        <div data-group-key="{{ element.multiple_common_id }}"
+             data-bf-group-id="{{ element.before_block_id }}"
+             data-delete-target="{{ element.id }}"
+             class="field-del-button button">削除
+        </div>
+        {# 追加ボタン #}
+        {% set hidden = 'hidden' %}
+        {% if element.multiple_last_block %}
+          {% set hidden = '' %}
+        {% endif %}
+        <div data-template="BlockForAdmin.twig"
+             data-append-target="{{ element.id }}"
+             data-current-sequence="{{ currentMaxSequence }}"
+             data-config-path="{{ element.config_path|json_encode() }}"
+             class="field-add-button button button-primary {{ hidden }}">追加
+        </div>
+      </div>
+    {% endif %}
   </section>
   {# END: 第二層 FORM BLOCK #}
 {% endmacro %}
