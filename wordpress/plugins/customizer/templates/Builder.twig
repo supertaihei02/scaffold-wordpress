@@ -50,17 +50,17 @@
  #################################### #}
 {% macro checkbox(element, classes, attributes) %}
   {# 値がないケースのためにhiddenを仕込む #}
-  <input name="{{ element.name }}" {{ renderAttributes(
-  element,
-  attributes|merge({ 'type': 'hidden', 'value': 'none' })
-  )|raw }}>
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': 'hidden',
+    'value': 'none'
+  }), ['id'])|raw }}>
   {# 要素分Checkbox作成 #}
   {% for choice_value in element.choice_values %}
-    <input {{ choice_value.selected }}
-    name="{{ element.name }}[]" {{ renderAttributes(element,
-  attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
-  )|raw }}
-    >{{ choice_value.name }}
+    <input {{ choice_value.selected }} name="{{ element.name }}[]" {{
+    easyAttrs(element, classes|merge([]), attributes|merge({
+      'type': element.input_type,
+      'value': choice_value.key
+    }), ['id', 'name'])|raw }}>{{ choice_value.name }}
   {% endfor %}
 {% endmacro checkbox %}
 
@@ -112,10 +112,10 @@
  #################################### #}
 {% macro radio(element, classes, attributes) %}
   {% for choice_value in element.choice_values %}
-    <input {{ choice_value.selected }} name="{{ element.name }}" {{ renderAttributes(
-  element,
-  attributes|merge({ 'type': element.input_type, 'value': choice_value.key })
-  )|raw }}>{{ choice_value.name }}
+    <input {{ choice_value.selected }} {{ easyAttrs(element, classes|merge([]), attributes|merge({
+      'type': element.input_type,
+      'value': choice_value.key
+    }), ['id'])|raw }}>{{ choice_value.name }}
   {% endfor %}
 {% endmacro radio %}
 
@@ -123,12 +123,11 @@
  #             select
  #################################### #}
 {% macro select(element, classes, attributes) %}
-  <select name="{{ element.name }}">
+  <select {{ easyAttrs(element, classes|merge([]), attributes|merge([]))|raw }}">
     {% for choice_value in element.choice_values %}
-      <option {{ choice_value.selected }} {{ renderAttributes(
-      element,
-      attributes|merge({ 'value': choice_value.key })
-      )|raw }}>{{ choice_value.name }}</option>
+      <option {{ easyAttrs(element, classes|merge([]), attributes|merge({
+        'value': choice_value.key
+      }), ['id', 'name', 'class'])|raw }}>{{ choice_value.name }}</option>
     {% endfor %}
   </select>
 {% endmacro select %}

@@ -412,7 +412,7 @@ class CustomizerConfig
                             SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
                             SI_DEFAULT => 'orange',
                             SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_ELEM_CLASSES => ['test', 'select'],
                             SI_FIELD_CHOICE_VALUES => [
                                 [
                                     SI_KEY => 'apple',
@@ -542,7 +542,7 @@ class CustomizerConfig
                             SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
                             SI_DEFAULT => 'orange',
                             SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_ELEM_CLASSES => ['test', 'select'],
                             SI_FIELD_CHOICE_VALUES => [
                                 [
                                     SI_KEY => 'apple',
@@ -672,7 +672,7 @@ class CustomizerConfig
                             SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
                             SI_DEFAULT => 'orange',
                             SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => ['test', 'checkbox'],
+                            SI_ELEM_CLASSES => ['test', 'select'],
                             SI_FIELD_CHOICE_VALUES => [
                                 [
                                     SI_KEY => 'apple',

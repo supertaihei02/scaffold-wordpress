@@ -168,9 +168,9 @@ function getFormGroupHtml()
     $template = CustomizerUtils::getRequire($_GET, 'template');
     $target_path = CustomizerUtils::asArray(str_replace("\\", '', CustomizerUtils::getRequire($_GET, 'path')));
     $group_id = CustomizerUtils::getRequire($_GET, 'group_id');
+    $group_key = CustomizerUtils::getRequire($_GET, 'group_key');
     $current_max_sequence = CustomizerUtils::getRequire($_GET, 'sequence');
     $next_sequence = $current_max_sequence + 1;
-    $next_id = CustomizerForm::bond($group_id, $next_sequence);
     
     if (!$si_twig->getLoader()->exists($template)) {
         $result['error'] = "{$template} is not exist.";
@@ -182,9 +182,12 @@ function getFormGroupHtml()
         $config = CustomizerTwigExtension::getConfig($target_path);
         $elements = CustomizerForm::configToElements($config, $target_path);
         $elements = CustomizerForm::changeSequenceInfo($next_sequence, $elements);
-        $new_block = new CustomizerElement($next_id, $next_id, [], $target_path);
+        $new_block = new CustomizerElement($group_id, null, [], $target_path);
+        $new_block = CustomizerForm::changeSequence($new_block, $next_sequence);
         $new_block->multiple = true;
         $new_block->multiple_last_block = true;
+        $new_block->multiple_common_id = $group_key;
+        $new_block->before_block_id = $group_id;
         $new_block->layer_name = null;
         $new_block->addChildren($elements);
         

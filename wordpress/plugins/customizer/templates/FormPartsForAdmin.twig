@@ -29,7 +29,7 @@
   {% if currentMaxSequence is empty %}
     {% set currentMaxSequence = getCurrentMaxSequence(element.children) %}
   {% endif %}
-  
+
   {# START: 第二層 FORM BLOCK #}
   <div {{ easyAttrs(element, ['block', element.multiple_common_id])|raw }}>
     {% if element.layer_name is not empty %}
@@ -55,6 +55,7 @@
         <div data-group-key="{{ element.multiple_common_id }}"
              data-bf-group-id="{{ element.before_block_id }}"
              data-delete-target="{{ element.id }}"
+             data-delete-sequence="{{ element.sequence }}"
              class="field-del-button button">削除
         </div>
         {# 追加ボタン #}
@@ -63,6 +64,7 @@
           {% set hidden = '' %}
         {% endif %}
         <div data-template="BlockForAdmin.twig"
+             data-group-key="{{ element.multiple_common_id }}"
              data-append-target="{{ element.id }}"
              data-current-sequence="{{ currentMaxSequence }}"
              data-config-path="{{ element.config_path|json_encode() }}"
@@ -79,7 +81,7 @@
 #################################### #}
 {% macro form(root, elements) %}
   <div class="wrap">
-    <form method="post" action="{{ getFormAction() }}">
+    <form id="auto-form" method="post" action="{{ getFormAction() }}">
       {{ formSettingForOptions(root) }}
       {% for element in elements %}
         {# START: 第一層 FORM GROUP #}
@@ -92,7 +94,8 @@
         {% endif %}
         {# END: 第一層 FORM GROUP #}
       {% endfor %}
-      {{ putSubmitButton()|raw }}
+      
+      {{ putSubmitButton(null, 'primary', 'submit', true, {'id': 'submit'})|raw }}
     </form>
   </div>
 {% endmacro %}

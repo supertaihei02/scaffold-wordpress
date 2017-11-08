@@ -109,6 +109,10 @@ class CustomizerForm
         if (CustomizerUtils::get($field, SI_FIELD_IS_REQUIRE, false)) {
             $elem->addAttributes('required');
         }
+        
+        // input系要素には全て inputクラスを付ける
+        $elem->addClasses('input');
+        
         $elem->input_type = $input_type;
         $elem->default_value = CustomizerUtils::get($field, SI_DEFAULT, null);
         $elem->choice_values = $choice_values;
@@ -386,6 +390,7 @@ class CustomizerForm
     {
         if ($args['action'] !== 'update') { die('不正なページ遷移です'); }
         
+        $delete_names = CustomizerUtils::asArray(CustomizerUtils::get($args, 'delete_names', []));
         $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
         $success_url = CustomizerUtils::getRequire($args, 'success_url');
         $failure_url = CustomizerUtils::getRequire($args, 'failure_url');
@@ -422,6 +427,14 @@ class CustomizerForm
         }
         
         /*
+         * 削除処理
+         */
+        foreach ($delete_names as $delete_name) {
+            list($option_key, $sequence) = explode(SI_HYPHEN, $delete_name);
+            CustomizerDatabase::deleteOption($option_key, $sequence);
+        }
+        
+        /*
          * 保存処理
          */
         $post_keys = array_keys($args);
@@ -434,7 +447,7 @@ class CustomizerForm
                 $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
 
                 foreach ($save_keys as $save_key) {
-                    list($option_key, $sequence) = explode('-', $save_key);
+                    list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
                     // すべて強制的に更新 or 追加する
                     CustomizerDatabase::addOption(
                         $option_key,

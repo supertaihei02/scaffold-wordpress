@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function()
 {
     var url = customizer.ajax_url;
+    var delete_names = [];
     
     function buildUrl(data)
     {
@@ -17,6 +18,20 @@ document.addEventListener('DOMContentLoaded', function()
         }
 
         return url;
+    }
+
+    function initialize() {
+        var form = document.querySelector('#auto-form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'delete_names';
+                hidden.value = delete_names;
+                form.appendChild(hidden);
+                return true;
+            }, false);
+        }
     }
     
     function bindEvent() {
@@ -58,14 +73,15 @@ document.addEventListener('DOMContentLoaded', function()
             args = target.attributes,
             path = args['data-config-path']['nodeValue'],
             sequence = args['data-current-sequence']['nodeValue'],
-            append_target = args['data-append-target']['nodeValue']
+            append_target = args['data-append-target']['nodeValue'],
+            group_key = args['data-group-key']['nodeValue']
         ;
         // 1回クリックしたら隠す
         target.classList.add('hidden');
-        renderNextFieldGroup(path, sequence, target, append_target);
+        renderNextFieldGroup(path, sequence, target, append_target, group_key);
     }
     
-    function renderNextFieldGroup(path, sequence, target, append_target)
+    function renderNextFieldGroup(path, sequence, target, append_target, group_key)
     {
         var action = 'get_form_group_html';
         var element = 'div';
@@ -74,7 +90,8 @@ document.addEventListener('DOMContentLoaded', function()
             template:    'CallAdminFormForApi.twig',
             path:        path,
             sequence:    sequence,
-            group_id:    append_target
+            group_id:    append_target,
+            group_key:   group_key
         };
         var request = new XMLHttpRequest();
         request.onreadystatechange = function (event) {
@@ -120,8 +137,7 @@ document.addEventListener('DOMContentLoaded', function()
             return;
         }
         
-        var can_remove = true,
-            del_button = e.currentTarget,
+        var del_button = e.currentTarget,
             args = del_button.attributes,
             group_key = args["data-group-key"]['nodeValue'],
             del_target = args["data-delete-target"]['nodeValue'],
@@ -136,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function()
             bf_group = document.querySelector('#' + bf_group_id);
             bf_add_button = bf_group.querySelector('.field-add-button');
         } else {
-            can_remove = false;
             alert("最後の要素は削除できません。");
             return false;
         }
@@ -157,10 +172,16 @@ document.addEventListener('DOMContentLoaded', function()
             }
         }
         
-        if (can_remove) {
-            $delete_target.remove();
-        }
+        // 削除した情報を保存する
+        $delete_target.querySelectorAll('.input').forEach(function(del_input) {
+            var name = del_input.attributes['name']['nodeValue'];
+            name = name.replace('[]', '');
+            if (delete_names.indexOf(name) === -1) {
+                delete_names.push(name);
+            }
+        });
         
+        $delete_target.remove();
         return true;
     }
 
@@ -181,5 +202,6 @@ document.addEventListener('DOMContentLoaded', function()
         e.preventDefault();
     }
     
+    initialize();
     bindEvent();
 }, false);

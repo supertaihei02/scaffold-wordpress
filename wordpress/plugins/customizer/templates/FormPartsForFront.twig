@@ -55,6 +55,7 @@
           {% set hidden = '' %}
         {% endif %}
         <div data-template="BlockForAdmin.twig"
+             data-group-key="{{ element.multiple_common_id }}"
              data-append-target="{{ element.id }}"
              data-current-sequence="{{ currentMaxSequence }}"
              data-config-path="{{ element.config_path|json_encode() }}"
@@ -69,7 +70,7 @@
 {% macro form(root, elements) %}
   <article class="wrap">
     <h2>Custom Form</h2>
-    <form method="post" action="{{ getFormAction() }}">
+    <form id="auto-form" method="post" action="{{ getFormAction() }}">
       {{ formSettingForOptions(root) }}
 
       {% for element in elements %}
@@ -87,7 +88,7 @@
         {# END: 第一層 FORM GROUP #}
       {% endfor %}
 
-      <input type="submit" value="送信">
+      {{ putSubmitButton(null, 'primary', 'submit', true, {'id': 'submit'})|raw }}
     </form>
   </article>
 {% endmacro %}

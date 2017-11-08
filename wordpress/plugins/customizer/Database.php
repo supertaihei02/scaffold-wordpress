@@ -340,7 +340,7 @@ class CustomizerDatabase
         $rows = $wpdb->get_results($wpdb->prepare("SELECT option_key, option_sequence, autoload FROM $table_name WHERE $where_query", ...$where_args));
         if (empty($rows)) { return false; }
         
-        $result = $wpdb->delete($wpdb->options, $where_query_arr);
+        $result = $wpdb->delete($table_name, $where_query_arr);
         if (!wp_installing()) {
             $autoload_options = [];
             foreach ($rows as $row) {
