@@ -6,6 +6,8 @@ const importCss = require('postcss-import');
 const customMedia = require('postcss-custom-media');
 const cssFixes = require('postcss-fixes');
 const url = require('postcss-url');
+const simpleVars = require('postcss-simple-vars');
+const mixins = require('postcss-mixins');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 
@@ -18,6 +20,8 @@ gulp.task('style', () => gulp.src(conf.style.entries)
     customProperties,
     customMedia,
     nested,
+    mixins,
+    simpleVars,
     cssFixes,
     //url(conf.style.urlOption),
     autoprefixer(conf.style.autoprefixerOption)
@@ -31,6 +35,8 @@ gulp.task('b.style', () => gulp.src(conf.style.entries)
     customProperties,
     customMedia,
     nested,
+    mixins,
+    simpleVars,
     cssFixes,
     autoprefixer(conf.style.autoprefixerOption),
     cssnano({

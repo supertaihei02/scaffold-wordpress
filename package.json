@@ -16,10 +16,10 @@
   },
   "browserslist": [
     "ie 11",
-    "ios >= 9",
-    "android >= 4.4.4",
+    "ios >= 10",
     "> 1% in JP",
-    "not ie < 11"
+    "not ie <= 10",
+    "not chrome 49"
   ],
   "devDependencies": {
     "autoprefixer": "^7.1.1",
@@ -46,7 +46,9 @@
     "postcss-custom-properties": "^6.1.0",
     "postcss-fixes": "^2.0.1",
     "postcss-import": "^10.0.0",
+    "postcss-mixins": "^6.2.0",
     "postcss-nested": "^2.0.2",
+    "postcss-simple-vars": "^4.1.0",
     "postcss-url": "^7.0.0",
     "raw-loader": "^0.5.1",
     "require-dir": "^0.3.2",
@@ -61,6 +63,6 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "jquery": "^3.2.1",
-    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch#0.2.0"
+    "libraries-frontend-framelunch": "framelunch/libraries-frontend-framelunch#0.3.2"
   }
 }
