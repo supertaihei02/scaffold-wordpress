@@ -3,6 +3,29 @@
 class CustomizerForm
 {
     public $success = false;
+    public $success_url, $failure_url;
+    
+    function __construct()
+    {
+        $this->success_url = site_url();
+        $this->failure_url = site_url();
+    }
+
+    function success($success_url = null)
+    {
+        $this->success = true;
+        if (!empty($success_url)) {
+            $this->success_url = $success_url;    
+        }
+    }
+
+    function failure($failure_url = null)
+    {
+        $this->success = false;
+        if (!empty($failure_url)) {
+            $this->failure_url = $failure_url;
+        }
+    }
     /* *******************************
      *     Form設定ファイルの読み込み
      * *******************************/
@@ -389,6 +412,7 @@ class CustomizerForm
      * *******************************/
     /**
      * @param $args
+     * @return bool
      */
     function update($args)
     {
@@ -410,8 +434,8 @@ class CustomizerForm
         $nonce_value = CustomizerUtils::getRequire($args, $nonce_key);
         
         if (!wp_verify_nonce($nonce_value, $nonce_key)) {
-            wp_redirect($failure_url);
-            exit();
+            $this->failure($failure_url);
+            return false;
         }
         
         /*
@@ -421,8 +445,8 @@ class CustomizerForm
         foreach ($option_groups as $option_group) {
             $form_info = CustomizerConfig::getFormSetting($option_group, false);
             if ($form_info === false) {
-                wp_redirect($failure_url);
-                exit();
+                $this->failure($failure_url);
+                return false;
             }
             $elements = self::configToElements($form_info);
             $save_targets[$option_group] = self::extractInputElements($elements);
@@ -463,8 +487,8 @@ class CustomizerForm
             
         }
 
-        wp_redirect($success_url);
-        exit();
+        $this->success($success_url);
+        return true;
     }
 
     static function getSaveTargetKeys(&$post_keys, $part_key)
@@ -518,4 +542,11 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
         }
     }
+
+    $redirect = $form->failure_url;
+    if ($form->success) {
+        $redirect = $form->success_url;
+    }
+    wp_redirect($redirect);
+    die();
 }
