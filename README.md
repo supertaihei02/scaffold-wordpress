@@ -192,6 +192,12 @@ make export
 - 固定ページ: `page.php`
 - タグ別一覧ページ: `tag.php`
 
+## 公開時の設定など
+
+- サイトマップちゃんとしたほうがよろしい
+    - Google XML Sitemaps使うのが楽っぽい。[参考](https://www.adminweb.jp/wordpress-plugin/list/index2.html)
+- ちゃんとクローリングされるように設定から __検索エンジンがサイトをインデックスしないようにする__ のチェックを外すこと
+
 ## TODO or 野望
 
 ### そもそも案件こなしたことないからほとんど妄想なんだけど、こんなんでいいのかな？

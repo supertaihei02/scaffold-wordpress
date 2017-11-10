@@ -1,4 +1,4 @@
-import 'babel-polyfill';  // 各entrypointの先頭で読み込む
+import 'babel-polyfill';  // 各entrypointの先頭で読み込むが、サイズがデカイので場合によっては丸ごと外して必要なpolyfillのみ読み込む
 
 class Main {
   constructor() {
@@ -8,9 +8,6 @@ class Main {
 
   onDOMContentLoaded() {
     console.log(`onDOMContentLoaded: ${new Date().toISOString()}`);
-
-    //setInterval(() => document.body.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 90%, 70%)`, 300);
-    //setInterval(() => document.body.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 60%, 30%)`, 300);
   }
 }
 
