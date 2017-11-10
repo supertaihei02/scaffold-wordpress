@@ -2,6 +2,7 @@
 
 class CustomizerForm
 {
+    public $success = false;
     /* *******************************
      *     Form設定ファイルの読み込み
      * *******************************/
@@ -389,10 +390,8 @@ class CustomizerForm
     /**
      * @param $args
      */
-    static function update($args)
+    function update($args)
     {
-        if ($args['action'] !== 'update') { die('不正なページ遷移です'); }
-        
         $delete_names = CustomizerUtils::asArray(CustomizerUtils::get($args, 'delete_names', []));
         $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
         $success_url = CustomizerUtils::getRequire($args, 'success_url');
@@ -489,6 +488,34 @@ class CustomizerForm
  *          保存処理起動
  * *******************************/
 if ($_SERVER["REQUEST_METHOD"] === 'POST') {
-    require_once(dirname(dirname(dirname(__DIR__))) . '/wp-load.php');
-    CustomizerForm::update($_POST);
+    $form = null;
+    $actions = isset($_POST['actions']) ? $_POST['actions'] : [];
+    if (!empty($actions)) {
+        require dirname(dirname(dirname(__DIR__))) . '/wp-load.php';
+        $form = new CustomizerForm();
+    }
+
+    foreach ($actions as $action) {
+
+        // 追加MODE[問い合わせフォーム等] => 独自options
+        if (password_verify(SI_FORM_ACTION_SAVE_ADD, $action)) {
+            
+        }
+        // 更新MODE[設定項目等] => 独自options
+        else if (password_verify(SI_FORM_ACTION_SAVE_UPDATE, $action)) {
+            $form->update($_POST);
+        }
+        // 投稿情報のMETA情報として保存 => post_meta
+        else if (password_verify(SI_FORM_ACTION_SAVE_WP_POST, $action)) {
+
+        }
+        // スプレッドシートに保存 => Google Spread Sheet
+        else if (password_verify(SI_FORM_ACTION_SAVE_SPREAD_SHEET, $action)) {
+
+        }
+        // メールの送信 => Mail BOX
+        else if (password_verify(SI_FORM_ACTION_SEND_MAIL, $action)) {
+
+        }
+    }
 }

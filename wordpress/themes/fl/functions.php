@@ -125,6 +125,7 @@ if (isActiveCustomizer()) {
         'contact' => [
             SI_KEY => 'contact',
             SI_NAME => 'お問い合わせ内容',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_SPREAD_SHEET,
             SI_CUSTOM_FIELDS => [
                 [
                     SI_KEY => 'client',

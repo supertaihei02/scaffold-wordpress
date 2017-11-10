@@ -104,14 +104,15 @@ class CustomizerTwigExtension extends Twig_Extension
     /* *******************************
      *        Options Form設定
      * *******************************/
-    static function formSettingForOptions($option_group_keys, $success_url = null, $failure_url = null)
+    static function formSettingForOptions($option_group_key, $success_url = null, $failure_url = null)
     {
         $key = 'update_option_with_sequence_';
-        foreach (CustomizerUtils::asArray($option_group_keys) as $option_group) {
-            $escaped = esc_attr($option_group);
-            echo "<input type='hidden' name='option_groups[]' value='" . $escaped . "' />";
-            $key .= $escaped;
-        }
+        $escaped = esc_attr($option_group_key);
+        echo "<input type='hidden' name='option_groups[]' value='" . $escaped . "' />";
+        $key .= $escaped;
+        
+        $config = CustomizerConfig::getFormSetting($escaped);
+        $actions = CustomizerUtils::getRequire($config[$escaped], SI_FORM_ACTION);
 
         if (is_null($success_url)) {
             $here = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
@@ -125,7 +126,6 @@ class CustomizerTwigExtension extends Twig_Extension
             $failure_url = "{$here}{$query_sign}failure";
         }
         
-        echo '<input type="hidden" name="action" value="update" />';
         echo "<input type=\"hidden\" name=\"success_url\" value=\"{$success_url}\" />";
         echo "<input type=\"hidden\" name=\"failure_url\" value=\"{$failure_url}\" />";
 
@@ -135,6 +135,11 @@ class CustomizerTwigExtension extends Twig_Extension
         } else {
             echo "<input type=\"hidden\" name=\"page_type\" value=\"front\" />";
             $key .= '_front';
+        }
+
+        foreach (CustomizerUtils::asArray($actions) as $action) {
+            $hashed = CustomizerUtils::encrypt($action);
+            echo "<input type=\"hidden\" name=\"actions[]\" value=\"{$hashed}\" />";
         }
         wp_nonce_field($key, $key);
     }

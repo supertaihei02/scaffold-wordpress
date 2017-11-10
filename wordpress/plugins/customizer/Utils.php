@@ -225,4 +225,9 @@ class CustomizerUtils
         }
         return $wk_config;
     }
+
+    static function encrypt($data)
+    {
+        return password_hash($data, PASSWORD_DEFAULT);
+    }
 }

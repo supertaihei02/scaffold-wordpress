@@ -311,6 +311,7 @@ class CustomizerConfig
         return [
             SI_KEY => 'test',
             SI_NAME => '全種類テスト',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_UPDATE,
             SI_CUSTOM_FIELDS => [
                 [
                     SI_KEY => 'single',
@@ -711,6 +712,7 @@ class CustomizerConfig
         return [
             SI_KEY => 'backbone',
             SI_NAME => '基幹設定',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_UPDATE,
             SI_CUSTOM_FIELDS => [
                 [
                     SI_KEY => 'log',
@@ -846,6 +848,7 @@ class CustomizerConfig
         return [
             SI_KEY => 'seo',
             SI_NAME => 'SEO基本設定',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_UPDATE,
             SI_CUSTOM_FIELDS => [
                 [
                     SI_KEY => 'base',
