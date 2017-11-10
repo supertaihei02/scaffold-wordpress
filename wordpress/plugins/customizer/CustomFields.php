@@ -1,4 +1,24 @@
 <?php
+
+class CustomizerFields
+{
+    static function setEvents()
+    {
+        add_action('add_meta_boxes', 'CustomizerFields::customFields');
+    }
+    
+    static function customFields($post_type, $post)
+    {
+        // POST TYPEのコンフィグを取得
+        $conf = CustomizerConfig::getCustomFieldSetting($post_type);
+        
+    }
+
+    static function addMetaBox()
+    {
+        
+    }
+}
 /**
  * Custom Fieldの生成
  */

@@ -147,16 +147,52 @@ class CustomizerForm
      *   ElementにDB保存値をセット&調整
      * *******************************/
     /**
+     * リソースから保存値を取得
+     * 
+     * @param CustomizerElement $element
+     * @param string $resource_type
+     * @param array $get_resource_args
+     * @param bool $default
+     * @return array|bool|mixed
+     * @throws Exception
+     */
+    static function getData(CustomizerElement $element, $default = false, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
+    {
+        switch ($resource_type) {
+            case SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES:
+                $result = CustomizerDatabase::getOption($element->id, $default);
+                break;
+            case SI_RESOURCE_TYPE_POST_META:
+                $result = [];
+                break;
+            case SI_RESOURCE_TYPE_SPREAD_SHEET:
+                $result = [];
+                break;
+            default:
+                throw new Exception("{$resource_type} is not exist.");
+                break;
+        }
+
+        return $result;
+    }
+    
+    /**
      * @param $elements
+     * @param string $resource_type
+     * @param array $get_resource_args
      * @return mixed
      */
-    static function applyInputValues($elements)
+    static function applyInputValues($elements, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
-        return array_reduce($elements, function ($reduced, $element) {
+        return array_reduce($elements, function ($reduced, $element) use ($resource_type, $get_resource_args){
+            
+            $elements = self::recursiveApplyInputValues(
+                $element, null, null,
+                $resource_type, $get_resource_args);
             /**
              * @var $element CustomizerElement
              */
-            foreach (self::recursiveApplyInputValues($element) as $one_element) {
+            foreach ($elements as $one_element) {
                 $reduced[] = $one_element;
             }
             return $reduced;
@@ -164,18 +200,20 @@ class CustomizerForm
     }
 
     /**
-     * @param $value
-     * @param $sequence
      * @param CustomizerElement $element
-     * @return array
+     * @param null $sequence
+     * @param null $value
+     * @param string $resource_type
+     * @param array $get_resource_args
+     * @return array|mixed
      */
-    static function recursiveApplyInputValues(CustomizerElement $element, $sequence = null, $value = null)
+    static function recursiveApplyInputValues(CustomizerElement $element, $sequence = null, $value = null, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
         $elements = [];
 
         if ($element->isInput()) {
             if (is_null($sequence) && is_null($value)) {
-                $value = CustomizerDatabase::getOption($element->id);
+                $value = self::getData($element);
                 if ($value === false) {
                     $value = $element->default_value;
                 } else {
@@ -195,7 +233,7 @@ class CustomizerForm
             // 子要素をサンプリングして値の階層数を取得
             $sequences = (function ($element) {
                 $sample = reset($element->children);
-                $sample_values = CustomizerDatabase::getOption($sample->id, [0]);
+                $sample_values = self::getData($sample, [0]);
                 return array_keys($sample_values);
             })($element);
             
@@ -230,7 +268,7 @@ class CustomizerForm
                 /**
                  * @var $child CustomizerElement
                  */
-                $child_values = CustomizerDatabase::getOption($child->id, [$child->default_value]);
+                $child_values = self::getData($child, [$child->default_value]);
                 foreach ($child_values as $child_sequence => $child_value) {
                     $grandson = clone $child;
                     $grandson = self::changeSequence($grandson, $child_sequence, $child_value);
@@ -410,85 +448,39 @@ class CustomizerForm
     /* *******************************
      *          保存処理
      * *******************************/
-    /**
-     * @param $args
-     * @return bool
-     */
-    function update($args)
+    static function common($args)
     {
         $delete_names = CustomizerUtils::asArray(CustomizerUtils::get($args, 'delete_names', []));
-        $option_groups = CustomizerUtils::getRequire($args, 'option_groups');
+        $option_group = CustomizerUtils::getRequire($args, 'option_group');
         $success_url = CustomizerUtils::getRequire($args, 'success_url');
         $failure_url = CustomizerUtils::getRequire($args, 'failure_url');
         $page_type = CustomizerUtils::getRequire($args, 'page_type');
-        
-        
+
         /*
          * セキュリティチェック
          */
-        $nonce_key = '';
-        foreach ($option_groups as $option_group) {
-            $nonce_key .= $option_group;
-        }
-        $nonce_key = "update_option_with_sequence_{$nonce_key}_{$page_type}";
+        $nonce_key = "update_option_with_sequence_{$option_group}_{$page_type}";
         $nonce_value = CustomizerUtils::getRequire($args, $nonce_key);
-        
+
         if (!wp_verify_nonce($nonce_value, $nonce_key)) {
-            $this->failure($failure_url);
-            return false;
+            return $failure_url;
         }
-        
+
         /*
          * 保存対象の抽出
          */
-        $save_targets = [];
-        foreach ($option_groups as $option_group) {
-            $form_info = CustomizerConfig::getFormSetting($option_group, false);
-            if ($form_info === false) {
-                $this->failure($failure_url);
-                return false;
-            }
-            $elements = self::configToElements($form_info);
-            $save_targets[$option_group] = self::extractInputElements($elements);
+        $form_info = CustomizerConfig::getFormSetting($option_group, false);
+        if ($form_info === false) {
+            return false;
         }
+        $elements = self::configToElements($form_info);
+        $save_targets = self::extractInputElements($elements);
         
-        /*
-         * 削除処理
-         */
-        foreach ($delete_names as $delete_name) {
-            list($option_key, $sequence) = explode(SI_HYPHEN, $delete_name);
-            CustomizerDatabase::deleteOption($option_key, $sequence);
-        }
-        
-        /*
-         * 保存処理
-         */
-        $post_keys = array_keys($args);
-        foreach ($save_targets as $option_group => $input_list) {
-            foreach ($input_list as $save_target) {
-                /**
-                 * @var $save_target CustomizerElement
-                 */
-                $id = $save_target->id;
-                $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
-
-                foreach ($save_keys as $save_key) {
-                    list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
-                    // すべて強制的に更新 or 追加する
-                    CustomizerDatabase::addOption(
-                        $option_key,
-                        $args[$save_key],
-                        $sequence,
-                        $save_target->autoload,
-                        true
-                    );
-                }
-            }
-            
-        }
-
-        $this->success($success_url);
-        return true;
+        $result_set = [
+            $delete_names, $option_group, $success_url,
+            $failure_url, $page_type, $save_targets
+        ];
+        return $result_set;
     }
 
     static function getSaveTargetKeys(&$post_keys, $part_key)
@@ -502,10 +494,122 @@ class CustomizerForm
             }
             return $reduced;
         });
-        
+
         return $save_keys;
     }
+    
+    /**
+     * @param $args
+     * @return bool
+     */
+    function update($args)
+    {
+        /*
+         * セキュリティチェック
+         */
+        $common = self::common($args);
+        if (is_string($common)) {
+            $this->failure($common);
+            return false;
+        }
+        
+        /*
+         * POSTデータ取得
+         */
+        list($delete_names, $option_groups, $success_url, 
+            $failure_url, $page_type, $save_targets) = $common;
+        
+        /*
+         * 削除処理
+         */
+        foreach ($delete_names as $delete_name) {
+            list($option_key, $sequence) = explode(SI_HYPHEN, $delete_name);
+            CustomizerDatabase::deleteOption($option_key, $sequence);
+        }
+        
+        /*
+         * 保存処理
+         */
+        $post_keys = array_keys($args);
+        foreach ($save_targets as $save_target) {
+            /**
+             * @var $save_target CustomizerElement
+             */
+            $id = $save_target->id;
+            $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
 
+            foreach ($save_keys as $save_key) {
+                list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
+                // すべて強制的に更新 or 追加する
+                CustomizerDatabase::addOption(
+                    $option_key,
+                    $args[$save_key],
+                    $sequence,
+                    $save_target->autoload,
+                    true
+                );
+            }
+        }
+
+        $this->success($success_url);
+        return true;
+    }
+
+    function wpPostUpdate($args)
+    {
+        $post_id = CustomizerUtils::getRequire($args, 'post_id');
+
+        /*
+        * セキュリティチェック
+        */
+        $common = self::common($args);
+        if (is_string($common)) {
+            $this->failure($common);
+            return false;
+        }
+
+        /*
+         * POSTデータ取得
+         */
+        list($delete_names, $option_groups, $success_url,
+            $failure_url, $page_type, $save_targets) = $common;
+
+        /*
+         * 削除処理
+         */
+        foreach ($delete_names as $delete_name) {
+            delete_metadata(
+                'post',
+                $post_id,
+                $delete_name
+            );
+        }
+
+        /*
+         * 保存処理
+         */
+        $post_keys = array_keys($args);
+        foreach ($save_targets as $save_target) {
+            /**
+             * @var $save_target CustomizerElement
+             */
+            $id = $save_target->id;
+            $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
+
+            foreach ($save_keys as $save_key) {
+                // すべて強制的に更新 or 追加する
+                update_metadata(
+                    'post',
+                    $post_id,
+                    $save_key,
+                    $args[$save_key]
+                );
+            }
+        }
+        
+        $this->success($success_url);
+        return true;
+    }
 }
 
 /* *******************************
@@ -531,7 +635,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         }
         // 投稿情報のMETA情報として保存 => post_meta
         else if (password_verify(SI_FORM_ACTION_SAVE_WP_POST, $action)) {
-
+            $form->wpPostUpdate($_POST);
         }
         // スプレッドシートに保存 => Google Spread Sheet
         else if (password_verify(SI_FORM_ACTION_SAVE_SPREAD_SHEET, $action)) {

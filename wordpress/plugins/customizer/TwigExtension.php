@@ -108,7 +108,6 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         $key = 'update_option_with_sequence_';
         $escaped = esc_attr($option_group_key);
-        echo "<input type='hidden' name='option_groups[]' value='" . $escaped . "' />";
         $key .= $escaped;
         
         $config = CustomizerConfig::getFormSetting($escaped);
@@ -125,7 +124,8 @@ class CustomizerTwigExtension extends Twig_Extension
             $success_url = "{$here}{$query_sign}success";
             $failure_url = "{$here}{$query_sign}failure";
         }
-        
+
+        echo "<input type='hidden' name='option_group' value='{$escaped}' />";
         echo "<input type=\"hidden\" name=\"success_url\" value=\"{$success_url}\" />";
         echo "<input type=\"hidden\" name=\"failure_url\" value=\"{$failure_url}\" />";
 

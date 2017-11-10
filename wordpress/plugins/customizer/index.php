@@ -35,23 +35,11 @@ if (!is_file(ABSPATH . '/vendor/autoload.php')) {
 require ABSPATH . '/vendor/autoload.php';
 require SI_BASE_PATH . '/ClassLoader.php';
 
-// Install
-add_action('plugins_loaded', 'CustomizerInstall::updateDb');
-register_uninstall_hook(__FILE__, 'CustomizerInstall::uninstall');
-
 // Globals
 $si_logger = new Logger();
-$si_customs = []; // post_idをkeyにしたカスタムフィールドの値が入る。使用後は空にする。
-$si_terms = [];   // get_termsの結果が入る。使用後は空にする。
-$si_twig = CustomizerTwig::createEngine();  // テンプレートエンジン Twig
+$si_customs = [];
+$si_terms = [];
+$si_twig = CustomizerTwig::createEngine();
 
-// WP-Cronが効かない場合の回避策
-if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POWER) {
-    if (!defined('ALTERNATE_WP_CRON')) {
-        define('ALTERNATE_WP_CRON', true);
-    }
-    new CustomizerCron();
-}
-
-// タイトルタグを自動生成する機能を削除 (きっとあとで移動する)
-remove_action('wp_head', '_wp_render_title_tag', 1);
+// Plugin Initialize
+CustomizerInstall::initialize();

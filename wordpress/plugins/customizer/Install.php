@@ -29,5 +29,26 @@ class CustomizerInstall
 
         delete_option('option_with_sequence_db_version');
     }
+
+    static function initialize()
+    {
+        // DBの定義
+        add_action('plugins_loaded', 'CustomizerInstall::updateDb');
+        register_uninstall_hook(__FILE__, 'CustomizerInstall::uninstall');
+        
+        // WP-Cronが効かない場合の回避策
+        if (!(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && CUSTOMIZER_CRON_MAIN_POWER) {
+            if (!defined('ALTERNATE_WP_CRON')) {
+                define('ALTERNATE_WP_CRON', true);
+            }
+            new CustomizerCron();
+        }
+        
+        // タイトルタグを自動生成する機能を削除
+        remove_action('wp_head', '_wp_render_title_tag', 1);
+        
+        // カスタムフィールド
+        CustomizerFields::setEvents();
+    }
 }
 

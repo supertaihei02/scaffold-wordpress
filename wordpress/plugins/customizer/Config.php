@@ -262,6 +262,28 @@ define('SI_DEFAULT_GET_COUNT', 10);
 class CustomizerConfig
 {
     /* *******************************
+     *       Custom Fields 設定
+     * *******************************/
+    static function getCustomFieldSetting($key, $throw = true)
+    {
+        switch ($key) {
+            case 'news':
+                $setting = [
+                    'news' => CustomizerFieldSettings::news()
+                ];
+                break;
+            default:
+                if ($throw) {
+                    throw new Exception("{$key} is no exist.");
+                }
+                $setting = false;
+                break;
+        }
+
+        return $setting;
+    }
+    
+    /* *******************************
      *          Form 設定
      * *******************************/
     static function getFormSetting($key, $throw = true)
@@ -275,24 +297,24 @@ class CustomizerConfig
         switch ($key) {
             case 'test':
                 $setting = [
-                    'test' => self::test()
+                    'test' => CustomizerFormSettings::test()
                 ];
                 break;
             case SI_SETTING_FORM_BACKBONE:
                 $setting = [
-                    SI_SETTING_FORM_BACKBONE => self::backbone()
+                    SI_SETTING_FORM_BACKBONE => CustomizerFormSettings::backbone()
                 ];
                 break;
             case SI_SETTING_FORM_SEO:
                 $setting = [
-                    SI_SETTING_FORM_SEO => self::seo()
+                    SI_SETTING_FORM_SEO => CustomizerFormSettings::seo()
                 ];
                 break;
             case SI_SETTING_FORM_ALL:
                 $setting = [
                     // 'test' => self::test(),
-                    SI_SETTING_FORM_BACKBONE => self::backbone(),
-                    SI_SETTING_FORM_SEO => self::seo(),
+                    SI_SETTING_FORM_BACKBONE => CustomizerFormSettings::backbone(),
+                    SI_SETTING_FORM_SEO => CustomizerFormSettings::seo(),
                 ];
                 break;
             default:
@@ -306,6 +328,118 @@ class CustomizerConfig
         return $setting;
     }
 
+    
+}
+
+class CustomizerFieldSettings
+{
+    static function news()
+    {
+        return [
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_WP_POST,
+            // このカスタムポストタイプに投稿できるRole
+            SI_ALLOW_ROLES => [ROLE_ADMIN, ROLE_OPERATOR],
+            // POST TYPEのID
+            SI_KEY  => POST_NEWS,
+            // POST TYPEの表示名称
+            SI_NAME => 'NEWS',
+            /*
+             * < リッチエディタを使用するかどうか >
+             * - SI_RICH_EDITOR_NOT_USE    : 全てのRoleで使用しない
+             * - SI_RICH_EDITOR_ONLY_ADMIN : ADMIN だけ使用
+             * - SI_RICH_EDITOR_USE        : だれでも使用
+             */
+            SI_USE_RICH_EDITOR => SI_RICH_EDITOR_USE,
+            // 管理画面でこのPOST_TYPEが表示される順序に関係する数値。それぞれずらすこと。
+            SI_MENU_POSITION => 7,
+            // アーカイブを有効にするか否か
+            SI_HAS_ARCHIVE => true,
+            // 記事詳細画面がデザイン上なくて、プレビュー機能で一覧画面を表示したい場合は true
+            SI_ARCHIVE_PREVIEW => false,
+            // 管理画面の一覧画面で独自に並び替えができるようにするかどうか
+            SI_USE_ORIGINAL_ORDER => false,
+            // Custom Fieldsの設定
+            SI_CUSTOM_FIELDS => [
+                // グループ階層
+                [
+                    // グループID
+                    SI_KEY  => 'archive',
+                    // 項目のラベル
+                    SI_NAME => '[一覧画面] 基本情報',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => false,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            SI_KEY  => 'img',
+                            SI_NAME => 'サムネイル画像[横XXX×縦XXX]',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                        ],
+                        [
+                            SI_KEY  => 'topic',
+                            SI_NAME => '見出し',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                        ]
+                    ]
+                ],
+                [
+                    // グループID
+                    SI_KEY  => 'single_basic',
+                    // 項目のラベル
+                    SI_NAME => '[詳細画面] 基本情報',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => false,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            SI_KEY  => 'img',
+                            SI_NAME => 'メイン画像[横XXX×縦XXX]',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                        ]
+                    ]
+                ],
+                [
+                    // グループID
+                    SI_KEY  => 'single_options',
+                    // 項目のラベル
+                    SI_NAME => '[詳細画面] 記事情報',
+                    // 動的に増やせる項目なのかどうか
+                    SI_IS_MULTIPLE => true,
+                    // 入力項目リスト
+                    SI_FIELDS => [
+                        // 入力項目
+                        [
+                            SI_KEY  => 'img',
+                            SI_NAME => '画像[横XXX×縦XXX]',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                        ],
+                        [
+                            SI_KEY  => 'text',
+                            SI_NAME => '記事テキスト',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                        ]
+                    ]
+                ],
+                // SEOのTDKフィールド(基本的にはあった方がいいと思う)
+                SI_DEFAULT_SEO_FIELDS
+            ],
+        ];
+    }
+}
+
+/**
+ * Form の設定を返すクラス
+ * Class CustomizerFormSettings
+ */
+class CustomizerFormSettings
+{
     static function test()
     {
         return [

@@ -165,6 +165,13 @@ define('SI_FORM_ACTION_SAVE_WP_POST',  'wp_post' . SI_FORM_ACTION_ENCRYPT_KEY);
 define('SI_FORM_ACTION_SAVE_SPREAD_SHEET',  'spread_sheet' . SI_FORM_ACTION_ENCRYPT_KEY);
 define('SI_FORM_ACTION_SEND_MAIL',  'send_mail' . SI_FORM_ACTION_ENCRYPT_KEY);
 
+// --- Resource Type
+define('SI_RESOURCE_TYPE',  'resource_type');
+define('SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES',  'option_with_sequences');
+define('SI_RESOURCE_TYPE_POST_META',  'post_meta');
+define('SI_RESOURCE_TYPE_SPREAD_SHEET',  'spread_sheet');
+
+
 // --- 設定画面
 define('SI_SETTING_BACKBONE',  'backbone');
 define('SI_SETTING_SEO',  'seo');
