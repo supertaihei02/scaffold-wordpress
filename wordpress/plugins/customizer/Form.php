@@ -171,7 +171,7 @@ class CustomizerForm
             // 子要素をサンプリングして値の階層数を取得
             $sequences = (function ($element) {
                 $sample = reset($element->children);
-                $sample_values = CustomizerDatabase::getOption($sample->id);
+                $sample_values = CustomizerDatabase::getOption($sample->id, [0]);
                 return array_keys($sample_values);
             })($element);
             
@@ -203,7 +203,10 @@ class CustomizerForm
             
             // 値の入った子要素をsequenceごとにBlockに追加
             foreach ($element->children as $child) {
-                $child_values = CustomizerDatabase::getOption($child->id);
+                /**
+                 * @var $child CustomizerElement
+                 */
+                $child_values = CustomizerDatabase::getOption($child->id, [$child->default_value]);
                 foreach ($child_values as $child_sequence => $child_value) {
                     $grandson = clone $child;
                     $grandson = self::changeSequence($grandson, $child_sequence, $child_value);
