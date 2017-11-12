@@ -588,17 +588,6 @@ class CustomizerForm
             $failure_url, $page_type, $save_targets) = $common;
 
         /*
-         * 削除処理
-         */
-        foreach ($delete_names as $delete_name) {
-            delete_metadata(
-                'post',
-                $post_id,
-                $delete_name
-            );
-        }
-
-        /*
          * 保存処理
          */
         $post_keys = array_keys($args);
@@ -629,6 +618,59 @@ class CustomizerForm
         
         return $post_id;
     }
+
+    static function wpTermUpdate($term_id)
+    {
+        $args = $_POST;
+
+        /*
+        * セキュリティチェック
+        */
+        try {
+            $common = self::common($args);
+        } catch (Exception $e) {
+            return false;
+        }
+        if (is_string($common)) {
+            return false;
+        }
+
+        /*
+         * POSTデータ取得
+         */
+        list($delete_names, $option_groups, $success_url,
+            $failure_url, $page_type, $save_targets) = $common;
+
+        /*
+         * 保存処理
+         */
+        $post_keys = array_keys($args);
+        foreach ($save_targets as $save_target) {
+            /**
+             * @var $save_target CustomizerElement
+             */
+            $id = $save_target->id;
+            $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
+            /*
+             * 同じkeyのデータをまとめる
+             */
+            $save_group_key = null;
+            $save_data = [];
+            foreach ($save_keys as $save_key) {
+                list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
+                $save_group_key = $option_key;
+                $save_data[$sequence] = $args[$save_key];
+            }
+            // すべて強制的に更新 or 追加する
+            update_term_meta(
+                $term_id,
+                $save_group_key,
+                $save_data
+            );
+        }
+
+        return $term_id;
+    }
 }
 
 /* *******************************
@@ -655,6 +697,10 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         }
         // 投稿情報のMETA情報として保存 => post_meta
         else if (password_verify(SI_FORM_ACTION_SAVE_WP_POST, $action)) {
+            $do_redirect = false;
+        }
+        // 投稿情報のMETA情報として保存 => term_meta
+        else if (password_verify(SI_FORM_ACTION_SAVE_WP_TERM, $action)) {
             $do_redirect = false;
         }
         // スプレッドシートに保存 => Google Spread Sheet
