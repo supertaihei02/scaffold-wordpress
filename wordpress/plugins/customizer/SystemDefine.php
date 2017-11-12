@@ -201,25 +201,45 @@ define('SI_DEFAULT_SEO_FIELDS', [
              * - hidden:       SI_FIELD_TYPE_HIDDEN
              * - file:         SI_FIELD_TYPE_FILE
              */
-            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+            SI_DEFAULT => null,
+            SI_ELEM_ATTRS => [],
+            SI_ELEM_CLASSES => [],
+            SI_FIELD_CHOICE_VALUES => [],
+            SI_FIELD_OPTION_AUTOLOAD => false,
         ],
         [
             SI_KEY  => 'description',
             SI_NAME => 'ディスクリプション',
             SI_FIELD_IS_REQUIRE => false,
-            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+            SI_DEFAULT => null,
+            SI_ELEM_ATTRS => [],
+            SI_ELEM_CLASSES => [],
+            SI_FIELD_CHOICE_VALUES => [],
+            SI_FIELD_OPTION_AUTOLOAD => false,
         ],
         [
             SI_KEY  => 'keywords',
             SI_NAME => 'キーワード[カンマ区切りで入力]',
             SI_FIELD_IS_REQUIRE => false,
-            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+            SI_DEFAULT => null,
+            SI_ELEM_ATTRS => [],
+            SI_ELEM_CLASSES => [],
+            SI_FIELD_CHOICE_VALUES => [],
+            SI_FIELD_OPTION_AUTOLOAD => false,
         ],
         [
             SI_KEY  => 'img',
             SI_NAME => 'OGPタグのIMAGE',
             SI_FIELD_IS_REQUIRE => false,
-            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+            SI_DEFAULT => null,
+            SI_ELEM_ATTRS => [],
+            SI_ELEM_CLASSES => [],
+            SI_FIELD_CHOICE_VALUES => [],
+            SI_FIELD_OPTION_AUTOLOAD => false,
         ],
     ]
 ]);

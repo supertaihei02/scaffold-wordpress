@@ -7,6 +7,9 @@
         <label for="{{ element.id }}">{{ element.layer_name }}</label>
         {{ builder.input(element) }}
       </div>
+    {% elseif element.input_type == 'hidden' %}
+      {% import 'Builder.twig' as builder %}
+      {{ builder.input(element, [], []) }}
     {% endif %}
 
     {# START: 子ノードがいる場合再帰的に描画 #}

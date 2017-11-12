@@ -262,28 +262,6 @@ define('SI_DEFAULT_GET_COUNT', 10);
 class CustomizerConfig
 {
     /* *******************************
-     *       Custom Fields 設定
-     * *******************************/
-    static function getCustomFieldSetting($key, $throw = true)
-    {
-        switch ($key) {
-            case 'news':
-                $setting = [
-                    'news' => CustomizerFieldSettings::news()
-                ];
-                break;
-            default:
-                if ($throw) {
-                    throw new Exception("{$key} is no exist.");
-                }
-                $setting = false;
-                break;
-        }
-
-        return $setting;
-    }
-    
-    /* *******************************
      *          Form 設定
      * *******************************/
     static function getFormSetting($key, $throw = true)
@@ -295,6 +273,17 @@ class CustomizerConfig
         }
         
         switch ($key) {
+            /* *******************************
+             *          CustomFields
+             * *******************************/
+            case 'news':
+                $setting = [
+                    'news' => CustomizerFieldSettings::news()
+                ];
+                break;
+            /* *******************************
+             *              Form
+             * *******************************/
             case 'test':
                 $setting = [
                     'test' => CustomizerFormSettings::test()
@@ -375,13 +364,23 @@ class CustomizerFieldSettings
                             SI_KEY  => 'img',
                             SI_NAME => 'サムネイル画像[横XXX×縦XXX]',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ],
                         [
                             SI_KEY  => 'topic',
                             SI_NAME => '見出し',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => 'デフォルト',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ]
                     ]
                 ],
@@ -399,7 +398,12 @@ class CustomizerFieldSettings
                             SI_KEY  => 'img',
                             SI_NAME => 'メイン画像[横XXX×縦XXX]',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ]
                     ]
                 ],
@@ -417,13 +421,23 @@ class CustomizerFieldSettings
                             SI_KEY  => 'img',
                             SI_NAME => '画像[横XXX×縦XXX]',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ],
                         [
                             SI_KEY  => 'text',
                             SI_NAME => '記事テキスト',
                             SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => '記事本文を記載します',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
                         ]
                     ]
                 ],

@@ -57,6 +57,9 @@ class CustomizerDatabase
 //        );
     }
 
+    /* *******************************
+     *       OPTION_WITH_SEQUENCE
+     * *******************************/
     /**
      * WPの update_optionに相当するメソッド
      *

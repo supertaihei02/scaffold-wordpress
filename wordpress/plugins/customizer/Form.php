@@ -163,7 +163,10 @@ class CustomizerForm
                 $result = CustomizerDatabase::getOption($element->id, $default);
                 break;
             case SI_RESOURCE_TYPE_POST_META:
-                $result = [];
+//                global $si_logger; $si_logger->develop([$get_resource_args[SI_GET_P_POST_ID], $element->name], null, $resource_type);
+                $result = get_post_meta($get_resource_args[SI_GET_P_POST_ID], $element->name, true);
+                $result = empty($result) ? $default : $result;
+//                global $si_logger; $si_logger->develop($result);
                 break;
             case SI_RESOURCE_TYPE_SPREAD_SHEET:
                 $result = [];
@@ -213,7 +216,7 @@ class CustomizerForm
 
         if ($element->isInput()) {
             if (is_null($sequence) && is_null($value)) {
-                $value = self::getData($element);
+                $value = self::getData($element, false, $resource_type, $get_resource_args);
                 if ($value === false) {
                     $value = $element->default_value;
                 } else {
@@ -231,12 +234,11 @@ class CustomizerForm
         else if ($element->multiple && $element->hasChild()) {
             // --- 子Inputに保存されている値の階層数分 Blockを増やす ---
             // 子要素をサンプリングして値の階層数を取得
-            $sequences = (function ($element) {
+            $sequences = (function ($element, $resource_type, $get_resource_args) {
                 $sample = reset($element->children);
-                $sample_values = self::getData($sample, [0]);
+                $sample_values = self::getData($sample, [0], $resource_type, $get_resource_args);
                 return array_keys($sample_values);
-            })($element);
-            
+            })($element, $resource_type, $get_resource_args);
             // 子要素数分Blockを複製
             $before_block_id = '';
             $last_sequence = end($sequences);
@@ -268,13 +270,15 @@ class CustomizerForm
                 /**
                  * @var $child CustomizerElement
                  */
-                $child_values = self::getData($child, [$child->default_value]);
+                $child_values = self::getData($child, [$child->default_value], $resource_type, $get_resource_args);
+
                 foreach ($child_values as $child_sequence => $child_value) {
                     $grandson = clone $child;
                     $grandson = self::changeSequence($grandson, $child_sequence, $child_value);
                     $blocks[$child_sequence]->addChildren(
                         self::recursiveApplyInputValues(
-                            $grandson, $child_sequence, $child_value
+                            $grandson, $child_sequence, $child_value,
+                            $resource_type, $get_resource_args
                         )
                     );
                 }
@@ -289,8 +293,12 @@ class CustomizerForm
          * 単純に子要素を持つElement
          */
         else if ($element->hasChild()) {
-            $element->children = array_reduce($element->children, function ($reduced, $child) {
-                foreach (self::recursiveApplyInputValues($child) as $one_element) {
+            $element->children = array_reduce($element->children, function ($reduced, $child) use ($resource_type, $get_resource_args){
+                $children = self::recursiveApplyInputValues(
+                    $child, null, null,
+                    $resource_type, $get_resource_args
+                );
+                foreach ($children as $one_element) {
                     $reduced[] = $one_element;
                 }
                 return $reduced;
@@ -471,7 +479,7 @@ class CustomizerForm
          */
         $form_info = CustomizerConfig::getFormSetting($option_group, false);
         if ($form_info === false) {
-            return false;
+            return $failure_url;
         }
         $elements = self::configToElements($form_info);
         $save_targets = self::extractInputElements($elements);
@@ -555,16 +563,16 @@ class CustomizerForm
         return true;
     }
 
-    function wpPostUpdate($args)
+    static function wpPostUpdate()
     {
-        $post_id = CustomizerUtils::getRequire($args, 'post_id');
+        $args = $_POST;
+        $post_id = CustomizerUtils::getRequire($args, 'post_ID');
 
         /*
         * セキュリティチェック
         */
         $common = self::common($args);
         if (is_string($common)) {
-            $this->failure($common);
             return false;
         }
 
@@ -595,20 +603,26 @@ class CustomizerForm
              */
             $id = $save_target->id;
             $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
-
+            /*
+             * 同じkeyのデータをまとめる
+             */
+            $save_group_key = null;
+            $save_data = [];
             foreach ($save_keys as $save_key) {
-                // すべて強制的に更新 or 追加する
-                update_metadata(
-                    'post',
-                    $post_id,
-                    $save_key,
-                    $args[$save_key]
-                );
+                list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
+                $save_group_key = $option_key;
+                $save_data[$sequence] = $args[$save_key];
             }
+            // すべて強制的に更新 or 追加する
+            update_metadata(
+                'post',
+                $post_id,
+                $save_group_key,
+                $save_data
+            );
         }
         
-        $this->success($success_url);
-        return true;
+        return $post_id;
     }
 }
 
@@ -617,6 +631,7 @@ class CustomizerForm
  * *******************************/
 if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $form = null;
+    $do_redirect = true;
     $actions = isset($_POST['actions']) ? $_POST['actions'] : [];
     if (!empty($actions)) {
         require dirname(dirname(dirname(__DIR__))) . '/wp-load.php';
@@ -635,7 +650,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         }
         // 投稿情報のMETA情報として保存 => post_meta
         else if (password_verify(SI_FORM_ACTION_SAVE_WP_POST, $action)) {
-            $form->wpPostUpdate($_POST);
+            $do_redirect = false;
         }
         // スプレッドシートに保存 => Google Spread Sheet
         else if (password_verify(SI_FORM_ACTION_SAVE_SPREAD_SHEET, $action)) {
@@ -651,6 +666,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     if ($form->success) {
         $redirect = $form->success_url;
     }
-    wp_redirect($redirect);
-    die();
+    if ($do_redirect) {
+        wp_redirect($redirect);
+        die();
+    }
 }

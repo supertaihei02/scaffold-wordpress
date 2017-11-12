@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function()
 
     function initialize() {
         var form = document.querySelector('#auto-form');
+        form = form ? form : document.querySelector('form#post');
         if (form) {
             form.addEventListener('submit', function () {
                 var hidden = document.createElement('input');

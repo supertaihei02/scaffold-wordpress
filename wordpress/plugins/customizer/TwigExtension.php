@@ -104,18 +104,18 @@ class CustomizerTwigExtension extends Twig_Extension
     /* *******************************
      *        Options Form設定
      * *******************************/
-    static function formSettingForOptions($option_group_key, $success_url = null, $failure_url = null)
+    static function formSettingForOptions($option_group_key, $config = null,  $success_url = null, $failure_url = null)
     {
         $key = 'update_option_with_sequence_';
         $escaped = esc_attr($option_group_key);
         $key .= $escaped;
         
-        $config = CustomizerConfig::getFormSetting($escaped);
+        $config = is_null($config) ? CustomizerConfig::getFormSetting($escaped) : $config;
         $actions = CustomizerUtils::getRequire($config[$escaped], SI_FORM_ACTION);
 
         if (is_null($success_url)) {
             $here = (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-            $here = str_replace(['?success', 'success', '?failure', 'failure'], '', $here);
+            $here = str_replace(['?success', '&success', '?failure', '&failure'], '', $here);
 
             $query_sign = '?';
             if (strpos($here, '?') !== false) {
@@ -125,7 +125,7 @@ class CustomizerTwigExtension extends Twig_Extension
             $failure_url = "{$here}{$query_sign}failure";
         }
 
-        echo "<input type='hidden' name='option_group' value='{$escaped}' />";
+        echo "<input type=\"hidden\" name=\"option_group\" value=\"{$escaped}\" />";
         echo "<input type=\"hidden\" name=\"success_url\" value=\"{$success_url}\" />";
         echo "<input type=\"hidden\" name=\"failure_url\" value=\"{$failure_url}\" />";
 
@@ -157,7 +157,7 @@ class CustomizerTwigExtension extends Twig_Extension
         self::displayForm('CallFrontForm.twig', $paths);
     }
     
-    static function displayForm($template, $paths)
+    static function displayForm($template, $paths, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
         global $si_twig;
         if (is_admin()) {
@@ -170,18 +170,18 @@ class CustomizerTwigExtension extends Twig_Extension
         $config = self::getConfig($paths);
         $si_twig->display($template, [
             'root' => reset($paths),
-            'elements' => self::getRenderElements($config, $paths),
+            'elements' => self::getRenderElements($config, $paths, $resource_type, $get_resource_args),
         ]);
     }
 
-    static function renderForm($template, $paths)
+    static function renderForm($template, $paths, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
         global $si_twig;
 
         $config = self::getConfig($paths);
         return $si_twig->render($template, [
             'root' => reset($paths),
-            'elements' => self::getRenderElements($config, $paths),
+            'elements' => self::getRenderElements($config, $paths, $resource_type, $get_resource_args),
         ]);
     }
 
@@ -198,10 +198,10 @@ class CustomizerTwigExtension extends Twig_Extension
         return CustomizerUtils::getConfig($config, $paths);   
     }
 
-    static function getRenderElements($config, $paths = [])
+    static function getRenderElements($config, $paths = [], $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
         $elements = CustomizerForm::configToElements($config, $paths);
-        return CustomizerForm::applyInputValues($elements);
+        return CustomizerForm::applyInputValues($elements, $resource_type, $get_resource_args);
     }
 
     /**
