@@ -300,7 +300,7 @@ function customStrictManagePosts()
     
     try {
         $taxonomy_keys = array();
-        foreach (siGetTaxonomiesConfig($post_type) as $conf) {
+        foreach (CustomizerTaxonomiesSettings::get($post_type) as $conf) {
             $taxonomy_key = "{$post_type}_{$conf[SI_KEY]}";
             if (is_object_in_taxonomy($post_type, $taxonomy_key)) {
                 $taxonomy_keys[] = $taxonomy_key;

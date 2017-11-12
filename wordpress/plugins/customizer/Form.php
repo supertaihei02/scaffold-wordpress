@@ -566,15 +566,20 @@ class CustomizerForm
     static function wpPostUpdate()
     {
         $args = $_POST;
-        $post_id = CustomizerUtils::getRequire($args, 'post_ID');
 
         /*
         * セキュリティチェック
         */
-        $common = self::common($args);
+        try {
+            $common = self::common($args);
+        } catch (Exception $e) {
+            return false;
+        }
         if (is_string($common)) {
             return false;
         }
+
+        $post_id = CustomizerUtils::getRequire($args, 'post_ID');
 
         /*
          * POSTデータ取得
