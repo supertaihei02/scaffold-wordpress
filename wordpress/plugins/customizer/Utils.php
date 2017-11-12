@@ -124,7 +124,7 @@ class CustomizerUtils
 
     static function getCustomizePostTypes()
     {
-        return array_reduce(SI_CUSTOM_POST_TYPES[SI_POST_TYPES], function ($reduced, $config) {
+        return array_reduce(CustomizerPostTypeSettings::getAll(), function ($reduced, $config) {
             $reduced[] = $config[SI_KEY];
             return $reduced;
         });
@@ -132,7 +132,8 @@ class CustomizerUtils
 
     static function title($title)
     {
-        return $title . SI_TITLE_SEPARATOR . get_bloginfo('name');
+        $sep = CustomizerDatabase::getOption('seo_base_title_separator', '｜', true);
+        return $title . $sep . get_bloginfo('name');
     }
 
     static function createDir($dir)

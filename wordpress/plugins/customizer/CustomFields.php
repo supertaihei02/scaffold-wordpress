@@ -6,7 +6,7 @@ class CustomizerFields
     {
         add_action('add_meta_boxes', 'CustomizerFields::customFields');
         add_action('save_post', 'CustomizerForm::wpPostUpdate');
-        add_action('admin_enqueue_scripts', 'CustomizerForm::cannotPreview');
+        add_action('admin_enqueue_scripts', 'CustomizerFields::cannotPreview');
     }
 
     static function customFields($post_type)
@@ -111,7 +111,7 @@ function addTaxonomyField($taxonomy)
 }
 
 add_action('add_tag_form_fields', 'addTaxonomyField');
-foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type => $terms) {
+foreach (CustomizerTaxonomiesSettings::getAll() as $post_type => $terms) {
     foreach ($terms as $term) {
         $filter_name = $post_type . SI_BOND . $term[SI_KEY];
         add_action($filter_name . '_add_form_fields', 'addTaxonomyField');
@@ -193,7 +193,7 @@ function siBuildEmptyGroupForTerm()
         SI_BEFORE_FIELD_GROUP => $_GET['group_id']
     ];
 
-    foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type => $terms) {
+    foreach (CustomizerTaxonomiesSettings::getAll() as $post_type => $terms) {
         if ($post_type !== $_GET['post_type']) {
             continue;
         }

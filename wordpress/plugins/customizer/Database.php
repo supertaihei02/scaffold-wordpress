@@ -140,9 +140,10 @@ class CustomizerDatabase
      * WPの get_optionに相当するメソッド
      * @param $key
      * @param bool $default
+     * @param bool $single
      * @return bool|mixed
      */
-    static function getOption($key, $default = false)
+    static function getOption($key, $default = false, $single = false)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table;
@@ -216,6 +217,9 @@ class CustomizerDatabase
             $value = maybe_unserialize($value);
         }
 
+        if ($single && is_array($value)) {
+            $value = array_shift($value);
+        }
         return $value;
     }
 

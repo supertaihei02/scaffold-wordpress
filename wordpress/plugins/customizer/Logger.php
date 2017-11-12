@@ -14,9 +14,9 @@ class Logger
     function __construct()
     {
         $today = (new \DateTime())->format('Y-m-d');
-        $this->level = SI_LOG_LEVEL;
-        $this->time = SI_LOG_OUTPUT_TIME;
-        $this->log_dir = SI_LOG_DIR;
+        $this->level = CustomizerDatabase::getOption('backbone_log_level', 1, true);
+        $this->time = CustomizerDatabase::getOption('backbone_log_include_time', true, true);
+        $this->log_dir = CustomizerDatabase::getOption('backbone_log_output_dir', __DIR__, true);
         $this->log_file = $this->log_dir. '/wp-' .$today;
         error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
         ini_set('display_errors', 'Off');

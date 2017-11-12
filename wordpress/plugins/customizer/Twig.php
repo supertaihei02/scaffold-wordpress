@@ -8,23 +8,29 @@ class CustomizerTwig
      */
     static function createEngine()
     {
-        CustomizerUtils::createDir(SI_TWIG_TEMPLATE_DIR);
-        CustomizerUtils::createDir(SI_TWIG_CACHE_DIR);
+        $is_debug = CustomizerDatabase::getOption('backbone_template_debug_mode', 'off', true);
+        $template_dir = CustomizerDatabase::getOption('backbone_template_theme_template_dir', null, true);
+        $template_cache_dir = CustomizerDatabase::getOption('backbone_template_theme_template_cache_dir', null, true);
+
+        
+        CustomizerUtils::createDir($template_dir);
+        CustomizerUtils::createDir($template_cache_dir);
 
         $loader = new \Twig_Loader_Filesystem([
-            SI_TWIG_TEMPLATE_DIR,
-            SI_TWIG_TEMPLATE_DIR . '/template-parts',
+            $template_dir,
+            $template_dir . '/template-parts',
             plugin_dir_path(__FILE__) . '/templates'
         ]);
+        $is_debug = $is_debug === 'on' ? true : false;
         $twig = new \Twig_Environment($loader, [
-            'debug' => SI_TWIG_DEBUG,
-            'auto_reload' => SI_TWIG_DEBUG,
-            'strict_variables' => SI_TWIG_DEBUG,
-            'cache' => SI_TWIG_CACHE_DIR
+            'debug' => $is_debug,
+            'auto_reload' => $is_debug,
+            'strict_variables' => $is_debug,
+            'cache' => $template_cache_dir
         ]);
 
         // 拡張機能の適用
-        if (SI_TWIG_DEBUG) {
+        if ($is_debug) {
             $twig->addExtension(new \Twig_Extension_Debug());
         }
         $twig->addExtension(new CustomizerTwigExtension());

@@ -180,7 +180,7 @@ function argsInitialize($args)
     // TAGによる絞り込み
     if (isset($args[SI_GET_P_TAGS]) && isset($args[SI_GET_P_POST_TYPE]) && !isGetAllTags($args[SI_GET_P_TAGS])) {
         foreach ($args[SI_GET_P_POST_TYPE] as $post_type) {
-            $taxonomies = siGetTaxonomiesConfig($post_type);
+            $taxonomies = CustomizerTaxonomiesSettings::get($post_type, []);
             foreach ($taxonomies as $taxonomy) {
                 $args[SI_GET_P_TAX_QUERY][] = [
                     SI_GET_P_TAX_QUERY_FIELD => 'slug',
@@ -315,7 +315,7 @@ function getPostsForRender($args, $customize = null)
                 $post_type = $post_content->post_type;
                 $post_id = $add_post->ID;
                 // 詳細画面へのリンクを付与
-                if (siGetPostTypeConfig($post_type)[SI_ARCHIVE_PREVIEW]) {
+                if (CustomizerPostTypeSettings::get($post_type)[SI_ARCHIVE_PREVIEW]) {
                     $add_post->link = site_url() . "/{$post_type}/#{$post_type}{$post_id}";
                 } else {
                     $add_post->link = get_the_permalink();
@@ -497,7 +497,7 @@ function setCustoms($post_id)
         $custom_fields_data = [];
         
         // Post Typeごとに値をまとめる
-        $conf = siGetPostTypeConfig($post_type, false);
+        $conf = CustomizerPostTypeSettings::get($post_type);
         if ($conf === false) {
             return false;
         }
@@ -573,7 +573,7 @@ function getGroupAndFieldNames($post_type, $arg_group_key, $term_mode = false, $
     if ($term_mode) {
         $custom_fields = siGetTaxonomyConfig($post_type, $term_key);
     } else {
-        $custom_fields = siGetPostTypeConfig($post_type);
+        $custom_fields = CustomizerPostTypeSettings::get($post_type);
     }
     foreach ($custom_fields[SI_CUSTOM_FIELDS] as $field_group) {
         if ($arg_group_key !== $field_group[SI_KEY]) {
@@ -833,7 +833,7 @@ function getBasicInfo()
         'charset' => get_bloginfo('charset'),
         'wp_head' => $wp_head,
         'body_class' => join( ' ', get_body_class()),
-        'ga_id' => SI_GOOGLE_ANALYTICS_ID
+        'ga_tag' => CustomizerDatabase::getOption('seo_base_google_analytics_tag', null, true)
     ];
 }
 
@@ -844,13 +844,16 @@ function getSeoMeta($key)
 {
     global $post, $si_customs, $seo_meta;
     
+    $def_desc = CustomizerDatabase::getOption('seo_base_default_description', null, true);
+    $def_keywords = CustomizerDatabase::getOption('seo_base_default_keywords', null, true);
+    $def_og_image = CustomizerDatabase::getOption('seo_base_default_ogp_image', null, true);
     $blog_name = get_bloginfo('name');
     $ogp_url = empty(get_the_permalink()) ? site_url() : get_the_permalink();
     $defaults = [
         SI_TITLE => get_the_title(),
-        SI_DESCRIPTION => SI_DEFAULT_DESCRIPTION . ' ' . $blog_name,
-        SI_KEYWORDS => SI_DEFAULT_KEYWORDS . ',' . $blog_name,
-        SI_OGP_IMAGE => site_url() . SI_DEFAULT_OGP_IMAGE,
+        SI_DESCRIPTION => $def_desc . ' ' . $blog_name,
+        SI_KEYWORDS => $def_keywords . ',' . $blog_name,
+        SI_OGP_IMAGE => site_url() . $def_og_image,
     ];
 
     /*

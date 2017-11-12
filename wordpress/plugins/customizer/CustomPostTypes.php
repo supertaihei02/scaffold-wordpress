@@ -1,18 +1,11 @@
 <?php
-/* *******************************
- *   Custom Post Type & Taxonomy
- * *******************************/
-function create_post_types() {
-    /* *******************************
-     *        Editorial Room
-     * *******************************/
-    (function () {
-        $all_post_types = SI_CUSTOM_POST_TYPES;
-        foreach ($all_post_types[SI_POST_TYPES] as $post_type_info) {
+
+class CustomPostTypes
+{
+    static function createPostTypes() {
+        $all_post_types = CustomizerPostTypeSettings::getAll();
+        foreach ($all_post_types as $post_type_info) {
             $post_key = $post_type_info[SI_KEY];
-            if (in_array($post_key, $all_post_types[SI_UNIQUE_SETTINGS])) {
-                continue;
-            }
 
             // --- POST TYPEの追加 ---
             // supports のパラメータを設定する配列（初期値だと title と editor のみ投稿画面で使える）
@@ -57,8 +50,7 @@ function create_post_types() {
             );
 
             // --- TAXONOMY の追加 ---
-            $taxonomies = isset($all_post_types[SI_TAXONOMIES][$post_key]) ? $all_post_types[SI_TAXONOMIES][$post_key] : [];
-            foreach ($taxonomies as $taxonomy) {
+            foreach (CustomizerTaxonomiesSettings::get($post_key, []) as $taxonomy) {
                 $taxonomy_key = $post_key .SI_BOND. $taxonomy[SI_KEY];
                 $taxonomy_args = array(
                     'show_in_rest' => true,
@@ -69,14 +61,14 @@ function create_post_types() {
                     ),
                     'hierarchical' => $taxonomy[SI_TAX_HIERARCHICAL],   // タクソノミーを階層化するか否か（子カテゴリを作れるか否か）
                     'meta_box_cb' => 'post_categories_meta_box',        // タクソノミーの設定形式は常にチェックボックス(post_tags_meta_box なら形式が変わる)
-                    
+
                     'show_ui' => true,                                  // タグの編集が管理画面上からできるようにするか否か
                     'show_in_menu' => $taxonomy[SI_TAX_SHOW_UI],        // MENUに編集画面が表示されるかどうか
                     'show_in_nav_menus' => true,                        // 
                     'show_tagcloud' => true,                            // 
                     'show_in_quick_edit' => true,                       // 
                 );
-                
+
                 register_taxonomy(
                     $taxonomy_key,                                         // 追加するタクソノミー名（英小文字とアンダースコアのみ）
                     $post_key,                                             // 上で設定したカスタム投稿ID
@@ -88,12 +80,11 @@ function create_post_types() {
                 foreach ($default_terms as $term) {
                     wp_insert_term(
                         $term[SI_NAME],
-                        $taxonomy_key, 
-                        ['slug' => $term[SI_KEY]] 
+                        $taxonomy_key,
+                        ['slug' => $term[SI_KEY]]
                     );
                 }
             }
-        }    
-    })();
+        }
+    }
 }
-add_action( 'init', 'create_post_types' ); // アクションに上記関数をフックします

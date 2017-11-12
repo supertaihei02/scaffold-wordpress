@@ -401,27 +401,10 @@ if (!function_exists('siGetMyRole')) {
         return $pages;
     }
 
-    function siGetPostTypeConfig($arg_post_type, $throw = true)
-    {
-        $conf = false;
-        foreach (SI_CUSTOM_POST_TYPES[SI_POST_TYPES] as $post_type) {
-            if ($arg_post_type === $post_type[SI_KEY]) {
-                $conf = $post_type;
-                break;
-            }
-        }
-
-        if ($conf === false && $throw) {
-            throw new Exception("[ {$arg_post_type} ] is not Post Type.");
-        }
-
-        return $conf;
-    }
-
     function siGetFieldGroupConfig($arg_post_type, $arg_group_key, $throw = true)
     {
         $conf = false;
-        foreach (siGetPostTypeConfig($arg_post_type)[SI_CUSTOM_FIELDS] as $group) {
+        foreach (CustomizerPostTypeSettings::get($arg_post_type)[SI_CUSTOM_FIELDS] as $group) {
             if ($arg_group_key === $group[SI_KEY]) {
                 $conf = $group;
                 break;
@@ -435,33 +418,12 @@ if (!function_exists('siGetMyRole')) {
         return $conf;
     }
 
-    function siGetTaxonomiesConfig($arg_post_type, $throw = true)
-    {
-        $conf = false;
-        foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type_key => $taxonomies) {
-            if ($arg_post_type === $post_type_key) {
-                $conf = $taxonomies;
-                break;
-            }
-        }
-
-        if ($conf === false && $throw) {
-            throw new Exception("[ $arg_post_type ] has not Taxonomies.");
-        }
-
-        return $conf;
-    }
-
     function siGetTaxonomyConfig($arg_post_type, $taxonomy_key, $throw = true)
     {
         $conf = false;
-        foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type_key => $taxonomies) {
-            if ($arg_post_type === $post_type_key) {
-                foreach ($taxonomies as $taxonomy) {
-                    if ($taxonomy_key === $taxonomy[SI_KEY]) {
-                        $conf = $taxonomy;
-                    }
-                }
+        foreach (CustomizerTaxonomiesSettings::get($arg_post_type) as $taxonomy) {
+            if ($taxonomy_key === $taxonomy[SI_KEY]) {
+                $conf = $taxonomy;
                 break;
             }
         }
@@ -481,7 +443,7 @@ if (!function_exists('siGetMyRole')) {
     function siSearchTaxonomyConfig($taxonomy_key)
     {
         $config = false;
-        foreach (SI_CUSTOM_POST_TYPES[SI_TAXONOMIES] as $post_type => $taxonomies) {
+        foreach (CustomizerTaxonomiesSettings::getAll() as $post_type => $taxonomies) {
             if (strpos($taxonomy_key, $post_type) === false) {
                 continue;
             }

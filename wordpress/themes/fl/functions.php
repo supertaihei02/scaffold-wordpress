@@ -14,21 +14,21 @@ if (isActiveCustomizer()) {
             SI_TITLE => 'HOME title',
             SI_DESCRIPTION => 'HOME desc',
             SI_KEYWORDS => 'HOME keywords',
-            SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
+            SI_OGP_IMAGE => null
         ],
         // 404 Page
         SI_PAGE_TYPE_404 => [
             SI_TITLE => '404 title',
             SI_DESCRIPTION => '',
             SI_KEYWORDS => '',
-            SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
+            SI_OGP_IMAGE => null
         ],
         // News Archive Page
         SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
             SI_TITLE => 'NEWS ARCHIVE title',
             SI_DESCRIPTION => 'NEWS ARCHIVE desc',
             SI_KEYWORDS => 'NEWS ARCHIVE keywords',
-            SI_OGP_IMAGE => SI_DEFAULT_OGP_IMAGE
+            SI_OGP_IMAGE => null
         ],
     ];
     

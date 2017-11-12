@@ -92,10 +92,9 @@ class ReservationPost extends BaseCron
 
     function reservationPost()
     {
-        $post_types = array_reduce(SI_CUSTOM_POST_TYPES[SI_POST_TYPES], function ($reduced, $post_type) {
-            $reduced[] = $post_type[SI_KEY];
-            return $reduced;
-        }, array('post'));
+        $post_types = CustomizerUtils::getCustomizePostTypes();
+        $post_types[] = 'post';
+        
         $posts = get_posts(array(
             SI_GET_P_POST_TYPE => $post_types,
             SI_GET_P_STATUS => SI_GET_P_STATUS_FUTURE

@@ -13,7 +13,7 @@ function remove_admin_menus()
         $roles = siGetMyRole($user_id);
     }
     
-    $all_post_types = SI_CUSTOM_POST_TYPES;
+    $all_post_types = CustomizerPostTypeSettings::getAll();
 
     // 表示したくないMenuを削除 
     if (empty($roles)) {
@@ -44,7 +44,7 @@ function remove_admin_menus()
     }
 
     // 自分で作成した Custom Post Type の表示可否
-    $positions = array_reduce($all_post_types[SI_POST_TYPES], function ($reduced, $post_type) use ($roles) {
+    $positions = array_reduce($all_post_types, function ($reduced, $post_type) use ($roles) {
         $authorized = false;
         foreach ($roles as $role) {
             if (in_array($role, $post_type[SI_ALLOW_ROLES]) || $role === ROLE_SUPER_ADMIN) {
@@ -389,7 +389,7 @@ function getPreviewPostLink ($url)
 {
     $preview_url = $url;
     $post_type = get_post_type();
-    $conf = siGetPostTypeConfig($post_type, false);
+    $conf = CustomizerPostTypeSettings::get($post_type);
     if (CustomizerUtils::get($conf, SI_ARCHIVE_PREVIEW, false)) {
         $post_id = get_the_ID();
         $add_query = array(
