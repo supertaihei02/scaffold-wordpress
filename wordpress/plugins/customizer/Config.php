@@ -130,7 +130,53 @@ class CustomizerConfig
         
         return $setting;
     }
+    
+    /* *******************************
+     *      Form設定の中のField設定
+     * *******************************/
+    /**
+     * @param $config
+     * @param $field_key
+     * @return bool | array
+     */
+    static function getFieldSetting($config, $field_key)
+    {
+        $result = false;
+        if (!isset($config[SI_CUSTOM_FIELDS])) {
+            return $result;
+        }
 
+        foreach ($config[SI_CUSTOM_FIELDS] as $field) {
+            if ($field[SI_KEY] === $field_key) {
+                $result = $field;
+                break;
+            }
+        }
+        
+        return $result;
+    }
+
+    /**
+     * @param $config
+     * @param $input_key
+     * @return bool | array
+     */
+    static function getInputSetting($config, $input_key)
+    {
+        $result = false;
+        if (!isset($config[SI_FIELDS])) {
+            return $result;
+        }
+
+        foreach ($config[SI_FIELDS] as $input) {
+            if ($input[SI_KEY] === $input_key) {
+                $result = $input;
+                break;
+            }
+        }
+
+        return $result;
+    }
     
 }
 
@@ -369,6 +415,30 @@ class CustomizerTaxonomiesSettings
  */
 class CustomizerFormSettings
 {
+    /**
+     * @param $post_type
+     * @param bool $default
+     * @return array | bool
+     */
+    static function get($post_type, $default = false)
+    {
+        $result = $default;
+        $callable = "CustomizerFormSettings::{$post_type}";
+        if (is_callable($callable)) {
+            $result = $callable();
+        }
+
+        return $result;
+    }
+
+    static function getAll()
+    {
+        return [
+            'backbone' => self::backbone(),
+            'seo' => self::seo(),
+        ];
+    }
+    
     static function test()
     {
         return [

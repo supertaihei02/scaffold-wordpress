@@ -1,7 +1,4 @@
 <?php
-global $option_with_sequence_db_version;
-$option_with_sequence_db_version = '1.1';
-
 class CustomizerDatabase
 {
     static $table = 'option_with_sequence';
@@ -296,9 +293,9 @@ class CustomizerDatabase
                 $sequence++;
             }
         }
-        
+
         $result = $wpdb->query($wpdb->prepare("INSERT INTO `$table_name` (`option_key`, `option_value`, `option_sequence`, `autoload`) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE `option_key` = VALUES(`option_key`), `option_value` = VALUES(`option_value`), `option_sequence` = VALUES(`option_sequence`), `autoload` = VALUES(`autoload`)", $option, $serialized_value, $sequence, $autoload));
-        
+
         if (!$result) { return false; }
 
         if (!wp_installing()) {
@@ -332,7 +329,7 @@ class CustomizerDatabase
         $table_name = $wpdb->prefix . self::$table;
 
         $option = trim($key);
-        if (empty($option)) { return false; } 
+        if (empty($option)) { return false; }
 
         // Get the ID, if no ID then return
         $where_query = 'option_key = %s';
@@ -343,10 +340,10 @@ class CustomizerDatabase
             $where_query_arr['option_sequence'] = $sequence;
             $where_args[] = $sequence;
         }
-        
+
         $rows = $wpdb->get_results($wpdb->prepare("SELECT option_key, option_sequence, autoload FROM $table_name WHERE $where_query", ...$where_args));
         if (empty($rows)) { return false; }
-        
+
         $result = $wpdb->delete($table_name, $where_query_arr);
         if (!wp_installing()) {
             $autoload_options = [];
@@ -354,7 +351,7 @@ class CustomizerDatabase
                 if ('no' === $row->autoload) { continue; }
                 $autoload_options[] = $row;
             }
-            
+
             if (!empty($autoload_options)) {
                 $all_options = self::loadAllOptions();
                 foreach ($autoload_options as $autoload_option) {
@@ -378,7 +375,7 @@ class CustomizerDatabase
                 wp_cache_set($option, $cached_option, self::$CACHE_GROUP_KEY);
             }
         }
-        
+
         return $result ? true : false;
     }
 }

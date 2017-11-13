@@ -8,10 +8,15 @@ class CustomizerTwig
      */
     static function createEngine()
     {
-        $is_debug = CustomizerDatabase::getOption('backbone_template_debug_mode', 'off', true);
-        $template_dir = CustomizerDatabase::getOption('backbone_template_theme_template_dir', null, true);
-        $template_cache_dir = CustomizerDatabase::getOption('backbone_template_theme_template_cache_dir', null, true);
-
+        $setting = CustomizerFormSettings::get('backbone');
+        $setting = CustomizerConfig::getFieldSetting($setting, 'template');
+        $debug_mode = CustomizerConfig::getInputSetting($setting, 'debug_mode');
+        $theme_template_dir = CustomizerConfig::getInputSetting($setting, 'theme_template_dir');
+        $theme_template_cache_dir = CustomizerConfig::getInputSetting($setting, 'theme_template_cache_dir');
+        
+        $is_debug = CustomizerDatabase::getOption('backbone_template_debug_mode', $debug_mode[SI_DEFAULT], true);
+        $template_dir = CustomizerDatabase::getOption('backbone_template_theme_template_dir', $theme_template_dir[SI_DEFAULT], true);
+        $template_cache_dir = CustomizerDatabase::getOption('backbone_template_theme_template_cache_dir', $theme_template_cache_dir[SI_DEFAULT], true);
         
         CustomizerUtils::createDir($template_dir);
         CustomizerUtils::createDir($template_cache_dir);

@@ -13,10 +13,16 @@ class Logger
     
     function __construct()
     {
+        $setting = CustomizerFormSettings::get('backbone');
+        $setting = CustomizerConfig::getFieldSetting($setting, 'log');
+        $output_dir = CustomizerConfig::getInputSetting($setting, 'output_dir');
+        $level = CustomizerConfig::getInputSetting($setting, 'level');
+        $include_time = CustomizerConfig::getInputSetting($setting, 'include_time');
+        
         $today = (new \DateTime())->format('Y-m-d');
-        $this->level = CustomizerDatabase::getOption('backbone_log_level', 1, true);
-        $this->time = CustomizerDatabase::getOption('backbone_log_include_time', true, true);
-        $this->log_dir = CustomizerDatabase::getOption('backbone_log_output_dir', __DIR__, true);
+        $this->level = CustomizerDatabase::getOption('backbone_log_level', $level[SI_DEFAULT], true);
+        $this->time = CustomizerDatabase::getOption('backbone_log_include_time', $include_time[SI_DEFAULT], true);
+        $this->log_dir = CustomizerDatabase::getOption('backbone_log_output_dir', $output_dir[SI_DEFAULT], true);
         $this->log_file = $this->log_dir. '/wp-' .$today;
         error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
         ini_set('display_errors', 'Off');

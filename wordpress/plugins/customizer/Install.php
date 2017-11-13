@@ -33,7 +33,6 @@ class CustomizerInstall
     static function initialize()
     {
         // DBの定義
-        add_action('plugins_loaded', 'CustomizerInstall::updateDb');
         register_uninstall_hook(__FILE__, 'CustomizerInstall::uninstall');
         
         // WP-Cronが効かない場合の回避策

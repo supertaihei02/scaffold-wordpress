@@ -35,7 +35,11 @@ if (!is_file(ABSPATH . '/vendor/autoload.php')) {
 require ABSPATH . '/vendor/autoload.php';
 require SI_BASE_PATH . '/ClassLoader.php';
 
+// DBの定義
+CustomizerInstall::updateDb();
+
 // Globals
+$option_with_sequence_db_version = '1.0';
 $si_logger = new Logger();
 $si_customs = [];
 $si_terms = [];
