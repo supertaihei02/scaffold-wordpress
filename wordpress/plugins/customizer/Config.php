@@ -359,6 +359,7 @@ class CustomizerTaxonomiesSettings
     {
         return [
             [
+                SI_FORM_ACTION => SI_FORM_ACTION_SAVE_WP_TERM,
                 // TAXONOMYのID
                 SI_KEY  => 'categories',
                 // TAXONOMYの表示名称

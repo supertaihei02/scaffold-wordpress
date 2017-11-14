@@ -106,6 +106,13 @@ class CustomizerTwigExtension extends Twig_Extension
      * *******************************/
     static function formSettingForOptions($option_group_key, $config = null,  $success_url = null, $failure_url = null)
     {
+        if (is_admin()) {
+            wp_enqueue_media();
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
+        } else {
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
+        }
+        
         $key = 'update_option_with_sequence_';
         $escaped = esc_attr($option_group_key);
         $key .= $escaped;
@@ -160,12 +167,6 @@ class CustomizerTwigExtension extends Twig_Extension
     static function displayForm($template, $paths, $resource_type = SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES, $get_resource_args = [])
     {
         global $si_twig;
-        if (is_admin()) {
-            wp_enqueue_media();
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
-        } else {
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
-        }
         
         $config = self::getConfig($paths);
         $si_twig->display($template, [

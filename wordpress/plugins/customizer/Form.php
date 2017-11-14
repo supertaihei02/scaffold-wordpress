@@ -163,13 +163,18 @@ class CustomizerForm
                 $result = CustomizerDatabase::getOption($element->id, $default);
                 break;
             case SI_RESOURCE_TYPE_POST_META:
-//                global $si_logger; $si_logger->develop([$get_resource_args[SI_GET_P_POST_ID], $element->name], null, $resource_type);
                 $result = get_post_meta($get_resource_args[SI_GET_P_POST_ID], $element->name, true);
                 $result = empty($result) ? $default : $result;
-//                global $si_logger; $si_logger->develop($result);
+                break;
+            case SI_RESOURCE_TYPE_TERM_META:
+                $result = get_term_meta($get_resource_args[SI_TERM_ID], $element->name, true);
+                $result = empty($result) ? $default : $result;
                 break;
             case SI_RESOURCE_TYPE_SPREAD_SHEET:
                 $result = [];
+                break;
+            case SI_RESOURCE_TYPE_DO_NOT_GET:
+                $result = $default;
                 break;
             default:
                 throw new Exception("{$resource_type} is not exist.");
@@ -456,7 +461,7 @@ class CustomizerForm
     /* *******************************
      *          保存処理
      * *******************************/
-    static function common($args)
+    static function common($args, $config = null)
     {
         $delete_names = CustomizerUtils::asArray(CustomizerUtils::get($args, 'delete_names', []));
         $option_group = CustomizerUtils::getRequire($args, 'option_group');
@@ -477,7 +482,7 @@ class CustomizerForm
         /*
          * 保存対象の抽出
          */
-        $form_info = CustomizerConfig::getFormSetting($option_group, false);
+        $form_info = is_null($config) ? CustomizerConfig::getFormSetting($option_group, false) : $config;
         if ($form_info === false) {
             return $failure_url;
         }
@@ -627,7 +632,8 @@ class CustomizerForm
         * セキュリティチェック
         */
         try {
-            $common = self::common($args);
+            $term = get_term($term_id);
+            $common = self::common($args, [$term->taxonomy => siSearchTaxonomyConfig($term->taxonomy)]);
         } catch (Exception $e) {
             return false;
         }

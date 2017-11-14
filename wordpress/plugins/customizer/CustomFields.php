@@ -14,16 +14,16 @@ class CustomizerFields
         add_action('admin_enqueue_scripts', 'CustomizerFields::hiddenField');
         
         // Taxonomies
-//        add_action('create_term', 'CustomizerForm::wpTermUpdate');
-//        add_action('edit_terms', 'CustomizerForm::wpTermUpdate');
-//        add_action('edit_tag_form', 'CustomizerFields::addTaxonomyFieldDetail');
-//        add_action('add_tag_form_fields', 'CustomizerFields::addTaxonomyField');
-//        foreach (CustomizerTaxonomiesSettings::getAll() as $post_type => $terms) {
-//            foreach ($terms as $term) {
-//                $filter_name = $post_type . SI_BOND . $term[SI_KEY];
-//                add_action($filter_name . '_add_form_fields', 'CustomizerFields::addTaxonomyField');
-//            }
-//        }
+        add_action('create_term', 'CustomizerForm::wpTermUpdate');
+        add_action('edit_terms', 'CustomizerForm::wpTermUpdate');
+        add_action('edit_tag_form', 'CustomizerFields::addTaxonomyFieldDetail');
+        add_action('add_tag_form_fields', 'CustomizerFields::addTaxonomyField');
+        foreach (CustomizerTaxonomiesSettings::getAll() as $post_type => $terms) {
+            foreach ($terms as $term) {
+                $filter_name = $post_type . SI_BOND . $term[SI_KEY];
+                add_action($filter_name . '_add_form_fields', 'CustomizerFields::addTaxonomyField');
+            }
+        }
     }
 
     /* *******************************
@@ -36,13 +36,6 @@ class CustomizerFields
         $conf = CustomizerConfig::getFormSetting($post_type, false);
         if ($conf === false) {
             return false;
-        }
-
-        if (is_admin()) {
-            wp_enqueue_media();
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
-        } else {
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
         }
 
         $elements = CustomizerTwigExtension::getRenderElements($conf, $post_type, SI_RESOURCE_TYPE_POST_META, [
@@ -138,86 +131,27 @@ class CustomizerFields
 
     static function addTaxonomyFieldDetail($term)
     {
-        self::displayTaxonomyFields($term->taxonomy, $term->slug);
+        self::displayTaxonomyFields($term->taxonomy, $term->term_id);
     }
 
-    static function displayTaxonomyFields($taxonomy, $slug = null)
+    static function displayTaxonomyFields($taxonomy, $term_id = null)
     {
-        $config = siSearchTaxonomyConfig($taxonomy);
-        global $si_logger; $si_logger->develop($config, null, 'take1');
+        global $si_twig;
+        $conf = [$taxonomy => siSearchTaxonomyConfig($taxonomy)];
+        $get_type = is_null($term_id) ? SI_RESOURCE_TYPE_DO_NOT_GET : SI_RESOURCE_TYPE_TERM_META;
+        $args = is_null($term_id) ? [] : [
+            SI_TERM_ID => $term_id
+        ];
+        $elements = CustomizerTwigExtension::getRenderElements(
+            $conf, $taxonomy, $get_type, $args
+        );
+        $si_twig->display(
+            'CallWpPostTerm.twig',
+            [
+                'elements' => $elements,
+                'root' => $taxonomy,
+                'config' => $conf
+            ]
+        );
     }
-}
-
-/**
- * $taxonomyの管理画面にFormを追加する
- * @param $taxonomy
- * @param null $slug
- */
-function siTaxonomyFormRender($taxonomy, $slug = null)
-{
-    $config = siSearchTaxonomyConfig($taxonomy);
-    if (empty($config[SI_CUSTOM_FIELDS])) {
-        return;
-    }
-    $custom_fields = $config[SI_CUSTOM_FIELDS];
-    if (empty($custom_fields)) {
-        return;
-    }
-
-    // Taxonomy情報を取得
-    $term_id = (function ($taxonomy, $slug) {
-        if (is_null($slug)) {
-            return null;
-        }
-        $taxonomies = get_terms($taxonomy, [
-            'hide_empty' => false,
-            'slug' => $slug
-        ]);
-        $current_taxonomy = array_shift($taxonomies);
-        return intval($current_taxonomy->term_id);
-    })($taxonomy, $slug);
-
-    echo '<table class="form-table"><tbody>';
-
-    $is_first = true;
-    foreach ($custom_fields as $custom_field_group) {
-        // 引数の作成
-        $value_indexes = (function ($term_id, $custom_field_group) {
-            if (!$custom_field_group[SI_IS_MULTIPLE]) {
-                return [0];
-            }
-            // 動的な項目の場合はValueIndex情報を更新する
-            $stored_serial = get_term_meta($term_id, $custom_field_group[SI_KEY] . SI_BOND . 'serial', true);
-            if (empty($stored_serial)) {
-                return [0];
-            }
-            return $stored_serial;
-        })($term_id, $custom_field_group);
-        end($value_indexes);
-        $final_key = key($value_indexes);
-        $before_group_key = null;
-        $is_first_in_group = true;
-
-        foreach ($value_indexes as $array_index => $value_index) {
-            // multiの時はmeta_box_keyにくっ付ける
-            $group_multi_key = $custom_field_group[SI_IS_MULTIPLE] ? $value_index : '';
-            $group_key = $custom_field_group[SI_KEY] . $group_multi_key;
-
-            $render_config = [
-                SI_IS_FIRST => $is_first,
-                SI_IS_LAST => ($final_key === $array_index),
-                SI_ARRAY_INDEX => $array_index,
-                SI_VALUE_INDEX => $value_index,
-                SI_GROUP_INFO => $custom_field_group,
-                SI_POST_TYPE => $config[SI_POST_TYPE],
-                SI_BEFORE_FIELD_GROUP => $before_group_key
-            ];
-            drawFrameForTerm($render_config, $value_index, $term_id, $is_first_in_group);
-
-            $is_first = false;
-            $is_first_in_group = false;
-            $before_group_key = $group_key;
-        }
-    }
-    echo '</tbody></table>';
 }

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function()
     function initialize() {
         var form = document.querySelector('#auto-form');
         form = form ? form : document.querySelector('form#post');
+        form = form ? form : document.querySelector('form#edittag');
         if (form) {
             form.addEventListener('submit', function () {
                 var hidden = document.createElement('input');
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function()
         }
         
         // アップロードボタンのバインド
-        if (uploadBindEvent) {
+        if (typeof uploadBindEvent !== "undefined") {
           uploadBindEvent();
         }
 

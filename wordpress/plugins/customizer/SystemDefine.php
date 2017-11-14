@@ -37,6 +37,7 @@ define('SI_GROUP_INFO',  'group_info');
 define('SI_TAGS',  'tags');
 define('SI_SLUG',  'slug');
 define('SI_TERMS',  'terms');
+define('SI_TERM_ID',  'term_id');
 define('SI_IS_PLANE',  'plane');
 define('SI_CUR_CLASS',  'current_class_name');
 define('SI_HAS_ARCHIVE',  'has_archive');
@@ -170,7 +171,9 @@ define('SI_FORM_ACTION_SEND_MAIL',  'send_mail' . SI_FORM_ACTION_ENCRYPT_KEY);
 define('SI_RESOURCE_TYPE',  'resource_type');
 define('SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES',  'option_with_sequences');
 define('SI_RESOURCE_TYPE_POST_META',  'post_meta');
+define('SI_RESOURCE_TYPE_TERM_META',  'term_meta');
 define('SI_RESOURCE_TYPE_SPREAD_SHEET',  'spread_sheet');
+define('SI_RESOURCE_TYPE_DO_NOT_GET',  'none');
 
 
 // --- 設定画面
