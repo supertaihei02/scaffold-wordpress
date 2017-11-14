@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', function()
                 chk.addEventListener('change', changeCheckBoxValue, false);
             });
         }
+        
+        // アップロードボタンのバインド
+        if (uploadBindEvent) {
+          uploadBindEvent();
+        }
 
     }
 
