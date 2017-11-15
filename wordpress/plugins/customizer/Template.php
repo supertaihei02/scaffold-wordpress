@@ -505,6 +505,9 @@ function setCustoms($post_id)
         foreach ($this_type_conf as $field_group) {
             $group_key = $field_group[SI_KEY];
             foreach ($custom_data_list as $group_and_field_key => $custom_data) {
+                // Keyのハイフンを置き換える
+                
+                $group_and_field_key = str_replace(SI_HYPHEN, SI_BOND, $group_and_field_key);
                 // デフォルトで入るデータは弾く
                 if (in_array($group_and_field_key, ['_edit_lock', '_edit_last'])) {
                     continue;
@@ -580,7 +583,7 @@ function getGroupAndFieldNames($post_type, $arg_group_key, $term_mode = false, $
             continue;
         }
         foreach ($field_group[SI_FIELDS] as $field) {
-            $names[] = $arg_group_key.SI_BOND.$field[SI_KEY];
+            $names[] = CustomizerForm::bond($arg_group_key, $field[SI_KEY]);
         }
         break;
     }
@@ -717,11 +720,13 @@ function getFormattedTermMeta($term)
                     continue;
                 }
                 // このField Groupに存在しないカラムは弾く
+                $group_and_field_key = str_replace($this_type_conf[SI_KEY].SI_BOND, '', $group_and_field_key);
                 if (!in_array($group_and_field_key, getGroupAndFieldNames($this_type_conf[SI_POST_TYPE], $group_key, true, $this_type_conf[SI_KEY]))) {
                     continue;
                 }
                 // 配列がシリアライズされているので、オブジェクトに直して保存
                 $serialized = array_shift($custom_data);
+                $group_and_field_key = str_replace($group_key.SI_BOND, '', $group_and_field_key);
                 $custom_fields_data[$group_key][$group_and_field_key] = maybe_unserialize($serialized);
             }
         }
