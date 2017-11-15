@@ -17,10 +17,15 @@ define('SI_CRON_TYPE',  'type');
 define('SI_BOND',  '_');
 define('SI_HYPHEN',  '-');
 
+define('SI_SYSTEM_DATE_FORMAT', 'Y-m-d');
+define('SI_SYSTEM_TIME_FORMAT', ' H:i:s');
+define('SI_SYSTEM_ZERO_TIME', ' 00:00:00');
+
 define('SI_KEY',  'key');
 define('SI_NAME',  'name');
 define('SI_SELECTED',  'selected');
 define('SI_DEFAULT',  'default');
+define('SI_EXTRA',  'extra');
 define('SI_POST_TYPE',  'post_type');
 define('SI_POST_TYPES',  'post_types');
 define('SI_BEFORE_FIELD_GROUP',  'before_field_group');
@@ -63,6 +68,18 @@ define('SI_FIELD_TYPE_FILE',  'file');
 define('SI_FIELD_TYPE_RADIO',  'radio');
 define('SI_FIELD_TYPE_SELECT',  'select');
 define('SI_FIELD_TYPE_NUMBER',  'number');
+define('SI_FIELD_TYPE_DATE',  'date');
+define('SI_FIELD_TYPE_TIME',  'time');
+
+// --- Input "date" EXTRA keys ---
+define('SI_DATE_EXTRA_MIN_DATE_SETTING',  'min_date');
+define('SI_DATE_EXTRA_MAX_DATE_SETTING',  'max_date');
+// --- Input "date" EXTRA values (Default値でも利用可能) ---
+define('SI_DATE_EXTRA_NOW',  'now');
+define('SI_DATE_EXTRA_TODAY',  'today');
+define('SI_DATE_EXTRA_TODAY_BEFORE',  'today_before');
+define('SI_DATE_EXTRA_TODAY_AFTER',  'today_after');
+define('SI_DATE_EXTRA_SET_TIME',  'set_time');
 
 define('SI_FIELD_CHOICE_VALUES',  'choice_values');
 define('SI_FIELD_CHOICE_TYPE_USERS',  'users');

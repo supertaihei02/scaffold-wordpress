@@ -133,7 +133,10 @@ class CustomizerForm
         if (CustomizerUtils::get($field, SI_FIELD_IS_REQUIRE, false)) {
             $elem->addAttributes('required');
         }
-        
+
+        // 特殊設定値をセット
+        $elem->addExtras(CustomizerUtils::get($field, SI_EXTRA, []));
+
         // input系要素には全て inputクラスを付ける
         $elem->addClasses('input');
         
@@ -224,13 +227,19 @@ class CustomizerForm
                 $value = self::getData($element, false, $resource_type, $get_resource_args);
                 if ($value === false) {
                     $value = $element->default_value;
+                    $element->is_data_exist = false;
                 } else {
                     $value = array_shift($value);
+                    $element->is_data_exist = true;
                 }
             }
             
             $element = self::changeSequence($element, $sequence, $value);
             $elements[] = self::customElement($element);
+
+            if ($element->input_type === SI_FIELD_TYPE_TIME) {
+                global $si_logger; $si_logger->develop(self::customElement($element), null, '$element');
+            }
         }
         /*
          * Input要素でなく multiple なら Block要素である
@@ -390,6 +399,9 @@ class CustomizerForm
      */
     static function customElement(CustomizerElement $element)
     {
+        // 特別な値なら変換する
+        $element->value = self::convertDateTimeExtraValue($element->value);
+
         switch ($element->input_type) {
             case SI_FIELD_TYPE_SELECT:
             case SI_FIELD_TYPE_RADIO:
@@ -405,11 +417,157 @@ class CustomizerForm
                     return $reduced;
                 }, []);
                 break;
+
+            case SI_FIELD_TYPE_DATE:
+                if (isset($element->extras[SI_DATE_EXTRA_MIN_DATE_SETTING])) {
+                    $element->addAttributes([
+                        'min' => self::convertDateTimeExtraValue(
+                            $element->extras[SI_DATE_EXTRA_MIN_DATE_SETTING]
+                        )
+                    ]);
+                }
+                if (isset($element->extras[SI_DATE_EXTRA_MAX_DATE_SETTING])) {
+                    $element->addAttributes([
+                        'max' => self::convertDateTimeExtraValue(
+                            $element->extras[SI_DATE_EXTRA_MAX_DATE_SETTING]
+                        )
+                    ]);
+                }
+                break;
+                
+            case SI_FIELD_TYPE_TIME:
+                if (!empty($element->value)) {
+                    $converted = new DateTime($element->value);
+                    $element->value = $converted->format(SI_SYSTEM_TIME_FORMAT);
+                }
+                if (isset($element->extras[SI_DATE_EXTRA_MIN_DATE_SETTING])) {
+                    $converted = self::convertDateTimeExtraValue(
+                        $element->extras[SI_DATE_EXTRA_MIN_DATE_SETTING]
+                    );
+                    $converted = new DateTime($converted);
+                    $converted = $converted->format(SI_SYSTEM_TIME_FORMAT);
+                    $element->addAttributes([
+                        'min' => $converted
+                    ]);
+                }
+                if (isset($element->extras[SI_DATE_EXTRA_MAX_DATE_SETTING])) {
+                    $converted = self::convertDateTimeExtraValue(
+                        $element->extras[SI_DATE_EXTRA_MAX_DATE_SETTING]
+                    );
+                    $converted = new DateTime($converted);
+                    $converted = $converted->format(SI_SYSTEM_TIME_FORMAT);
+                    $element->addAttributes([
+                        'max' => $converted
+                    ]);
+                }
+                
+                
+                
+                
+                break;
         }
 
         return $element;
     }
 
+    /**
+     * "today" 等特殊な値を日付等に変換する
+     * @param $setting_value
+     * @return bool|string
+     */
+    static function convertDateTimeExtraValue($setting_value)
+    {
+        $result = $setting_value;
+        // 今日
+        if ($setting_value === SI_DATE_EXTRA_TODAY) {
+            $now = new DateTime();
+            $result = $now->format(SI_SYSTEM_DATE_FORMAT.SI_SYSTEM_ZERO_TIME);
+        } 
+        // 今
+        else if ($setting_value === SI_DATE_EXTRA_NOW) {
+            $now = new DateTime();
+            $result = $now->format(SI_SYSTEM_DATE_FORMAT.SI_SYSTEM_TIME_FORMAT);
+        }
+        // 複雑な設定
+        else if (is_array($setting_value) && ($datetime = self::configToDateTimeString($setting_value)) !== false) {
+            $result = $datetime;
+        }
+        return $result;
+    }
+
+    /**
+     * 複雑な時間設定処理
+     * @param $config
+     * @return bool | string
+     */
+    static function configToDateTimeString($config)
+    {
+        $result = false;
+        $is_time_setting = false;
+        $now = new DateTime();
+        
+        $extra_settings = [
+            SI_DATE_EXTRA_TODAY_BEFORE, SI_DATE_EXTRA_TODAY_AFTER, SI_DATE_EXTRA_SET_TIME
+        ];
+        foreach ($extra_settings as $extra_setting) {
+            if (array_key_exists($extra_setting, $config)) {
+                $is_time_setting = true;
+                $now = self::buildDateTime($now, $extra_setting, $config[$extra_setting]);
+            }
+        }
+
+        if ($is_time_setting) {
+            $result = $now->format(SI_SYSTEM_DATE_FORMAT.SI_SYSTEM_TIME_FORMAT);
+        }
+        
+        return $result;
+    }
+
+    /**
+     * 設定にしたがって時刻を修正する
+     * @param DateTime $current_date
+     * @param $extra_key
+     * @param $extra_value
+     * @return DateTime
+     */
+    static function buildDateTime(DateTime $current_date, $extra_key, $extra_value)
+    {
+        try {
+            switch ($extra_key) {
+                case SI_DATE_EXTRA_TODAY_BEFORE:
+                    $current_date->modify("-{$extra_value} day");
+                    break;
+                case SI_DATE_EXTRA_TODAY_AFTER:
+                    $current_date->modify("+{$extra_value} day");
+                    break;
+                case SI_DATE_EXTRA_SET_TIME:
+                    $times = explode(':', $extra_value);
+                    // フォーマットがおかしければ例外が飛ぶようにしている
+                    if (count($times) === 3) {
+                        list($h, $i, $s) = $times;
+                    } else {
+                        $s = 0;
+                        list($h, $i) = $times;
+                    }
+                    $current_date->setTime($h, $i, $s);
+                    break;
+            }
+        } catch (Exception $exception) {
+            global $si_logger;
+            $si_logger->debug(
+                $exception->getMessage() .
+                PHP_EOL . $exception->getTraceAsString()
+            );
+        }
+
+        return $current_date;
+    }
+
+    /**
+     * Elementsの中から再帰的にInput要素のみを抽出
+     * @param $elements
+     * @return mixed
+     */
     static function extractInputElements($elements)
     {
         return array_reduce($elements, function ($reduced, $element) {

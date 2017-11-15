@@ -252,6 +252,7 @@ class CustomizerPostTypeSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY  => 'topic',
@@ -263,6 +264,7 @@ class CustomizerPostTypeSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ]
                     ]
                 ],
@@ -286,6 +288,7 @@ class CustomizerPostTypeSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ]
                     ]
                 ],
@@ -309,6 +312,7 @@ class CustomizerPostTypeSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY  => 'text',
@@ -320,6 +324,7 @@ class CustomizerPostTypeSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ]
                     ]
                 ],
@@ -398,6 +403,7 @@ class CustomizerTaxonomiesSettings
                                 SI_ELEM_CLASSES => [],
                                 SI_FIELD_CHOICE_VALUES => [],
                                 SI_FIELD_OPTION_AUTOLOAD => false,
+                                SI_EXTRA => [],
                             ],
                         ]
                     ]
@@ -460,6 +466,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'text'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'textarea',
@@ -471,6 +478,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'textarea'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'checkbox',
@@ -495,6 +503,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'hidden',
@@ -506,6 +515,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'hidden'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'file',
@@ -517,6 +527,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'file'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'radio',
@@ -537,6 +548,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'select',
@@ -561,6 +573,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'number',
@@ -572,6 +585,54 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'date',
+                            SI_NAME => '日付',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_DATE,
+                            SI_DEFAULT => [
+                                SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                SI_DATE_EXTRA_SET_TIME => '17:00:00',
+                            ],
+                            SI_ELEM_ATTRS => ['length' => 20],
+                            SI_ELEM_CLASSES => ['test', 'date'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [
+                                SI_DATE_EXTRA_MIN_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                    SI_DATE_EXTRA_SET_TIME => '17:00',    
+                                ],
+                                SI_DATE_EXTRA_MAX_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 30,
+                                    SI_DATE_EXTRA_SET_TIME => '05:00',
+                                ],
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'time',
+                            SI_NAME => '時刻',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TIME,
+                            SI_DEFAULT => '17:00',
+                            SI_ELEM_ATTRS => [
+                                'step' => 1800
+                            ],
+                            SI_ELEM_CLASSES => ['test', 'time'],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [
+                                SI_DATE_EXTRA_MIN_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                    SI_DATE_EXTRA_SET_TIME => '17:00',
+                                ],
+                                SI_DATE_EXTRA_MAX_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 30,
+                                    SI_DATE_EXTRA_SET_TIME => '23:30',
+                                ],
+                            ],
                         ],
                     ]
                 ],
@@ -590,6 +651,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'text'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'textarea',
@@ -601,6 +663,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'textarea'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'checkbox',
@@ -625,6 +688,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'hidden',
@@ -636,6 +700,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'hidden'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'file',
@@ -647,6 +712,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'file'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'radio',
@@ -667,6 +733,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'select',
@@ -691,6 +758,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'number',
@@ -702,6 +770,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                     ]
                 ],
@@ -720,6 +789,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'text'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'textarea',
@@ -731,6 +801,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'textarea'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'checkbox',
@@ -755,6 +826,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'hidden',
@@ -766,6 +838,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'hidden'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'file',
@@ -777,6 +850,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => ['test', 'file'],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'radio',
@@ -797,6 +871,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'select',
@@ -821,6 +896,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'number',
@@ -832,6 +908,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
                         ],
                     ]
                 ]
@@ -861,6 +938,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'level',
@@ -872,6 +950,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'include_time',
@@ -892,6 +971,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                     ]
                 ],
@@ -919,6 +999,7 @@ class CustomizerFormSettings
                                 ],
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'theme_template_dir',
@@ -930,6 +1011,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'theme_template_cache_dir',
@@ -941,6 +1023,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                     ]
                 ],
@@ -970,6 +1053,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'default_description',
@@ -981,6 +1065,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'default_keywords',
@@ -992,6 +1077,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'default_ogp_image',
@@ -1003,6 +1089,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                         [
                             SI_KEY => 'google_analytics_tag',
@@ -1014,6 +1101,7 @@ class CustomizerFormSettings
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],
                             SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
                         ],
                     ]
                 ],

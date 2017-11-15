@@ -25,6 +25,10 @@
     {{ builder.select(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_NUMBER') %}
     {{ builder.number(element, classes, attributes) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_DATE') %}
+    {{ builder.date(element, classes, attributes) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_TIME') %}
+    {{ builder.time(element, classes, attributes) }}
   {% endif %}
 {% endmacro input %}
 
@@ -141,3 +145,23 @@
     'value': element.value
   }))|raw }}>
 {% endmacro number %}
+
+{# ####################################
+ #             date
+ #################################### #}
+{% macro date(element, classes, attributes) %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  }))|raw }}>
+{% endmacro date %}
+
+{# ####################################
+ #             time
+ #################################### #}
+{% macro time(element, classes, attributes) %}
+  <input {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  }))|raw }}>
+{% endmacro time %}

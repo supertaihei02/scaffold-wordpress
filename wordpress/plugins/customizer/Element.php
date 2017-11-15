@@ -7,6 +7,7 @@ class CustomizerElement
     public $value = null;
     public $classes = [];
     public $attributes = [];
+    public $extras = [];
     public $children = [];
     public $config_path = [];
 
@@ -20,6 +21,7 @@ class CustomizerElement
     public $before_block_id = '';
     public $autoload = false;
     public $sequence = 0;
+    public $is_data_exist = false;
 
     function __construct($key, $name = null, $args = [], $config_path = [])
     {
@@ -30,6 +32,7 @@ class CustomizerElement
         $this->value = CustomizerUtils::get($args, SI_ELEM_VALUE, null);
         $this->classes = CustomizerUtils::get($args, SI_ELEM_CLASSES, []);
         $this->attributes = CustomizerUtils::get($args, SI_ELEM_ATTRS, []);
+        $this->extras = CustomizerUtils::get($args, SI_EXTRA, []);
         $this->children = CustomizerUtils::get($args, SI_ELEM_CHILDREN, []);
         $this->config_path = $config_path;
     }
@@ -92,6 +95,33 @@ class CustomizerElement
     {
         foreach (CustomizerUtils::asArray($attribute_keys) as $key) {
             unset($this->attributes[$key]);
+        }
+    }
+
+    // --------------
+    // - Extras -
+    // --------------
+    function getRenderExtras($extras)
+    {
+        $this->addExtras($extras);
+        return $this->extras;
+    }
+
+    function addExtras($extras)
+    {
+        foreach (CustomizerUtils::asArray($extras) as $key => $attr) {
+            if (is_int($key)) {
+                $this->extras[$attr] = null;
+                continue;
+            }
+            $this->extras[$key] = empty($attr) ? null :$attr;
+        }
+    }
+
+    function removeExtras($extra_keys)
+    {
+        foreach (CustomizerUtils::asArray($extra_keys) as $key) {
+            unset($this->extras[$key]);
         }
     }
 
