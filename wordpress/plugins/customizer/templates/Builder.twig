@@ -81,9 +81,9 @@
   <div id="{{ element.id }}">
     {% if element.value is not empty %}
       {% if isImage(element.value) %}
-        <img src="{{ element.value }}" alt="選択中の画像">
+        <img {{ easyAttrs(element, classes|merge([]), attributes|merge([]), ['id', 'name'])|raw }} src="{{ element.value }}" alt="選択中の画像">
       {% else %}
-        <p>{{ basename(element.value) }}</p>
+        <p> {{ easyAttrs(element, classes|merge([]), attributes|merge([]), ['id', 'name'])|raw }} {{ basename(element.value) }}</p>
       {% endif %}
     {% endif %}
     {% if isAdmin() %}

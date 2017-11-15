@@ -389,17 +389,15 @@ class CustomizerTaxonomiesSettings
                                 // 項目ID(一意)
                                 SI_KEY  => 'img',
                                 // 項目のラベル
-                                SI_NAME => 'サムネイル画像[横162×縦162]',
+                                SI_NAME => 'サムネイル画像',
                                 // 入力必須かどうか(SI_IS_MULTIPLE=true の場合は無効)
                                 SI_FIELD_IS_REQUIRE => false,
-                                /*
-                                 * 項目の Input Type
-                                 * - text:         SI_FIELD_TYPE_TEXT
-                                 * - textarea:     SI_FIELD_TYPE_TEXTAREA
-                                 * - hidden:       SI_FIELD_TYPE_HIDDEN
-                                 * - file:         SI_FIELD_TYPE_FILE
-                                 */
-                                SI_FIELD_TYPE => SI_FIELD_TYPE_FILE
+                                SI_FIELD_TYPE => SI_FIELD_TYPE_FILE,
+                                SI_DEFAULT => 'デフォルト',
+                                SI_ELEM_ATTRS => ['width' => 160],
+                                SI_ELEM_CLASSES => [],
+                                SI_FIELD_CHOICE_VALUES => [],
+                                SI_FIELD_OPTION_AUTOLOAD => false,
                             ],
                         ]
                     ]
