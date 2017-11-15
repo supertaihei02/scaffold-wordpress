@@ -17,14 +17,21 @@ class CustomizerTwig
         $is_debug = CustomizerDatabase::getOption('backbone_template_debug_mode', $debug_mode[SI_DEFAULT], true);
         $template_dir = CustomizerDatabase::getOption('backbone_template_theme_template_dir', $theme_template_dir[SI_DEFAULT], true);
         $template_cache_dir = CustomizerDatabase::getOption('backbone_template_theme_template_cache_dir', $theme_template_cache_dir[SI_DEFAULT], true);
+        $plugin_template_dir = plugin_dir_path(__FILE__) . '/templates';
         
         CustomizerUtils::createDir($template_dir);
         CustomizerUtils::createDir($template_cache_dir);
 
         $loader = new \Twig_Loader_Filesystem([
+            // Theme用
             $template_dir,
             $template_dir . '/template-parts',
-            plugin_dir_path(__FILE__) . '/templates'
+            // Plugin用
+            $plugin_template_dir ,
+            $plugin_template_dir . '/admin/normal',
+            $plugin_template_dir . '/admin/post',
+            $plugin_template_dir . '/admin/term',
+            $plugin_template_dir . '/front/normal',
         ]);
         $is_debug = $is_debug === 'on' ? true : false;
         $twig = new \Twig_Environment($loader, [

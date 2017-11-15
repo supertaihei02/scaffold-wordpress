@@ -30,8 +30,6 @@ class CustomizerSetting
 
     static function test()
     {
-        $keys = ["test","custom_fields",2,"fields"];
-//        CustomizerTwigExtension::displayForm('CallAdminFormInput.twig', $keys);
         CustomizerTwigExtension::displayFormAdmin('test');
     }
 }

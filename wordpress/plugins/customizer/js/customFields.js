@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function()
     {
         var target = e.currentTarget,
             args = target.attributes,
+            template = args['data-template']['nodeValue'],
             path = args['data-config-path']['nodeValue'],
             sequence = args['data-current-sequence']['nodeValue'],
             append_target = args['data-append-target']['nodeValue'],
@@ -85,16 +86,16 @@ document.addEventListener('DOMContentLoaded', function()
         ;
         // 1回クリックしたら隠す
         target.classList.add('hidden');
-        renderNextFieldGroup(path, sequence, target, append_target, group_key);
+        renderNextFieldGroup(path, sequence, target, append_target, group_key, template);
     }
     
-    function renderNextFieldGroup(path, sequence, target, append_target, group_key)
+    function renderNextFieldGroup(path, sequence, target, append_target, group_key, template)
     {
         var action = 'get_form_group_html';
         var element = 'div';
         var data = {
             action:      action,
-            template:    'CallAdminFormForApi.twig',
+            template:    template,
             path:        path,
             sequence:    sequence,
             group_id:    append_target,

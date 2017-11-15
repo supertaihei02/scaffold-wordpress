@@ -65,7 +65,7 @@ class CustomizerFields
         global $si_twig;
         $args = $args['args'];
         $si_twig->display(
-            'CallWpPostForm.twig',
+            'CallWpPost.twig',
             $args
         );
     }
@@ -146,7 +146,7 @@ class CustomizerFields
             $conf, $taxonomy, $get_type, $args
         );
         $si_twig->display(
-            'CallWpPostTerm.twig',
+            'CallWpTerm.twig',
             [
                 'elements' => $elements,
                 'root' => $taxonomy,
