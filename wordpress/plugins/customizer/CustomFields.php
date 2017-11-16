@@ -84,7 +84,7 @@ class CustomizerFields
             if (!empty($post) && in_array($post->post_status, array('auto-draft', 'draft'))) {
                 if ($post->post_type != 'page') {
                     if (!self::isSavedCustomValues($post->ID)) {
-                        wp_enqueue_script('cannotPreview', plugins_url('js/cannotPreview.js', __FILE__));
+                        wp_enqueue_script('cannotPreview', plugins_url('js/cannotPreview.js', SI_PLUGIN_PATH));
                     }
                 }
             }

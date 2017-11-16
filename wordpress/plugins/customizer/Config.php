@@ -876,7 +876,7 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                             SI_NAME => 'ログ出力先ディレクトリ',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => __DIR__ . '/log',
+                            SI_DEFAULT => SI_BASE_PATH . '/log',
                             SI_ELEM_ATTRS => [],
                             SI_ELEM_CLASSES => [],
                             SI_FIELD_CHOICE_VALUES => [],

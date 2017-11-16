@@ -26,7 +26,7 @@ class CustomizerSetting
         $use_spread_sheet = $use_spread_sheet === 'on' ? true : false;
         if ($use_spread_sheet) {
             // Spread Sheet用 Javascript 読み込み
-            wp_enqueue_script('spread-sheet', plugins_url('js/googleSpreadSheet.js', __FILE__));
+            wp_enqueue_script('spread-sheet', plugins_url('js/googleSpreadSheet.js', SI_PLUGIN_PATH));
 
             add_options_page(
                 'SPREAD SHEET', 'SPREAD SHEET', 'manage_options',

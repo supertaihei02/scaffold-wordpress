@@ -108,9 +108,9 @@ class CustomizerTwigExtension extends Twig_Extension
     {
         if (is_admin()) {
             wp_enqueue_media();
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', __FILE__), ['jquery']);
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/adminFileUpload.js', SI_PLUGIN_PATH), ['jquery']);
         } else {
-            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', __FILE__), ['jquery']);
+            wp_enqueue_script('customizer-admin-upload', plugins_url('js/frontFileUpload.js', SI_PLUGIN_PATH), ['jquery']);
         }
         
         $key = 'update_option_with_sequence_';

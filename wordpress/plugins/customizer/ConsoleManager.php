@@ -197,8 +197,8 @@ add_action('admin_enqueue_scripts', 'blankPreview');
 function blankPreview($hook)
 {
     if ($hook == 'edit.php') {
-        wp_enqueue_script('blankPreview', plugins_url('js/blankPreview.js', __FILE__));
-        wp_enqueue_script('inline-edit-post-override', plugins_url('js/inline-edit-post.js', __FILE__), array('inline-edit-post'));
+        wp_enqueue_script('blankPreview', plugins_url('js/blankPreview.js', SI_PLUGIN_PATH));
+        wp_enqueue_script('inline-edit-post-override', plugins_url('js/inline-edit-post.js', SI_PLUGIN_PATH), array('inline-edit-post'));
     }
 }
 

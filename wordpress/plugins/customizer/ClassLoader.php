@@ -44,8 +44,11 @@ class CustomizerClassLoader
     private static function directories()
     {
         if (empty(self::$dirs)) {
+            $plugin_dir = plugin_dir_path(__FILE__);
             self::$dirs = array(
-                plugin_dir_path(__FILE__),
+                $plugin_dir,
+                $plugin_dir . 'expand/twig',
+                $plugin_dir . 'expand/google',
             );
         }
 

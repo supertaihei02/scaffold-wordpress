@@ -27,6 +27,7 @@ License: GPL2
 // Timezone
 date_default_timezone_set(get_option('timezone_string'));
 define('SI_BASE_PATH', __DIR__);
+define('SI_PLUGIN_PATH', __DIR__ . '/customizer');
 
 // Modules
 if (!is_file(ABSPATH . '/vendor/autoload.php')) {
