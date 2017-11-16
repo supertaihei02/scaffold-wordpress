@@ -16,6 +16,8 @@ class CustomizerSetting
             'TEST', 'TEST', 'manage_options',
             'test', 'CustomizerSetting::test'
         );
+        
+        // スプレッドシートモードがONの場合はメニュー表示
     }
     
     static function backbone()

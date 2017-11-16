@@ -236,10 +236,6 @@ class CustomizerForm
             
             $element = self::changeSequence($element, $sequence, $value);
             $elements[] = self::customElement($element);
-
-            if ($element->input_type === SI_FIELD_TYPE_TIME) {
-                global $si_logger; $si_logger->develop(self::customElement($element), null, '$element');
-            }
         }
         /*
          * Input要素でなく multiple なら Block要素である

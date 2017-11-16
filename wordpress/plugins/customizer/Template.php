@@ -493,6 +493,8 @@ function setCustoms($post_id)
         $post_type = $post->post_type;
     }
     $custom_data_list = get_post_custom($post_id);
+
+    $si_customs[$post_id] = [];
     if (!empty($custom_data_list)) {
         $custom_fields_data = [];
         

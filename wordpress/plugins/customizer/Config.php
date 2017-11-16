@@ -61,12 +61,6 @@ define('USER_HIDDEN_MENUS', [
 ]);
 
 /* *******************************
- *          記事の設定
- * *******************************/
-// POST TYPE, TAXONOMYのKEYは何度か使うので、define して使う
-define('POST_NEWS',  'news');
-
-/* *******************************
  *            描画関連
  *    プラグインコア機能には無関与
  * *******************************/
@@ -180,30 +174,12 @@ class CustomizerConfig
     
 }
 
-class CustomizerPostTypeSettings
+/**
+ * Post Typeの設定
+ * Class CustomizerPostTypeSettings
+ */
+class CustomizerPostTypeSettings extends CustomizerBaseConfig
 {
-    /**
-     * @param $post_type
-     * @param bool $default
-     * @return array | bool
-     */
-    static function get($post_type, $default = false)
-    {
-        $result = $default;
-        $callable = "CustomizerPostTypeSettings::{$post_type}";
-        if (is_callable($callable)) {
-            $result = $callable();
-        }
-
-        return $result;
-    }
-    
-    static function getAll()
-    {
-        return [
-            'news' => self::news()
-        ];
-    }
     static function news()
     {
         return [
@@ -211,7 +187,7 @@ class CustomizerPostTypeSettings
             // このカスタムポストタイプに投稿できるRole
             SI_ALLOW_ROLES => [ROLE_ADMIN, ROLE_OPERATOR],
             // POST TYPEのID
-            SI_KEY  => POST_NEWS,
+            SI_KEY  => 'news',
             // POST TYPEの表示名称
             SI_NAME => 'NEWS',
             /*
@@ -335,31 +311,12 @@ class CustomizerPostTypeSettings
     }
 }
 
-class CustomizerTaxonomiesSettings
+/**
+ * Taxonomyの設定
+ * Class CustomizerTaxonomiesSettings
+ */
+class CustomizerTaxonomiesSettings extends CustomizerBaseConfig
 {
-    /**
-     * @param $post_type
-     * @param bool $default
-     * @return array | bool
-     */
-    static function get($post_type, $default = false)
-    {
-        $result = $default;
-        $callable = "CustomizerTaxonomiesSettings::{$post_type}";
-        if (is_callable($callable)) {
-            $result = $callable();
-        }
-
-        return $result;
-    }
-    
-    static function getAll()
-    {
-        return [
-            'news' => self::news()
-        ];
-    }
-    
     static function news()
     {
         return [
@@ -415,27 +372,15 @@ class CustomizerTaxonomiesSettings
 }
 
 /**
- * Form の設定を返すクラス
+ * Form の設定
  * Class CustomizerFormSettings
  */
-class CustomizerFormSettings
+class CustomizerFormSettings extends CustomizerBaseConfig
 {
     /**
-     * @param $post_type
-     * @param bool $default
-     * @return array | bool
+     * testは返したくないから override
+     * @return array
      */
-    static function get($post_type, $default = false)
-    {
-        $result = $default;
-        $callable = "CustomizerFormSettings::{$post_type}";
-        if (is_callable($callable)) {
-            $result = $callable();
-        }
-
-        return $result;
-    }
-
     static function getAll()
     {
         return [
@@ -1025,6 +970,34 @@ class CustomizerFormSettings
                             SI_FIELD_OPTION_AUTOLOAD => true,
                             SI_EXTRA => [],
                         ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'use_google_spread_sheet',
+                    SI_NAME => 'Google Spread Sheet',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'use',
+                            SI_NAME => 'スプレッドシート連携',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'off',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'on',
+                                    SI_NAME => 'オン',
+                                ],
+                                [
+                                    SI_KEY => 'off',
+                                    SI_NAME => 'オフ',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => true,
+                            SI_EXTRA => [],
+                        ]
                     ]
                 ],
             ]

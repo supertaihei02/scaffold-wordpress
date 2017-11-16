@@ -47,7 +47,7 @@ if (isActiveCustomizer()) {
              */
             'onLoad' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_POST_TYPE => 'news',
                 SI_GET_P_LIMIT => 8,
                 SI_GET_P_ORDER => 'DESC',
                 SI_GET_P_ORDER_BY => 'date',
@@ -75,7 +75,7 @@ if (isActiveCustomizer()) {
              */
             'onLoad' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_POST_TYPE => 'news',
                 SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 4),
                 SI_GET_P_ORDER => 'DESC',
                 SI_GET_P_ORDER_BY => 'date',
@@ -85,7 +85,7 @@ if (isActiveCustomizer()) {
             ],
             'api' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_POST_TYPE => 'news',
                 SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 2),
                 SI_GET_P_ORDER => 'DESC',
                 SI_GET_P_ORDER_BY => 'date',
@@ -95,7 +95,7 @@ if (isActiveCustomizer()) {
             ],
             'terms' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_T_TAXONOMIES => POST_NEWS.'_categories',
+                SI_GET_T_TAXONOMIES => 'news'.'_categories',
                 SI_GET_T_HIDE_EMPTY => false,
                 SI_GET_T_TAGS => CustomizerUtils::get($_GET, SI_GET_T_TAGS, -1),
             ],
@@ -107,7 +107,7 @@ if (isActiveCustomizer()) {
              */
             'onLoad' => [
                 SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
-                SI_GET_P_POST_TYPE => POST_NEWS,
+                SI_GET_P_POST_TYPE => 'news',
                 SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 4),
                 SI_GET_P_ORDER => 'DESC',
                 SI_GET_P_ORDER_BY => 'date',
