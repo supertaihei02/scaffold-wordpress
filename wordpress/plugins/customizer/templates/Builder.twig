@@ -29,6 +29,8 @@
     {{ builder.date(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_TIME') %}
     {{ builder.time(element, classes, attributes) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_BUTTON') %}
+    {{ builder.button(element, classes, attributes) }}
   {% endif %}
 {% endmacro input %}
 
@@ -165,3 +167,13 @@
     'value': element.value
   }))|raw }}>
 {% endmacro time %}
+
+{# ####################################
+ #             button
+ #################################### #}
+{% macro button(element, classes, attributes) %}
+  <button {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': element.input_type,
+    'value': element.value
+  }), ['name'])|raw }}>{{ element.layer_name }}</button>
+{% endmacro button %}

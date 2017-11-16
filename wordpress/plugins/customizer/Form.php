@@ -397,6 +397,23 @@ class CustomizerForm
     {
         // 特別な値なら変換する
         $element->value = self::convertDateTimeExtraValue($element->value);
+        
+        // 他の要素のname情報が必要な場合は追加する
+        if (array_key_exists(SI_EXTRA_SET_ATTR_NAME, $element->extras)) {
+            $target_keys = $element->extras[SI_EXTRA_SET_ATTR_NAME];
+            $target_keys = CustomizerUtils::asArray($target_keys);
+            $wk_path = $element->config_path;
+            array_pop($wk_path);
+            $wk_path = self::getKey($wk_path);
+            foreach ($target_keys as $target_key) {
+                $element->addAttributes([
+                    $target_key => CustomizerForm::bond(
+                        $wk_path, 
+                            $target_key . SI_HYPHEN . $element->sequence
+                    )
+                ]);
+            }
+        }
 
         switch ($element->input_type) {
             case SI_FIELD_TYPE_SELECT:
@@ -456,10 +473,6 @@ class CustomizerForm
                         'max' => $converted
                     ]);
                 }
-                
-                
-                
-                
                 break;
         }
 

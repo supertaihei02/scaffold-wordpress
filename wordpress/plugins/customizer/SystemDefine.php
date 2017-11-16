@@ -70,6 +70,11 @@ define('SI_FIELD_TYPE_SELECT',  'select');
 define('SI_FIELD_TYPE_NUMBER',  'number');
 define('SI_FIELD_TYPE_DATE',  'date');
 define('SI_FIELD_TYPE_TIME',  'time');
+define('SI_FIELD_TYPE_BUTTON',  'button');
+
+// --- EXTRA keys ---
+define('SI_EXTRA_SET_ATTR_NAME',  'set_attr_name');
+
 
 // --- Input "date" EXTRA keys ---
 define('SI_DATE_EXTRA_MIN_DATE_SETTING',  'min_date');
@@ -169,11 +174,6 @@ define('SI_ELEM_ATTRS',  'attrs');
 define('SI_ELEM_ATTR',  'attr');
 define('SI_ELEM_CHILDREN',  'children');
 
-// --- Config keys
-define('SI_SETTING_FORM_ALL',  'all');
-define('SI_SETTING_FORM_BACKBONE',  'backbone');
-define('SI_SETTING_FORM_SEO',  'seo');
-
 // --- Form Action
 define('SI_FORM_ACTION',  'actions');
 define('SI_FORM_ACTION_ENCRYPT_KEY',  'flFl43e89');
@@ -196,6 +196,7 @@ define('SI_RESOURCE_TYPE_DO_NOT_GET',  'none');
 // --- 設定画面
 define('SI_SETTING_BACKBONE',  'backbone');
 define('SI_SETTING_SEO',  'seo');
+define('SI_SETTING_GOOGLE_SPREAD_SHEET',  'google_spread_sheet');
 
 // デフォルトSEOフィールド
 define('SI_DEFAULT_SEO_FIELDS', [

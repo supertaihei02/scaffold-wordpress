@@ -97,21 +97,19 @@ class CustomizerConfig
                     'test' => CustomizerFormSettings::test()
                 ];
                 break;
-            case SI_SETTING_FORM_BACKBONE:
+            case SI_SETTING_BACKBONE:
                 $setting = [
-                    SI_SETTING_FORM_BACKBONE => CustomizerFormSettings::backbone()
+                    SI_SETTING_BACKBONE => CustomizerFormSettings::backbone()
                 ];
                 break;
-            case SI_SETTING_FORM_SEO:
+            case SI_SETTING_SEO:
                 $setting = [
-                    SI_SETTING_FORM_SEO => CustomizerFormSettings::seo()
+                    SI_SETTING_SEO => CustomizerFormSettings::seo()
                 ];
                 break;
-            case SI_SETTING_FORM_ALL:
+            case SI_SETTING_GOOGLE_SPREAD_SHEET:
                 $setting = [
-                    // 'test' => self::test(),
-                    SI_SETTING_FORM_BACKBONE => CustomizerFormSettings::backbone(),
-                    SI_SETTING_FORM_SEO => CustomizerFormSettings::seo(),
+                    SI_SETTING_GOOGLE_SPREAD_SHEET => CustomizerFormSettings::google_spread_sheet()
                 ];
                 break;
             default:
@@ -973,13 +971,13 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                     ]
                 ],
                 [
-                    SI_KEY => 'use_google_spread_sheet',
-                    SI_NAME => 'Google Spread Sheet',
+                    SI_KEY => 'enable_services',
+                    SI_NAME => '拡張機能の有効化設定',
                     SI_IS_MULTIPLE => false,
                     SI_FIELDS => [
                         [
-                            SI_KEY => 'use',
-                            SI_NAME => 'スプレッドシート連携',
+                            SI_KEY => 'google_spread_sheet',
+                            SI_NAME => 'Google Spread Sheet',
                             SI_FIELD_IS_REQUIRE => false,
                             SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
                             SI_DEFAULT => 'off',
@@ -1076,6 +1074,434 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                             SI_FIELD_OPTION_AUTOLOAD => true,
                             SI_EXTRA => [],
                         ],
+                    ]
+                ],
+            ]
+        ];
+    }
+
+    static function google_spread_sheet()
+    {
+        $result = [
+            SI_KEY => 'google_spread_sheet',
+            SI_NAME => 'SPREAD SHEET設定',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_UPDATE,
+            SI_CUSTOM_FIELDS => []
+        ];
+        foreach (CustomizerGoogleSpreadSheetSettings::getAll() as $key => $settings) {
+            $result[SI_CUSTOM_FIELDS][] = [
+                SI_KEY => $key,
+                SI_NAME => $settings[SI_NAME],
+                SI_IS_MULTIPLE => false,
+                SI_FIELDS => [
+                    [
+                        // ここのkeyは変えない(Javascriptで利用している)
+                        SI_KEY => 'spread_sheet_id',
+                        SI_NAME => 'Spread Sheet ID',
+                        SI_FIELD_IS_REQUIRE => false,
+                        SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                        SI_DEFAULT => null,
+                        SI_ELEM_ATTRS => [],
+                        SI_ELEM_CLASSES => [],
+                        SI_FIELD_CHOICE_VALUES => [],
+                        SI_FIELD_OPTION_AUTOLOAD => true,
+                        SI_EXTRA => [],
+                    ],
+                    [
+                        SI_KEY => 'create_button',
+                        SI_NAME => 'Spread Sheetの作成',
+                        SI_FIELD_IS_REQUIRE => false,
+                        SI_FIELD_TYPE => SI_FIELD_TYPE_BUTTON,
+                        SI_DEFAULT => null,
+                        SI_ELEM_ATTRS => [
+                            'sheet_key' => $key,
+                            'sheet_name' => $settings[SI_NAME],
+                        ],
+                        SI_ELEM_CLASSES => [
+                            'create_spread_sheet', 'button'
+                        ],
+                        SI_FIELD_CHOICE_VALUES => [],
+                        SI_FIELD_OPTION_AUTOLOAD => false,
+                        SI_EXTRA => [
+                            SI_EXTRA_SET_ATTR_NAME => 'spread_sheet_id'
+                        ],
+                    ]
+                ]
+            ];
+        }
+        
+        return $result;
+    }
+}
+
+class CustomizerGoogleSpreadSheetSettings extends CustomizerBaseConfig
+{
+    static function reservation()
+    {
+        return [
+            SI_KEY => 'reservation',
+            SI_NAME => '予約情報',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_SPREAD_SHEET,
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'customer',
+                    SI_NAME => 'お客様情報',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'kana',
+                            SI_NAME => '予約者氏名（カナ）',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'contact_method',
+                            SI_NAME => 'ご連絡方法',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'tel',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['contact_method'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'tel',
+                                    SI_NAME => '電話',
+                                ],
+                                [
+                                    SI_KEY => 'mail',
+                                    SI_NAME => 'メール',
+                                ],
+                                [
+                                    SI_KEY => 'line',
+                                    SI_NAME => 'LINE',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'contact',
+                            SI_NAME => 'ご連絡先',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'reserve_info',
+                    SI_NAME => 'ご予約内容',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'date',
+                            SI_NAME => 'ご予約日付',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_DATE,
+                            SI_DEFAULT => [
+                                SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                SI_DATE_EXTRA_SET_TIME => '17:00:00',
+                            ],
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [
+                                SI_DATE_EXTRA_MIN_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                    SI_DATE_EXTRA_SET_TIME => '17:00',
+                                ],
+                                SI_DATE_EXTRA_MAX_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 30,
+                                    SI_DATE_EXTRA_SET_TIME => '05:00',
+                                ],
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'select',
+                            SI_NAME => 'ご来店時間',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => '18:00',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => '18:00',
+                                    SI_NAME => '18:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '18:30',
+                                    SI_NAME => '18:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '19:00',
+                                    SI_NAME => '19:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '19:30',
+                                    SI_NAME => '19:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '20:00',
+                                    SI_NAME => '20:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '20:30',
+                                    SI_NAME => '20:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '21:00',
+                                    SI_NAME => '21:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '21:30',
+                                    SI_NAME => '21:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '22:00',
+                                    SI_NAME => '22:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '22:30',
+                                    SI_NAME => '22:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '23:00',
+                                    SI_NAME => '23:00 ~',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'number_of_people',
+                            SI_NAME => 'ご予約人数',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 5,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'other',
+                    SI_NAME => 'その他',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'message',
+                            SI_NAME => 'メッセージ',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => "その他ご予約に際しまして、ご要望・ご質問などがございましたらご入力下さい。",
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ]
+                    ]
+                ],
+            ]
+        ];
+    }
+
+    static function test_spread()
+    {
+        return [
+            SI_KEY => 'test_spread',
+            SI_NAME => 'テスト',
+            SI_FORM_ACTION => SI_FORM_ACTION_SAVE_SPREAD_SHEET,
+            SI_CUSTOM_FIELDS => [
+                [
+                    SI_KEY => 'customer',
+                    SI_NAME => 'お客様情報',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'kana',
+                            SI_NAME => '予約者氏名（カナ）',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'contact_method',
+                            SI_NAME => 'ご連絡方法',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_RADIO,
+                            SI_DEFAULT => 'tel',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => ['contact_method'],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => 'tel',
+                                    SI_NAME => '電話',
+                                ],
+                                [
+                                    SI_KEY => 'mail',
+                                    SI_NAME => 'メール',
+                                ],
+                                [
+                                    SI_KEY => 'line',
+                                    SI_NAME => 'LINE',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'contact',
+                            SI_NAME => 'ご連絡先',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                            SI_DEFAULT => null,
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'reserve_info',
+                    SI_NAME => 'ご予約内容',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'date',
+                            SI_NAME => 'ご予約日付',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_DATE,
+                            SI_DEFAULT => [
+                                SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                SI_DATE_EXTRA_SET_TIME => '17:00:00',
+                            ],
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [
+                                SI_DATE_EXTRA_MIN_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 1,
+                                    SI_DATE_EXTRA_SET_TIME => '17:00',
+                                ],
+                                SI_DATE_EXTRA_MAX_DATE_SETTING => [
+                                    SI_DATE_EXTRA_TODAY_AFTER => 30,
+                                    SI_DATE_EXTRA_SET_TIME => '05:00',
+                                ],
+                            ],
+                        ],
+                        [
+                            SI_KEY => 'select',
+                            SI_NAME => 'ご来店時間',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_SELECT,
+                            SI_DEFAULT => '18:00',
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [
+                                [
+                                    SI_KEY => '18:00',
+                                    SI_NAME => '18:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '18:30',
+                                    SI_NAME => '18:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '19:00',
+                                    SI_NAME => '19:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '19:30',
+                                    SI_NAME => '19:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '20:00',
+                                    SI_NAME => '20:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '20:30',
+                                    SI_NAME => '20:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '21:00',
+                                    SI_NAME => '21:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '21:30',
+                                    SI_NAME => '21:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '22:00',
+                                    SI_NAME => '22:00 ~',
+                                ],
+                                [
+                                    SI_KEY => '22:30',
+                                    SI_NAME => '22:30 ~',
+                                ],
+                                [
+                                    SI_KEY => '23:00',
+                                    SI_NAME => '23:00 ~',
+                                ],
+                            ],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                        [
+                            SI_KEY => 'number_of_people',
+                            SI_NAME => 'ご予約人数',
+                            SI_FIELD_IS_REQUIRE => true,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_NUMBER,
+                            SI_DEFAULT => 5,
+                            SI_ELEM_ATTRS => [ 'min' => 1, 'max' => 9, 'step' => 1 ],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ],
+                    ]
+                ],
+                [
+                    SI_KEY => 'other',
+                    SI_NAME => 'その他',
+                    SI_IS_MULTIPLE => false,
+                    SI_FIELDS => [
+                        [
+                            SI_KEY => 'message',
+                            SI_NAME => 'メッセージ',
+                            SI_FIELD_IS_REQUIRE => false,
+                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXTAREA,
+                            SI_DEFAULT => "その他ご予約に際しまして、ご要望・ご質問などがございましたらご入力下さい。",
+                            SI_ELEM_ATTRS => [],
+                            SI_ELEM_CLASSES => [],
+                            SI_FIELD_CHOICE_VALUES => [],
+                            SI_FIELD_OPTION_AUTOLOAD => false,
+                            SI_EXTRA => [],
+                        ]
                     ]
                 ],
             ]

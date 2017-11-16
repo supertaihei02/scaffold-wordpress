@@ -6,7 +6,11 @@
     {% set element = updateSequence(element, currentSequence) %}
     {% import 'Builder.twig' as builder %}
     <tr>
-      <th scope="row"><label for="{{ element.id }}">{{ element.layer_name }}</label></th>
+      {% if element.input_type == 'button' %}
+        <th scope="row"></th>
+      {% else %}
+        <th scope="row"><label for="{{ element.id }}">{{ element.layer_name }}</label></th>
+      {% endif %}
       <td>{{ builder.input(element, ['regular-text'], []) }}</td>
     </tr>
   {% elseif element.input_type == 'hidden' %}
