@@ -1,15 +1,13 @@
-document.addEventListener('DOMContentLoaded', function()
-{
-    function disableSort() 
-    {
-        if (jQuery('.meta-box-sortables').sortable) {
-            jQuery('.meta-box-sortables').sortable({
-                disabled: true
-            });
-        }
+document.addEventListener('DOMContentLoaded', function () {
+  function disableSort() {
+    if (jQuery('.meta-box-sortables').sortable) {
+      jQuery('.meta-box-sortables').sortable({
+        disabled: true
+      });
     }
+  }
 
-    disableSort();
+  disableSort();
 }, false);
 
 function uploadBindEvent() {
@@ -18,12 +16,12 @@ function uploadBindEvent() {
   ;
 
   if (upload_button && uploadByMediaBox) {
-    upload_button.forEach(function(up) {
+    upload_button.forEach(function (up) {
       up.addEventListener('click', uploadByMediaBox, false);
     });
   }
   if (upload_clear_button && clearSelectedImage) {
-    upload_clear_button.forEach(function(clr) {
+    upload_clear_button.forEach(function (clr) {
       clr.addEventListener('click', clearSelectedImage, false);
     });
   }
@@ -34,8 +32,7 @@ function uploadBindEvent() {
 //       Media関連
 // ====================
 // カスタムしたmedia modalの作成
-function createCustomMedia()
-{
+function createCustomMedia() {
   return wp.media({
     title: 'ファイルアップロード',
     library: {type: ''},
@@ -50,7 +47,7 @@ function uploadByMediaBox(e) {
   var args = e.currentTarget.attributes;
   var customMedia = createCustomMedia();
   clearSelectedImage(e);
-  customMedia.on('select', function() {
+  customMedia.on('select', function () {
     var attachment = customMedia.state().get('selection').first().toJSON(),
       parent_url_input = document.querySelector('#' + args["data-url-input"]['nodeValue']),
       url_input = parent_url_input.querySelector('input'),
@@ -60,7 +57,9 @@ function uploadByMediaBox(e) {
       ext = split[split.length - 1].toLowerCase(),
       img_extensions = ['png', 'jpg', 'jpeg', 'gif', 'ico']
     ;
-    if (img_extensions.some(function(v){ return v === ext })) {
+    if (img_extensions.some(function (v) {
+        return v === ext
+      })) {
       if (!url_img) {
         url_img = document.createElement('img');
         parent_url_input.insertBefore(url_img, parent_url_input.firstChild);
@@ -80,10 +79,9 @@ function uploadByMediaBox(e) {
   customMedia.open();
 }
 
-function baseName(str)
-{
+function baseName(str) {
   var base = new String(str).substring(str.lastIndexOf('/') + 1);
-  if(base.lastIndexOf('.') != -1)
+  if (base.lastIndexOf('.') != -1)
     base = base.substring(0, base.lastIndexOf('.'));
   return base;
 }
