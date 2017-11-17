@@ -45,6 +45,7 @@ $si_logger = new Logger();
 $si_customs = [];
 $si_terms = [];
 $si_twig = CustomizerTwig::createEngine();
+$si_spread_sheet = null;
 
 // Plugin Initialize
 CustomizerInstall::initialize();

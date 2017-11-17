@@ -20,7 +20,16 @@ document.addEventListener('DOMContentLoaded', function()
     }
 
     function initialize() {
+        var authButtons = document.querySelectorAll('.auth_google_client');
         var createButtons = document.querySelectorAll('.create_spread_sheet');
+        if (authButtons) {
+            if (authButtons) {
+                authButtons.forEach(function(authButton) {
+                    authButton.addEventListener('click', auth, false);
+                });
+            }
+        }
+        
         if (createButtons) {
             if (createButtons) {
               createButtons.forEach(function(createButton) {
@@ -29,7 +38,57 @@ document.addEventListener('DOMContentLoaded', function()
             }
         }
     }
+  
+    // ====================
+    //  Google 認証情報の作成
+    // ====================
+    function auth(e) 
+    {
+        var target = e.currentTarget, 
+          args = target.attributes, 
+          inputCredentialPath = args['credentials']['nodeValue'],
+          $inputTarget = document.querySelector('#' + inputCredentialPath)
+        ;
+      
+        if ($inputTarget) {
+            postToServer(inputCredentialPath);
+        }
+    }
+    
+    function callCreateSpreadSheet(inputCredentialPath) 
+    {
+      var action = 'create_google_spread_sheet';
+      var data = {
+        action:       action, 
+        input_sheet_id:   inputCredentialPath
+      };
+      
+      var request = new XMLHttpRequest();
+      request.onreadystatechange = function (event) {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+          var response = JSON.parse(request.responseText.trim());
+          if (response.success) {
+            var $inputTarget = document.querySelector('#' + response.input_sheet_id);
+            if ($inputTarget) {
+              $inputTarget.textContent = response.sheet_id;
+            }
+          } else {
+            console.log(response.error);
+          }
+        } else {
+          console.log(request.statusText); // => Error Message
+        }
+      }
+    };
+    request.onerror = function (event) {
+      console.log(event.type); // => "error"
+    };
 
+    request.open("GET", url + buildUrl(data), true);
+    request.send();
+  }
+    
     // ====================
     //  SpreadSheet の作成
     // ====================
@@ -52,11 +111,11 @@ document.addEventListener('DOMContentLoaded', function()
         }
         
         if (doExecute) {
-            postToServer(sheetKey, sheetName, inputSheetId);
+            callCreateSpreadSheet(sheetKey, sheetName, inputSheetId);
         }
     }
     
-    function postToServer(sheetKey, sheetName, inputSheetId)
+    function callCreateSpreadSheet(sheetKey, sheetName, inputSheetId)
     {
         var action = 'create_google_spread_sheet';
         var data = {

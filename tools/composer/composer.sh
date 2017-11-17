@@ -13,4 +13,4 @@ if [ ! -f $ENV_FILE ]; then
 fi
 source $ENV_FILE
 
-docker exec $WORDPRESS_CONTAINER /bin/bash -c "mv -n /tmp/vendor ./ ; cp -f /tmp/composer.json ./composer.json ; cp -f /tmp/composer.lock ./composer.lock ; composer dump-autoload ;"
+docker exec $WORDPRESS_CONTAINER /bin/bash -c "rm -fr ./vendor; cp -a /tmp/vendor ./ ; cp -f /tmp/composer.json ./composer.json ; cp -f /tmp/composer.lock ./composer.lock ; composer dump-autoload ;"

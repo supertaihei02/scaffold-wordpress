@@ -4,6 +4,7 @@ class CustomizerSetting
 {
     static function initialize()
     {
+        global $si_spread_sheet;
         add_options_page(
             '基幹設定', '基幹設定', 'manage_options',
             SI_SETTING_BACKBONE, 'CustomizerSetting::backbone'
@@ -25,9 +26,10 @@ class CustomizerSetting
         $use_spread_sheet = CustomizerDatabase::getOption('backbone_enable_services_google_spread_sheet', $use_spread_sheet[SI_DEFAULT], true);
         $use_spread_sheet = $use_spread_sheet === 'on' ? true : false;
         if ($use_spread_sheet) {
+            // Google Clientの Controller作成
+            $si_spread_sheet = new CustomizerSpreadSheet();
             // Spread Sheet用 Javascript 読み込み
             wp_enqueue_script('spread-sheet', plugins_url('js/googleSpreadSheet.js', SI_PLUGIN_PATH));
-
             add_options_page(
                 'SPREAD SHEET', 'SPREAD SHEET', 'manage_options',
                 'google_spread_sheet', 'CustomizerSetting::googleSpreadSheet'

@@ -1088,6 +1088,44 @@ class CustomizerFormSettings extends CustomizerBaseConfig
             SI_FORM_ACTION => SI_FORM_ACTION_SAVE_UPDATE,
             SI_CUSTOM_FIELDS => []
         ];
+        
+        // 共通設定
+        $result[SI_CUSTOM_FIELDS][] = [
+            SI_KEY => 'common',
+            SI_NAME => '共通設定',
+            SI_IS_MULTIPLE => false,
+            SI_FIELDS => [
+                [
+                    SI_KEY => 'credentials',
+                    SI_NAME => '認証情報ファイルパス',
+                    SI_FIELD_IS_REQUIRE => false,
+                    SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                    SI_DEFAULT => SI_PLUGIN_PATH . '/expand/google/credentials/client_credentials.json',
+                    SI_ELEM_ATTRS => ['readonly'],
+                    SI_ELEM_CLASSES => [],
+                    SI_FIELD_CHOICE_VALUES => [],
+                    SI_FIELD_OPTION_AUTOLOAD => true,
+                    SI_EXTRA => [],
+                ],
+                [
+                    SI_KEY => 'auth_button',
+                    SI_NAME => '認証情報の作成',
+                    SI_FIELD_IS_REQUIRE => false,
+                    SI_FIELD_TYPE => SI_FIELD_TYPE_BUTTON,
+                    SI_DEFAULT => null,
+                    SI_ELEM_ATTRS => [],
+                    SI_ELEM_CLASSES => [
+                        'auth_google_client', 'button'
+                    ],
+                    SI_FIELD_CHOICE_VALUES => [],
+                    SI_FIELD_OPTION_AUTOLOAD => false,
+                    SI_EXTRA => [
+                        SI_EXTRA_SET_ATTR_NAME => 'credentials'
+                    ],
+                ]
+            ]
+        ];
+        
         foreach (CustomizerGoogleSpreadSheetSettings::getAll() as $key => $settings) {
             $result[SI_CUSTOM_FIELDS][] = [
                 SI_KEY => $key,
@@ -1134,6 +1172,9 @@ class CustomizerFormSettings extends CustomizerBaseConfig
     }
 }
 
+/**
+ * Class CustomizerGoogleSpreadSheetSettings
+ */
 class CustomizerGoogleSpreadSheetSettings extends CustomizerBaseConfig
 {
     static function reservation()

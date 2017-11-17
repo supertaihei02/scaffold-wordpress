@@ -51,7 +51,7 @@ class CustomizerTwigExtension extends Twig_Extension
      */
     static function getFormAction()
     {
-        return plugin_dir_url(__FILE__) . 'Form.php';
+        return plugin_dir_url(SI_PLUGIN_PATH) . 'Form.php';
     }
 
     /**
