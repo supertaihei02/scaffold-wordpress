@@ -42,19 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // ====================
   function auth(e) {
     var target = e.currentTarget,
-      args = target.attributes,
-      inputCredentialPath = args['credentials']['nodeValue'],
-      $inputTarget = document.querySelector('#' + inputCredentialPath),
       $inputSuccessUrl = document.querySelector('input[name=success_url]'),
       successUtl = $inputSuccessUrl.value
     ;
-
-    if ($inputTarget) {
-      callGoogleAuth(successUtl);
-    }
+    callGoogleAuth(successUtl, target);
   }
 
-  function callGoogleAuth(successUrl) {
+  function callGoogleAuth(successUrl, target) {
     var action = 'auth_google_api';
     var data = {
       action: action,
@@ -69,7 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
           if (response.success) {
             window.open(response.auth_url, '_self');
           } else {
-            console.log(response.error);
+            var err = document.querySelector('#err-'+target.id);
+            err.textContent = response.error;
+            err.classList.remove('hidden');
           }
         } else {
           console.log(request.statusText); // => Error Message

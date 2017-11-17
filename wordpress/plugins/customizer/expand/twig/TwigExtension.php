@@ -22,6 +22,8 @@ class CustomizerTwigExtension extends Twig_Extension
             new Twig_Function('isImage', [$this, 'isImage']),
             new Twig_Function('basename', [$this, 'basename']),
             new Twig_Function('isAdmin', [$this, 'isAdmin']),
+            new Twig_Function('inArray', [$this, 'inArray']),
+            new Twig_Function('keyExists', [$this, 'keyExists']),
         ];
     }
 
@@ -99,6 +101,28 @@ class CustomizerTwigExtension extends Twig_Extension
     static function isAdmin()
     {
         return is_admin();
+    }
+
+    /**
+     * 配列に含まれているか
+     * @param $needle
+     * @param $haystack
+     * @return bool
+     */
+    static function inArray($needle, $haystack)
+    {
+        return in_array($needle, $haystack);
+    }
+
+    /**
+     * 配列に指定keyが含まれているかどうか
+     * @param $needle
+     * @param $haystack
+     * @return bool
+     */
+    static function keyExists($needle, $haystack)
+    {
+        return array_key_exists($needle, $haystack);
     }
     
     /* *******************************

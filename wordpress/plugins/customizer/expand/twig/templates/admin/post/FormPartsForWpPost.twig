@@ -6,9 +6,17 @@
     {% set element = updateSequence(element, currentSequence) %}
     {% import 'Builder.twig' as builder %}
     <li>
-      <label for="{{ element.id }}">{{ element.layer_name }}</label>
+      {% if element.input_type != 'button' %}
+        <label for="{{ element.id }}">{{ element.layer_name }}</label>
+      {% endif %}
       <br />
-      {{ builder.input(element, ['regular-text'], []) }}  
+      {% if keyExists(constant('SI_EXTRA_NOTICE'), element.extras) %}
+        <span id="notice-{{ element.id }}" class="notice" >element.extras.notice</span>
+      {% else %}
+        <span id="notice-{{ element.id }}" class="hidden notice" ></span>
+      {% endif %}
+      {{ builder.input(element, ['regular-text'], []) }}
+      <span id="err-{{ element.id }}" class="hidden error" ></span>
     </li>
   {% elseif element.input_type == 'hidden' %}
     {% import 'Builder.twig' as builder %}

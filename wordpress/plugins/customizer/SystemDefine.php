@@ -74,6 +74,7 @@ define('SI_FIELD_TYPE_BUTTON',  'button');
 
 // --- EXTRA keys ---
 define('SI_EXTRA_SET_ATTR_NAME',  'set_attr_name');
+define('SI_EXTRA_NOTICE',  'notice');
 
 
 // --- Input "date" EXTRA keys ---

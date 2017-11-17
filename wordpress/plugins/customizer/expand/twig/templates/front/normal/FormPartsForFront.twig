@@ -4,8 +4,16 @@
     {% if element.isInput() and element.input_type != 'hidden' %}
       {% import 'Builder.twig' as builder %}
       <div class="{{ element.input_type }}">
-        <label for="{{ element.id }}">{{ element.layer_name }}</label>
+        {% if element.input_type != 'button' %}
+          <label for="{{ element.id }}">{{ element.layer_name }}</label>
+        {% endif %}
+        {% if keyExists(constant(''), element.extras) %}
+          <span id="notice-{{ element.id }}" class="notice" >element.extras.notice</span>
+        {% else %}
+          <span id="notice-{{ element.id }}" class="hidden notice" ></span>
+        {% endif %}
         {{ builder.input(element) }}
+        <span id="err-{{ element.id }}" class="hidden error" ></span>
       </div>
     {% elseif element.input_type == 'hidden' %}
       {% import 'Builder.twig' as builder %}
