@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
             window.open(response.auth_url, '_self');
           } else {
             var err = document.querySelector('#err-'+target.id);
-            err.textContent = response.error;
+            err.innerHTML = response.error;
             err.classList.remove('hidden');
           }
         } else {

@@ -49,24 +49,45 @@ class CustomizerSpreadSheet
         $secret_path = CustomizerConfig::getInputSetting($setting, 'secrets');
         $secret_path = CustomizerDatabase::getOption('google_spread_sheet_common_secrets', $secret_path[SI_DEFAULT], true);
 
-        return $secret_path;
+        return self::expandHomeDirectory($secret_path);
     }
 
     /**
+     * 最低限の準備がなかったら即死
+     */
+    static private function minimumCheck()
+    {
+        $client_secret = self::getClientSecretPath();
+        if (!CustomizerUtils::isFile($client_secret)) {
+            echo json_encode([
+                'success' => false,
+                'error' => '<br>OAuth クライアントのJSONが配置されていません <br> => ' . $client_secret
+            ]);
+            die();
+        }
+    }
+    
+    /**
      * スプレッドシートのAPIが利用できるのか
-     * @param $sheet_id
+     * @param Google_Client $client
+     * @param null $sheet_id
      * @return array
      */
-    static private function canUseSpreadSheet($sheet_id = null)
+    static private function canUseSpreadSheet(Google_Client $client, $sheet_id = null)
     {
         $result = [
             'success' => true,
-            'message' => ''
+            'error' => ''
         ];
         // Clientが取得できているか
         if (!(self::$client instanceof Google_Client)) {
             $result['success'] = false;
-            $result['message'] = '認証情報が不正です。credential.jsonは配置されていますか？';
+            $result['error'] = '認証情報が不正です。credential.jsonは配置されていますか？';
+        }
+        // AccessTokenが無効だったら再取得しておく
+        else if (!$client->isAccessTokenExpired()) {
+            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            file_put_contents(self::getCredentialPath(), json_encode($client->getAccessToken()));
         }
         
         if (!is_null($sheet_id)) {
@@ -104,34 +125,11 @@ class CustomizerSpreadSheet
         $client->setAuthConfig(self::getClientSecretPath());
 //        $client->setAccessType('offline');
 
-        // Load previously authorized credentials from a file.
-        $credentialsPath = self::expandHomeDirectory($credential_path);
-        if (file_exists($credentialsPath)) {
-            $accessToken = json_decode(file_get_contents($credentialsPath), true);
+        if (CustomizerUtils::isFile($credential_path)) {
+            $access_token = json_decode(file_get_contents($credential_path), true);
+            $client->setAccessToken($access_token);
         } else {
-            // Request authorization from the user.
-            $authUrl = $client->createAuthUrl();
-            
-            printf("Open the following link in your browser:\n%s\n", $authUrl);
-            print 'Enter verification code: ';
-            $authCode = trim(fgets(STDIN));
-
-            // Exchange authorization code for an access token.
-            $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-
-            // Store the credentials to disk.
-            if(!file_exists(dirname($credentialsPath))) {
-                mkdir(dirname($credentialsPath), 0700, true);
-            }
-            file_put_contents($credentialsPath, json_encode($accessToken));
-            printf("Credentials saved to %s\n", $credentialsPath);
-        }
-        $client->setAccessToken($accessToken);
-
-        // Refresh the token if it's expired.
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            file_put_contents($credentialsPath, json_encode($client->getAccessToken()));
+            $client = false;
         }
 
         return $client;
@@ -145,10 +143,14 @@ class CustomizerSpreadSheet
         header('content-type: application/json; charset=utf-8');
         
         $credentials_path = self::getCredentialPath();
+        $client_secret = self::getClientSecretPath();
+        
+        self::minimumCheck();
+        
         $client = new Google_Client();
         $client->setApplicationName(self::$APPLICATION_NAME);
         $client->setScopes(self::$SCOPES);
-        $client->setAuthConfig(self::getClientSecretPath());
+        $client->setAuthConfig($client_secret);
         $client->setRedirectUri(self::getRedirectUri());
 
         $access_token = null;
@@ -165,7 +167,7 @@ class CustomizerSpreadSheet
             } else {
                 $result = [
                     'success' => false,
-                    'error' => 'すでにAccessTokenはセットされています'
+                    'error' => '<br>すでにAccessTokenはセットされています'
                 ];
             }
         }
@@ -186,6 +188,7 @@ class CustomizerSpreadSheet
     }
 
     /**
+     * AccessTokenをファイルに保存する
      * Googleからリダイレクトで呼び出される
      * @param bool $code
      * @return array|bool
@@ -204,7 +207,7 @@ class CustomizerSpreadSheet
         }
 
         // CODEをAccessTokenに変換
-        $credentials_path = self::expandHomeDirectory(self::getCredentialPath());
+        $credentials_path = self::getCredentialPath();
         $access_token = $client->fetchAccessTokenWithAuthCode($auth_code);
 
         // AccessTokenの保存
@@ -227,6 +230,7 @@ class CustomizerSpreadSheet
      * *******************************/
     static function createSpreadSheet()
     {
+        
     } 
 
 }

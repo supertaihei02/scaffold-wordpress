@@ -1131,9 +1131,7 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                     ],
                     SI_FIELD_CHOICE_VALUES => [],
                     SI_FIELD_OPTION_AUTOLOAD => false,
-                    SI_EXTRA => [
-                        SI_EXTRA_SET_ATTR_NAME => 'credentials'
-                    ],
+                    SI_EXTRA => [],
                 ]
             ]
         ];
