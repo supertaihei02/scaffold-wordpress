@@ -49,6 +49,21 @@ class CustomizerInstall
         // カスタムフィールド
         add_action('init', 'CustomPostTypes::createPostTypes');
         CustomizerFields::setEvents();
+        
+        // Ajax
+
+        // スプレッドシート
+        $setting = CustomizerFormSettings::get('backbone');
+        $setting = CustomizerConfig::getFieldSetting($setting, 'enable_services');
+        $use_spread_sheet = CustomizerConfig::getInputSetting($setting, 'google_spread_sheet');
+        $use_spread_sheet = CustomizerDatabase::getOption('backbone_enable_services_google_spread_sheet', $use_spread_sheet[SI_DEFAULT], true);
+        $use_spread_sheet = $use_spread_sheet === 'on' ? true : false;
+        if ($use_spread_sheet) {
+            add_action( 'wp_ajax_auth_google_api', 'CustomizerSpreadSheet::getAuthUrl');
+            add_action( 'wp_ajax_nopriv_auth_google_api', 'CustomizerSpreadSheet::getAuthUrl');
+            add_action( 'wp_ajax_set_google_access_token', 'CustomizerSpreadSheet::createAccessToken');
+            add_action( 'wp_ajax_nopriv_set_google_access_token', 'CustomizerSpreadSheet::createAccessToken');
+        }
     }
 }
 

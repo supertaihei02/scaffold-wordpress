@@ -44,19 +44,21 @@ document.addEventListener('DOMContentLoaded', function () {
     var target = e.currentTarget,
       args = target.attributes,
       inputCredentialPath = args['credentials']['nodeValue'],
-      $inputTarget = document.querySelector('#' + inputCredentialPath)
+      $inputTarget = document.querySelector('#' + inputCredentialPath),
+      $inputSuccessUrl = document.querySelector('input[name=success_url]'),
+      successUtl = $inputSuccessUrl.value
     ;
 
     if ($inputTarget) {
-      postToServer(inputCredentialPath);
+      callGoogleAuth(successUtl);
     }
   }
 
-  function callCreateSpreadSheet(inputCredentialPath) {
-    var action = 'create_google_spread_sheet';
+  function callGoogleAuth(successUrl) {
+    var action = 'auth_google_api';
     var data = {
       action: action,
-      input_sheet_id: inputCredentialPath
+      success_url: successUrl
     };
 
     var request = new XMLHttpRequest();
@@ -65,10 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (request.status === 200) {
           var response = JSON.parse(request.responseText.trim());
           if (response.success) {
-            var $inputTarget = document.querySelector('#' + response.input_sheet_id);
-            if ($inputTarget) {
-              $inputTarget.textContent = response.sheet_id;
-            }
+            window.open(response.auth_url, '_self');
           } else {
             console.log(response.error);
           }
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log(event.type); // => "error"
     };
 
-    request.open("GET", url + buildUrl(data), true);
+    request.open("POST", url + buildUrl(data), true);
     request.send();
   }
 
