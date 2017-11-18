@@ -1,5 +1,23 @@
 <?php
 
+class CustomizerAjax
+{
+    static function requireParam($params, $key)
+    {
+        try {
+            $param = CustomizerUtils::getRequire($params, $key);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => "[ {$key} ] is required."
+            ]);
+            die();
+        }
+        
+        return $param;
+    }
+}
+
 /**
  * API実行用URL等を
  * Javascriptから読めるように出力

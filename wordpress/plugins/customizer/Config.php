@@ -1156,13 +1156,40 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                         SI_EXTRA => [],
                     ],
                     [
+                        // ここのkeyは変えない(Javascriptで利用している)
+                        SI_KEY => 'spread_sheet_url',
+                        SI_NAME => 'Spread Sheet URL',
+                        SI_FIELD_IS_REQUIRE => false,
+                        SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
+                        SI_DEFAULT => null,
+                        SI_ELEM_ATTRS => [],
+                        SI_ELEM_CLASSES => [],
+                        SI_FIELD_CHOICE_VALUES => [],
+                        SI_FIELD_OPTION_AUTOLOAD => true,
+                        SI_EXTRA => [],
+                    ],
+                    [
+                        SI_KEY => 'edit_sheet_button',
+                        SI_NAME => 'シートを編集する',
+                        SI_FIELD_IS_REQUIRE => false,
+                        SI_FIELD_TYPE => SI_FIELD_TYPE_LINK_BUTTON,
+                        SI_DEFAULT => null,
+                        SI_ELEM_ATTRS => [],
+                        SI_ELEM_CLASSES => ['button'],
+                        SI_FIELD_CHOICE_VALUES => [],
+                        SI_FIELD_OPTION_AUTOLOAD => true,
+                        SI_EXTRA => [
+                            SI_EXTRA_SET_ATTR_NAME => 'spread_sheet_url',
+                            SI_LINK_BUTTON_EXTRA_LINK_OPTION_BY_OTHER_ELEMENT => 'spread_sheet_url',
+                        ],
+                    ],
+                    [
                         SI_KEY => 'create_button',
                         SI_NAME => 'Spread Sheetの作成',
                         SI_FIELD_IS_REQUIRE => false,
                         SI_FIELD_TYPE => SI_FIELD_TYPE_BUTTON,
                         SI_DEFAULT => null,
                         SI_ELEM_ATTRS => [
-                            'sheet_key' => $key,
                             'sheet_name' => $settings[SI_NAME],
                         ],
                         SI_ELEM_CLASSES => [
@@ -1171,7 +1198,10 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                         SI_FIELD_CHOICE_VALUES => [],
                         SI_FIELD_OPTION_AUTOLOAD => false,
                         SI_EXTRA => [
-                            SI_EXTRA_SET_ATTR_NAME => 'spread_sheet_id'
+                            SI_EXTRA_SET_ATTR_NAME => [
+                                'spread_sheet_id',
+                                'spread_sheet_url'
+                            ],
                         ],
                     ]
                 ]

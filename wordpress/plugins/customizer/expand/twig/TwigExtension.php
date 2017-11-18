@@ -24,6 +24,7 @@ class CustomizerTwigExtension extends Twig_Extension
             new Twig_Function('isAdmin', [$this, 'isAdmin']),
             new Twig_Function('inArray', [$this, 'inArray']),
             new Twig_Function('keyExists', [$this, 'keyExists']),
+            new Twig_Function('getOption', [$this, 'getOption']),
         ];
     }
 
@@ -173,6 +174,11 @@ class CustomizerTwigExtension extends Twig_Extension
             echo "<input type=\"hidden\" name=\"actions[]\" value=\"{$hashed}\" />";
         }
         wp_nonce_field($key, $key);
+    }
+
+    static function getOption($key, $default = null, $is_single = true)
+    {
+        return CustomizerDatabase::getOption($key, $default, $is_single);
     }
     
     /* *******************************

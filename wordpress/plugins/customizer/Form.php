@@ -164,6 +164,7 @@ class CustomizerForm
         switch ($resource_type) {
             case SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES:
                 $result = CustomizerDatabase::getOption($element->id, $default);
+                global $si_logger; $si_logger->develop($result, null, $element->id);
                 break;
             case SI_RESOURCE_TYPE_POST_META:
                 $result = get_post_meta($get_resource_args[SI_GET_P_POST_ID], $element->name, true);

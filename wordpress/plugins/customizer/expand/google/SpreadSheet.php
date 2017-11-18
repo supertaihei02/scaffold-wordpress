@@ -15,6 +15,11 @@ class CustomizerSpreadSheet
 //        self::$client = self::getClient();
     }
 
+    static function iAmApi()
+    {
+        header('content-type: application/json; charset=utf-8');
+    }
+
     /* *******************************
      *       Google API Auth
      * *******************************/
@@ -66,37 +71,6 @@ class CustomizerSpreadSheet
             die();
         }
     }
-    
-    /**
-     * スプレッドシートのAPIが利用できるのか
-     * @param Google_Client $client
-     * @param null $sheet_id
-     * @return array
-     */
-    static private function canUseSpreadSheet(Google_Client $client, $sheet_id = null)
-    {
-        $result = [
-            'success' => true,
-            'error' => ''
-        ];
-        // Clientが取得できているか
-        if (!(self::$client instanceof Google_Client)) {
-            $result['success'] = false;
-            $result['error'] = '認証情報が不正です。credential.jsonは配置されていますか？';
-        }
-        // AccessTokenが無効だったら再取得しておく
-        else if (!$client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            file_put_contents(self::getCredentialPath(), json_encode($client->getAccessToken()));
-        }
-        
-        if (!is_null($sheet_id)) {
-            // TODO SheetIDが有効かどうか
-            
-        }
-        
-        return $result;
-    }
 
     /**
      * Expands the home directory alias '~' to the full path.
@@ -128,6 +102,9 @@ class CustomizerSpreadSheet
         if (CustomizerUtils::isFile($credential_path)) {
             $access_token = json_decode(file_get_contents($credential_path), true);
             $client->setAccessToken($access_token);
+            if (!self::refreshAccessToken($client)) {
+                $client = false;
+            }
         } else {
             $client = false;
         }
@@ -140,7 +117,7 @@ class CustomizerSpreadSheet
      */
     static function getAuthUrl()
     {
-        header('content-type: application/json; charset=utf-8');
+        self::iAmApi();
         
         $credentials_path = self::getCredentialPath();
         $client_secret = self::getClientSecretPath();
@@ -163,7 +140,14 @@ class CustomizerSpreadSheet
         } else {
             $client->setAccessToken($access_token);
             if ($client->isAccessTokenExpired()) {
-                $result = self::buildResultAuthUrl($client);
+                if (self::refreshAccessToken($client)) {
+                    $result = [
+                        'success' => false,
+                        'error' => '<br>AccessTokenの期限が切れていたから更新しておきました'
+                    ];    
+                } else {
+                    $result = self::buildResultAuthUrl($client);
+                }
             } else {
                 $result = [
                     'success' => false,
@@ -180,11 +164,31 @@ class CustomizerSpreadSheet
     {
         $auth_url = $client->createAuthUrl();
         session_start();
-        $_SESSION['auth_success_url'] = $_GET['success_url'];
+        $_SESSION['auth_success_url'] = $_POST['success_url'];
         return [
             'success' => true,
             'auth_url' => $auth_url
         ];
+    }
+
+    /**
+     * AccessTokenの更新
+     * @param Google_Client $client
+     * @return bool
+     */
+    static function refreshAccessToken(Google_Client $client)
+    {
+        if ($client->isAccessTokenExpired()) {
+            $refresh_token = $client->getRefreshToken();
+            if (empty($refresh_token)) {
+                return false;
+            }
+            // 期限が切れていたら更新
+            $client->fetchAccessTokenWithRefreshToken();
+            file_put_contents(self::getCredentialPath(), json_encode($client->getAccessToken()));
+        }
+        
+        return true;
     }
 
     /**
@@ -228,9 +232,63 @@ class CustomizerSpreadSheet
     /* *******************************
      *       Spread Sheet Control
      * *******************************/
+
+    /**
+     * @return Google_Service_Sheets
+     */
+    static private function getSpreadSheetService()
+    {
+        $client = self::getClient();
+        if (!($client instanceof Google_Client)) {
+            echo json_encode([
+                'success' => false,
+                'error' => '<br>認証情報が不正です。<br>client_secret.jsonは配置されていますか？<br>配置されているなら「認証情報の作成」ボタンを押してください。'
+            ]);
+            die();
+        }
+
+        /**
+         * @var $client Google_Client
+         */
+        return new Google_Service_Sheets($client);
+    }
+
+    /**
+     * Sheetの作成
+     */
     static function createSpreadSheet()
     {
+        $responce = [];
         
-    } 
+        self::iAmApi();
+        self::minimumCheck();
 
+        // Parameter取得
+        $save_sheet_id_name = CustomizerAjax::requireParam($_POST, 'sheet_id_name');
+        $save_sheet_url_name= CustomizerAjax::requireParam($_POST, 'sheet_url_name');
+        $sheet_name = CustomizerAjax::requireParam($_POST, 'sheet_name');
+        
+        // Service作成
+        $service = self::getSpreadSheetService();
+        // Spread Sheet新規作成
+        $requestBody = new Google_Service_Sheets_Spreadsheet();
+        $created_spread_sheet = $service->spreadsheets->create($requestBody);
+        // Sheet情報を保存
+        $spread_sheet_id = $created_spread_sheet->getSpreadsheetId();
+        $spread_sheet_url = $created_spread_sheet->getSpreadsheetUrl();
+        list($key_A, $sequence_A) = explode('-', $save_sheet_id_name);
+        list($key_B, $sequence_B) = explode('-', $save_sheet_url_name);
+        CustomizerDatabase::addOption($key_A, $spread_sheet_id, $sequence_A, 'no', true);
+        CustomizerDatabase::addOption($key_B, $spread_sheet_url, $sequence_B, 'no', true);
+        // TODO Sheet名を変更
+        
+        // TODO Sheetにヘッダ列を追加
+        
+        // 返り値
+        $responce['success'] = true;
+        $responce['sheet_id'] = $spread_sheet_id;
+        $responce['sheet_url'] = $spread_sheet_url;
+        echo json_encode($responce);
+        die();
+    } 
 }

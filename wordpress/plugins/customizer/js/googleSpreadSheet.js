@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
   var url = customizer.ajax_url;
 
-  function buildUrl(data) {
+  function buildUrl(data, post = false) {
     var first_time = true;
     var url = "";
     for (var key in data) {
       if (first_time) {
-        url += "?";
+        url += post ? '' : '?';
       } else {
         url += "&";
       }
@@ -76,8 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log(event.type); // => "error"
     };
 
-    request.open("POST", url + buildUrl(data), true);
-    request.send();
+    request.open("POST", url + '?' + action, true);
+    request.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    request.send(buildUrl(data, true));
   }
 
   // ====================
@@ -86,13 +87,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function createSheet(e) {
     var target = e.currentTarget,
       args = target.attributes,
-      sheetKey = args['sheet_key']['nodeValue'],
       sheetName = args['sheet_name']['nodeValue'],
-      inputSheetId = args['spread_sheet_id']['nodeValue'],
-      $inputTarget = document.querySelector('#' + inputSheetId),
+      sheetIdName = args['spread_sheet_id']['nodeValue'],
+      sheetUrlName = args['spread_sheet_url']['nodeValue'],
+      $inputTarget = document.querySelector('#' + sheetIdName),
       doExecute = false
     ;
-    if ($inputTarget.textContent.trim().length > 0) {
+    if ($inputTarget.value.trim().length > 0) {
       if (window.confirm('本当に実行しますか？(現在セットされているSheetIDは削除されます)')) {
         doExecute = true;
       }
@@ -101,17 +102,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (doExecute) {
-      callCreateSpreadSheet(sheetKey, sheetName, inputSheetId);
+      callCreateSpreadSheet(sheetName, sheetIdName, sheetUrlName);
     }
   }
 
-  function callCreateSpreadSheet(sheetKey, sheetName, inputSheetId) {
+  function callCreateSpreadSheet(sheetLayerName, sheetIdName, sheetUrlName) {
     var action = 'create_google_spread_sheet';
     var data = {
       action: action,
-      sheet_key: sheetKey,
-      sheet_name: sheetName,
-      input_sheet_id: inputSheetId
+      sheet_name: sheetLayerName,
+      sheet_id_name: sheetIdName,
+      sheet_url_name: sheetUrlName,
     };
     var request = new XMLHttpRequest();
     request.onreadystatechange = function (event) {
@@ -119,9 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (request.status === 200) {
           var response = JSON.parse(request.responseText.trim());
           if (response.success) {
-            var $inputTarget = document.querySelector('#' + response.input_sheet_id);
+            var $inputTarget = document.querySelector('#' + sheetIdName);
             if ($inputTarget) {
-              $inputTarget.textContent = response.sheet_id;
+              $inputTarget.value = response.sheet_id;
             }
           } else {
             console.log(response.error);
@@ -135,8 +136,9 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log(event.type); // => "error"
     };
 
-    request.open("GET", url + buildUrl(data), true);
-    request.send();
+    request.open("POST", url + '?' + action, true);
+    request.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    request.send(buildUrl(data, true));
   }
 
   initialize();

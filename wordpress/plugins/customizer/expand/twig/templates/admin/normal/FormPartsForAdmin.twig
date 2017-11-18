@@ -6,7 +6,7 @@
     {% set element = updateSequence(element, currentSequence) %}
     {% import 'Builder.twig' as builder %}
     <tr>
-      {% if element.input_type == 'button' %}
+      {% if element.input_type == 'button' or element.input_type == 'link_button' %}
         <th scope="row"></th>
       {% else %}
         <th scope="row"><label for="{{ element.id }}">{{ element.layer_name }}</label></th>

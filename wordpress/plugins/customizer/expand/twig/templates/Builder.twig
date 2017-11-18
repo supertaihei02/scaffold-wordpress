@@ -31,6 +31,8 @@
     {{ builder.time(element, classes, attributes) }}
   {% elseif element.input_type == constant('SI_FIELD_TYPE_BUTTON') %}
     {{ builder.button(element, classes, attributes) }}
+  {% elseif element.input_type == constant('SI_FIELD_TYPE_LINK_BUTTON') %}
+    {{ builder.linkButton(element, classes, attributes) }}
   {% endif %}
 {% endmacro input %}
 
@@ -177,3 +179,27 @@
     'value': element.value
   }), ['name'])|raw }}>{{ element.layer_name }}</button>
 {% endmacro button %}
+
+{# ####################################
+ #           link button
+ #################################### #}
+{% macro linkButton(element, classes, attributes) %}
+  <button {{ easyAttrs(element, classes|merge([]), attributes|merge({
+    'type': 'button',
+    'value': element.value
+  }), ['name'])|raw }}
+      {% set link_url = null %}
+      {% if keyExists(constant('SI_LINK_BUTTON_EXTRA_LINK_ELEMENT_VALUE'), element.extras) %}
+        {% set link_url = element.value %}
+      {% elseif keyExists(constant('SI_LINK_BUTTON_EXTRA_LINK_OPTION'), element.extras) %}
+        {% set link_url = getOption(element.value) %}
+      {% elseif keyExists(constant('SI_LINK_BUTTON_EXTRA_LINK_OPTION_BY_OTHER_ELEMENT'), element.extras) %}
+        {% set link_url = getOption(element.attributes[element.extras[constant('SI_LINK_BUTTON_EXTRA_LINK_OPTION_BY_OTHER_ELEMENT')]]) %}
+      {% endif %}
+      {% if link_url is not empty %}
+        onclick="javascript:window.open('{{ link_url }}', '_blank');"
+      {% else %}
+        onclick="javascript:alert('リンク先が無効です');"
+      {% endif %}
+  >{{ element.layer_name }}</button>
+{% endmacro linkButton %}

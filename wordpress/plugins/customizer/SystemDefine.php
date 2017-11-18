@@ -71,11 +71,16 @@ define('SI_FIELD_TYPE_NUMBER',  'number');
 define('SI_FIELD_TYPE_DATE',  'date');
 define('SI_FIELD_TYPE_TIME',  'time');
 define('SI_FIELD_TYPE_BUTTON',  'button');
+define('SI_FIELD_TYPE_LINK_BUTTON',  'link_button');
 
 // --- EXTRA keys ---
 define('SI_EXTRA_SET_ATTR_NAME',  'set_attr_name');
 define('SI_EXTRA_NOTICE',  'notice');
 
+// --- Input "button" EXTRA keys ---
+define('SI_LINK_BUTTON_EXTRA_LINK_ELEMENT_VALUE',  'button_link_element_value');
+define('SI_LINK_BUTTON_EXTRA_LINK_OPTION',  'button_link_option');
+define('SI_LINK_BUTTON_EXTRA_LINK_OPTION_BY_OTHER_ELEMENT',  'button_link_option_by_other_element');
 
 // --- Input "date" EXTRA keys ---
 define('SI_DATE_EXTRA_MIN_DATE_SETTING',  'min_date');
