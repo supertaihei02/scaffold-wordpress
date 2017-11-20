@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html {{ basic.lang }}>
+<head>
+  <meta charset="{{ basic.charset }}"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+  <title>{{ seo.title }}</title>
+  <meta name="description" content="{{ seo.description }}">
+  <meta name="keywords" content="{{ seo.keywords }}">
+  <!-- ogp -->
+  <meta property="og:title" content="{{ seo.title }}"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="{{ seo.ogp_url }}"/>
+  <meta property="og:image" content="{{ seo.ogp_image }}"/>
+  <meta property="og:site_name" content="{{ seo.ogp_site_name }}"/>
+  <meta property="og:description" content="{{ seo.description }}"/>
+
+  <link rel="shortcut icon" href="/wp-content/themes/fl/favicon.ico">
+  {{ basic.wp_head|raw }}
+
+  <!-- Unique Meta -->
+  {% block metadatas %}{% endblock metadatas %}
+  <!-- Unique Styles -->
+  {% block styles %}{% endblock styles %}
+  <!-- Unique Scripts -->
+  {% block scripts %}{% endblock scripts %}
+
+  <!-- GoogleAnalytics -->
+  {{ basic.ga_tag|raw }}
+</head>
+<body class="{{ basic.body_class }}">
+
+{% block main %}{% endblock main %}
+
+</body>
+</html>
