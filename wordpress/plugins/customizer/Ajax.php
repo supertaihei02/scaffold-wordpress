@@ -16,6 +16,15 @@ class CustomizerAjax
         
         return $param;
     }
+
+    static function dieAjax($error)
+    {
+        echo json_encode([
+            'success' => false,
+            'error' => $error
+        ]);
+        die();
+    }
 }
 
 /**

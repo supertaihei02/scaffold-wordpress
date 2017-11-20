@@ -178,6 +178,7 @@ class CustomizerTwigExtension extends Twig_Extension
 
     static function getOption($key, $default = null, $is_single = true)
     {
+        list($key, $value) = explode('-', $key);
         return CustomizerDatabase::getOption($key, $default, $is_single);
     }
     

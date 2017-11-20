@@ -1153,7 +1153,9 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                         SI_ELEM_CLASSES => [],
                         SI_FIELD_CHOICE_VALUES => [],
                         SI_FIELD_OPTION_AUTOLOAD => true,
-                        SI_EXTRA => [],
+                        SI_EXTRA => [
+                            SI_SPREAD_SHEET_TARGET_SHEET_NAME => 'シート1'
+                        ],
                     ],
                     [
                         // ここのkeyは変えない(Javascriptで利用している)
@@ -1191,6 +1193,7 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                         SI_DEFAULT => null,
                         SI_ELEM_ATTRS => [
                             'sheet_name' => $settings[SI_NAME],
+                            'option_group' => $key
                         ],
                         SI_ELEM_CLASSES => [
                             'create_spread_sheet', 'button'

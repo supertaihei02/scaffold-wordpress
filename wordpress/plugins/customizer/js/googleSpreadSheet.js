@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function createSheet(e) {
     var target = e.currentTarget,
       args = target.attributes,
+      optionGroup = args['option_group']['nodeValue'],
       sheetName = args['sheet_name']['nodeValue'],
       sheetIdName = args['spread_sheet_id']['nodeValue'],
       sheetUrlName = args['spread_sheet_url']['nodeValue'],
@@ -102,17 +103,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (doExecute) {
-      callCreateSpreadSheet(sheetName, sheetIdName, sheetUrlName);
+      callCreateSpreadSheet(optionGroup, sheetName, sheetIdName, sheetUrlName);
     }
   }
 
-  function callCreateSpreadSheet(sheetLayerName, sheetIdName, sheetUrlName) {
+  function callCreateSpreadSheet(optionGroup, sheetLayerName, sheetIdName, sheetUrlName) {
     var action = 'create_google_spread_sheet';
     var data = {
       action: action,
       sheet_name: sheetLayerName,
       sheet_id_name: sheetIdName,
       sheet_url_name: sheetUrlName,
+      option_group: optionGroup,
     };
     var request = new XMLHttpRequest();
     request.onreadystatechange = function (event) {

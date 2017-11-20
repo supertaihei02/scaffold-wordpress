@@ -164,7 +164,6 @@ class CustomizerForm
         switch ($resource_type) {
             case SI_RESOURCE_TYPE_OPTION_WITH_SEQUENCES:
                 $result = CustomizerDatabase::getOption($element->id, $default);
-                global $si_logger; $si_logger->develop($result, null, $element->id);
                 break;
             case SI_RESOURCE_TYPE_POST_META:
                 $result = get_post_meta($get_resource_args[SI_GET_P_POST_ID], $element->name, true);
@@ -631,6 +630,8 @@ class CustomizerForm
      * *******************************/
     static function common($args, $config = null)
     {
+        global $si_logger;
+        
         $delete_names = CustomizerUtils::asArray(CustomizerUtils::get($args, 'delete_names', []));
         $option_group = CustomizerUtils::getRequire($args, 'option_group');
         $success_url = CustomizerUtils::getRequire($args, 'success_url');
@@ -644,6 +645,7 @@ class CustomizerForm
         $nonce_value = CustomizerUtils::getRequire($args, $nonce_key);
 
         if (!wp_verify_nonce($nonce_value, $nonce_key)) {
+            $si_logger->debug('Invalid Nonce.');
             return $failure_url;
         }
 
@@ -652,6 +654,7 @@ class CustomizerForm
          */
         $form_info = is_null($config) ? CustomizerConfig::getFormSetting($option_group, false) : $config;
         if ($form_info === false) {
+            $si_logger->debug('Missing Form Information.');
             return $failure_url;
         }
         $elements = self::configToElements($form_info);
@@ -732,6 +735,69 @@ class CustomizerForm
             }
         }
 
+        $this->success($success_url);
+        return true;
+    }
+
+    function addSpreadSheetRecord($args)
+    {
+        global $si_logger;
+        /*
+         * セキュリティチェック
+         */
+        $common = self::common($args);
+        if (is_string($common)) {
+            $this->failure($common);
+            return false;
+        }
+
+        /*
+         * POSTデータ取得
+         */
+        list($delete_names, $option_group, $success_url,
+            $failure_url, $page_type, $save_targets) = $common;
+
+        /*
+         * 保存対象を1つのオブジェクトにまとめる
+         */
+        $save_data = [];
+        $post_keys = array_keys($args);
+        foreach ($save_targets as $save_target) {
+            /**
+             * @var $save_target CustomizerElement
+             */
+            $id = $save_target->id;
+            $save_keys = self::getSaveTargetKeys($post_keys, $id. SI_HYPHEN);
+
+            foreach ($save_keys as $save_key) {
+                list($option_key, $sequence) = explode(SI_HYPHEN, $save_key);
+                $save_data[$option_key][$sequence] = $args[$save_key];
+            }
+        }
+
+        try {
+            // Spread Sheet ID
+            $spread_sheet_id = CustomizerDatabase::getOption("google_spread_sheet_{$option_group}_spread_sheet_id", false, true);
+            if (empty($spread_sheet_id)) {
+                throw new Exception('Spread Sheet IDが設定されていません');
+            }
+            
+            // Spread Sheet Name
+            $setting = CustomizerFormSettings::get('google_spread_sheet');
+            $setting = CustomizerConfig::getFieldSetting($setting, $option_group);
+            $spread_sheet_id_setting = CustomizerConfig::getInputSetting($setting, 'spread_sheet_id');
+            $spread_sheet_name = 'Sheet1';
+            if (array_key_exists(SI_SPREAD_SHEET_TARGET_SHEET_NAME, $spread_sheet_id_setting[SI_EXTRA])) {
+                $spread_sheet_name = $spread_sheet_id_setting[SI_EXTRA][SI_SPREAD_SHEET_TARGET_SHEET_NAME];
+            }
+            
+            CustomizerSpreadSheet::addRecord($save_data, $spread_sheet_id, $spread_sheet_name);
+        } catch (Exception $exception) {
+            $si_logger->debug($exception->getMessage() . PHP_EOL . $exception->getTraceAsString());
+            $this->failure($common);
+            return false;
+        }
+        
         $this->success($success_url);
         return true;
     }
@@ -879,7 +945,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         }
         // スプレッドシートに保存 => Google Spread Sheet
         else if (password_verify(SI_FORM_ACTION_SAVE_SPREAD_SHEET, $action)) {
-
+            $form->addSpreadSheetRecord($_POST);
         }
         // メールの送信 => Mail BOX
         else if (password_verify(SI_FORM_ACTION_SEND_MAIL, $action)) {

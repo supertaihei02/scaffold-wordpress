@@ -77,6 +77,10 @@ define('SI_FIELD_TYPE_LINK_BUTTON',  'link_button');
 define('SI_EXTRA_SET_ATTR_NAME',  'set_attr_name');
 define('SI_EXTRA_NOTICE',  'notice');
 
+// --- Spread Sheet EXTRA keys ---
+define('SI_SPREAD_SHEET_TARGET_SHEET_NAME',  'spread_sheet_target_sheet_name');
+
+
 // --- Input "button" EXTRA keys ---
 define('SI_LINK_BUTTON_EXTRA_LINK_ELEMENT_VALUE',  'button_link_element_value');
 define('SI_LINK_BUTTON_EXTRA_LINK_OPTION',  'button_link_option');

@@ -97,7 +97,8 @@ class CustomizerSpreadSheet
         $client->setApplicationName(self::$APPLICATION_NAME);
         $client->setScopes(self::$SCOPES);
         $client->setAuthConfig(self::getClientSecretPath());
-//        $client->setAccessType('offline');
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
 
         if (CustomizerUtils::isFile($credential_path)) {
             $access_token = json_decode(file_get_contents($credential_path), true);
@@ -129,6 +130,8 @@ class CustomizerSpreadSheet
         $client->setScopes(self::$SCOPES);
         $client->setAuthConfig($client_secret);
         $client->setRedirectUri(self::getRedirectUri());
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
 
         $access_token = null;
         if (CustomizerUtils::isFile($credentials_path)) {
@@ -204,6 +207,8 @@ class CustomizerSpreadSheet
         $client->setScopes(self::$SCOPES);
         $client->setAuthConfig(self::getClientSecretPath());
         $client->setRedirectUri(self::getRedirectUri());
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
 
         $auth_code = CustomizerUtils::get($_GET, 'code', $code);
         if ($auth_code === false) {
@@ -264,8 +269,9 @@ class CustomizerSpreadSheet
         self::minimumCheck();
 
         // Parameter取得
+        $option_group = CustomizerAjax::requireParam($_POST, 'option_group');
         $save_sheet_id_name = CustomizerAjax::requireParam($_POST, 'sheet_id_name');
-        $save_sheet_url_name= CustomizerAjax::requireParam($_POST, 'sheet_url_name');
+        $save_sheet_url_name = CustomizerAjax::requireParam($_POST, 'sheet_url_name');
         $sheet_name = CustomizerAjax::requireParam($_POST, 'sheet_name');
         
         // Service作成
@@ -280,9 +286,28 @@ class CustomizerSpreadSheet
         list($key_B, $sequence_B) = explode('-', $save_sheet_url_name);
         CustomizerDatabase::addOption($key_A, $spread_sheet_id, $sequence_A, 'no', true);
         CustomizerDatabase::addOption($key_B, $spread_sheet_url, $sequence_B, 'no', true);
+        
         // TODO Sheet名を変更
         
-        // TODO Sheetにヘッダ列を追加
+        // Sheetにヘッダ列を追加
+        $fields = [];
+        $settings = CustomizerConfig::getFormSetting($option_group);
+        if (empty($settings)) {
+            CustomizerAjax::dieAjax("Form設定「{$option_group}」は存在しません");
+        }
+        $settings = $settings[$option_group];
+        foreach ($settings[SI_CUSTOM_FIELDS] as $setting) {
+            foreach ($setting[SI_FIELDS] as $field) {
+                $fields[] = $field[SI_NAME];
+            }
+        }
+        $request = new Google_Service_Sheets_ValueRange();
+        $request->setValues(['values' => $fields]);
+        $service->spreadsheets_values->append(
+            $spread_sheet_id, 'シート1', $request, [
+                'valueInputOption' => 'USER_ENTERED'
+            ]
+        );
         
         // 返り値
         $responce['success'] = true;
@@ -290,5 +315,33 @@ class CustomizerSpreadSheet
         $responce['sheet_url'] = $spread_sheet_url;
         echo json_encode($responce);
         die();
-    } 
+    }
+
+    /**
+     * @param $record
+     * @param $spread_sheet_id
+     * @param string $sheet_name
+     */
+    static function addRecord($record, $spread_sheet_id, $sheet_name = 'Sheet1')
+    {
+        self::minimumCheck();
+        $service = self::getSpreadSheetService();
+
+        $request = new Google_Service_Sheets_ValueRange();
+        $append_values = [];
+        foreach ($record as $column => $values) {
+            $one_value = [];
+            foreach ($values as $sequence => $value) {
+                $one_value[] = $value;
+            }
+            $append_values[] = implode(',', $one_value);
+        }
+
+        $request->setValues(['values' => $append_values]);
+        $service->spreadsheets_values->append(
+            $spread_sheet_id, $sheet_name, $request, [
+                'valueInputOption' => 'USER_ENTERED'
+            ]
+        );
+    }
 }
