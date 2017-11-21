@@ -5,7 +5,10 @@ const conf = require('../config');
 
 const entry = {
   vendor: [
-    'babel-polyfill',
+    // useBuiltIns: trueが効かなくなるためvendorからは外す
+    // 'babel-polyfill',
+    // babel-plugin-date-fnsが効かなくなるためvendorからは外す
+    // 'date-fns',
     'jquery'
   ]
 };

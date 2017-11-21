@@ -1,4 +1,4 @@
-const { browserslist } = require('../package.json');
+const { browserslist: browsers } = require('../package.json');
 
 module.exports = {
   copy: {
@@ -10,7 +10,13 @@ module.exports = {
     entries: ['frontend/styles/*.css', '!frontend/styles/_*.css'],
     watches: ['frontend/styles/*.css', 'frontend/styles/**/*.css'],
     outputDir: 'wordpress/themes/fl',
-    autoprefixerOption: { grid: true }
+    urlOption: { filter: ['./**/*'], url: 'inline' },
+    autoprefixerOption: { grid: true },
+    cssnanoOption: {
+      // for postcss-fixes  https://www.npmjs.com/package/postcss-fixes#recommended-usage
+      safe: true,
+      calc: false,
+    },
   },
 
   script: {
@@ -22,7 +28,7 @@ module.exports = {
         ['env', {
           // package.jsonで指定したbrowserslistを利用する
           targets: {
-            browsers: browserslist,
+            browsers,
             uglify: process.env.NODE_ENV === 'production'
           },
           // babel-polyfillのうちbrowserslistを踏まえて必要なものだけ読み込む
@@ -35,7 +41,8 @@ module.exports = {
         'flow'
       ],
       plugins: [
-        'transform-object-rest-spread'
+        'transform-object-rest-spread',
+        'date-fns'
       ],
       cacheDirectory: true,
       babelrc: false
