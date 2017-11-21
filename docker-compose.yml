@@ -17,6 +17,7 @@ services:
       - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./tools/wordmove:/var/www/tools/wordmove
       - ./.env:/var/www/.env
+      - ~/.ssh:/root/.ssh
     networks:
       main:
         aliases:

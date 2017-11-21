@@ -38,15 +38,19 @@ staging:
     host: "{{ env.STAGING_UPLOAD_HOST }}"
     user: "{{ env.STAGING_UPLOAD_USER }}"
     port: {{ env.STAGING_UPLOAD_PORT }}
-    pass: {{ env.STAGING_UPLOAD_PASS }}
     rsync_options: --verbose
+  {% if env.STAGING_UPLOAD_PASS is not empty %}
+    pass: {{ env.STAGING_UPLOAD_PASS }}
+  {% endif %}
 {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
     host: "{{ env.STAGING_UPLOAD_HOST }}"
     user: "{{ env.STAGING_UPLOAD_USER }}"
     port: {{ env.STAGING_UPLOAD_PORT }}
-    pass: {{ env.STAGING_UPLOAD_PASS }}
     passive: false
+  {% if env.STAGING_UPLOAD_PASS is not empty %}
+    pass: {{ env.STAGING_UPLOAD_PASS }}
+  {% endif %}
 {% endif %}
 {% endif %}
 {% if env.PRODUCTION_WP_HOME is not empty %}
@@ -77,13 +81,18 @@ production:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
-    password: "{{ env.PRODUCTION_UPLOAD_PASS }}"
     rsync_options: --verbose
+  {% if env.PRODUCTION_UPLOAD_PASS is not empty %}
+    password: {{ env.PRODUCTION_UPLOAD_PASS }}
+  {% endif %}
 {% elseif env.PRODUCTION_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
     host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
     user: "{{ env.PRODUCTION_UPLOAD_USER }}"
     port: {{ env.PRODUCTION_UPLOAD_PORT }}
-    password: "{{ env.PRODUCTION_UPLOAD_PASS }}"
+    passive: false
+  {% if env.PRODUCTION_UPLOAD_PASS is not empty %}
+    password: {{ env.PRODUCTION_UPLOAD_PASS }}
+  {% endif %}
 {% endif %}
 {% endif %}

@@ -71,9 +71,16 @@ class CustomizerTwig
      */
     static function currentPage($routing_logic = null, $get_arguments_logic = null)
     {
+        $arguments = is_callable($get_arguments_logic) ? $get_arguments_logic() : self::defaultGetArgumentsLogic();
+        
+        /*
+         * 常に渡す変数を定義
+         */
+        $arguments['theme_uri'] = get_template_directory_uri();
+        
         return [
             is_callable($routing_logic) ? $routing_logic() : self::defaultRoutingLogic(),
-            is_callable($get_arguments_logic) ? $get_arguments_logic() : self::defaultGetArgumentsLogic(),
+            $arguments,
         ];
     }
 
