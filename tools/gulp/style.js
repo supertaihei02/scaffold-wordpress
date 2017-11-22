@@ -23,7 +23,7 @@ gulp.task('style', () => gulp.src(conf.style.entries)
     mixins,
     simpleVars,
     cssFixes,
-    //url(conf.style.urlOption),
+    url(conf.style.urlOption),
     autoprefixer(conf.style.autoprefixerOption)
   ]))
   .pipe(gulp.dest(conf.style.outputDir))
@@ -38,11 +38,9 @@ gulp.task('b.style', () => gulp.src(conf.style.entries)
     mixins,
     simpleVars,
     cssFixes,
+    url(conf.style.urlOption),
     autoprefixer(conf.style.autoprefixerOption),
-    cssnano({
-      safe: true,
-      calc: false
-    })
+    cssnano(conf.style.cssnanoOption)
   ]))
   .pipe(gulp.dest(conf.style.outputDir))
 );
