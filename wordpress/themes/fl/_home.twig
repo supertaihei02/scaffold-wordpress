@@ -4,7 +4,9 @@
 {#このページ特有のCSS#}
 {% block styles %}{% endblock styles %}
 {#このページ特有のJS#}
-{% block scripts %}{% endblock scripts %}
+{% block scripts %}
+  {{ scripts(['/js/index.js', '/js/home.js']) }}
+{% endblock scripts %}
 {#bodyタグの中身#}
 {% block main %}
   {#{% include 'news-archive.twig' %}#}

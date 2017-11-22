@@ -25,9 +25,40 @@ class CustomizerTwigExtension extends Twig_Extension
             new Twig_Function('inArray', [$this, 'inArray']),
             new Twig_Function('keyExists', [$this, 'keyExists']),
             new Twig_Function('getOption', [$this, 'getOption']),
+            new Twig_Function('log', [$this, 'log']),
+            new Twig_Function('scripts', [$this, 'scripts']),
+            new Twig_Function('styles', [$this, 'styles']),
         ];
     }
 
+    static function scripts($scripts)
+    {
+        $template = '<script src="%s?v=%s"></script>';
+        self::loadFile($template, $scripts);
+
+    }
+
+    static function styles($styles)
+    {
+        $template = '<link rel="stylesheet" href="%s?v=%s">';
+        self::loadFile($template, $styles);
+    }
+
+    static private function loadFile($template, $files)
+    {
+        $real_dir = get_template_directory();
+        $base_uri = get_template_directory_uri();
+        foreach (CustomizerUtils::asArray($files) as $file) {
+            $file_path = $real_dir . $file;
+            $file_uri = $base_uri . $file;
+            if (CustomizerUtils::isFile($file_path)) {
+                $update_time = filemtime($file_path);
+                echo sprintf($template, $file_uri, $update_time);
+            }
+        }
+    }
+
+    
     /**
      * 指定した条件のタグ一覧等の表示に利用
      * @param $condition_path
@@ -124,6 +155,18 @@ class CustomizerTwigExtension extends Twig_Extension
     static function keyExists($needle, $haystack)
     {
         return array_key_exists($needle, $haystack);
+    }
+
+    /**
+     * ログに吐き出す
+     * @param $obj
+     * @param null $keyword
+     * @param null $other_file
+     */
+    static function log($obj, $keyword = null, $other_file = null)
+    {
+        global $si_logger;
+        $si_logger->develop($obj, $other_file, $keyword);
     }
     
     /* *******************************

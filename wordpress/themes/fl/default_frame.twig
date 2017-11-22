@@ -22,8 +22,6 @@
   {% block metadatas %}{% endblock metadatas %}
   <!-- Unique Styles -->
   {% block styles %}{% endblock styles %}
-  <!-- Unique Scripts -->
-  {% block scripts %}{% endblock scripts %}
 
   <!-- GoogleAnalytics -->
   {{ basic.ga_tag|raw }}
@@ -32,7 +30,7 @@
 
 {% block main %}{% endblock main %}
 
-<!-- Unique After Scripts -->
-{% block after_scripts %}{% endblock after_scripts %}
+<!-- Unique Scripts -->
+{% block scripts %}{% endblock scripts %}
 </body>
 </html>

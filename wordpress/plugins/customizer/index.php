@@ -46,5 +46,12 @@ $si_customs = [];
 $si_terms = [];
 $si_twig = CustomizerTwig::createEngine();
 
+// User定義情報
+$seo_meta = [];
+$conditions = [];
+$forms = [];
+$post_types = [];
+$taxonomies = [];
+
 // Plugin Initialize
 CustomizerInstall::initialize();

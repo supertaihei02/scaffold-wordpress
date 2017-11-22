@@ -178,6 +178,12 @@ class CustomizerConfig
  */
 class CustomizerPostTypeSettings extends CustomizerBaseConfig
 {
+    static function getAdditionalConfig()
+    {
+        global $post_types;
+        return empty($post_types) ? [] : $post_types;
+    }
+    
     static function news()
     {
         return [
@@ -315,6 +321,12 @@ class CustomizerPostTypeSettings extends CustomizerBaseConfig
  */
 class CustomizerTaxonomiesSettings extends CustomizerBaseConfig
 {
+    static function getAdditionalConfig()
+    {
+        global $taxonomies;
+        return empty($taxonomies) ? [] : $taxonomies;
+    }
+    
     static function news()
     {
         return [
@@ -375,18 +387,12 @@ class CustomizerTaxonomiesSettings extends CustomizerBaseConfig
  */
 class CustomizerFormSettings extends CustomizerBaseConfig
 {
-    /**
-     * testは返したくないから override
-     * @return array
-     */
-    static function getAll()
+    static function getAdditionalConfig()
     {
-        return [
-            'backbone' => self::backbone(),
-            'seo' => self::seo(),
-        ];
+        global $forms;
+        return empty($forms) ? [] : $forms;
     }
-    
+
     static function test()
     {
         return [
