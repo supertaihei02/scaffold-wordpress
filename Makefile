@@ -4,7 +4,6 @@ _:
 	make init
 
 init:
-	cp .env.sample .env
 	docker-compose up -d
 	make composer
 	yarn
@@ -18,7 +17,7 @@ gen-movefile:
 
 gen-movefile-with-libraries:
 	bash tools/wordmove/generate.sh 1
-	
+
 clean:
 	docker-compose down
 	docker-compose up -d

@@ -33,6 +33,7 @@
     "browser-sync": "^2.18.12",
     "cache-loader": "^1.1.0",
     "cssnano": "^3.10.0",
+    "dotenv": "^4.0.0",
     "eslint": "^4.4.0",
     "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.2.3",
     "eslint-plugin-flowtype-errors": "^3.3.6",
