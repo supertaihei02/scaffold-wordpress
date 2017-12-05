@@ -8,6 +8,7 @@ init:
 	make composer
 	yarn
 	make import
+	make gen-movefile
 
 composer:
 	bash tools/composer/composer.sh
