@@ -9,7 +9,7 @@ dotenv.config();
 
 gulp.task('default', () => process.env.NODE_ENV === 'production' ? runSequence(
   // production
-  'copy',
+  ['b.copy', 'image'],
   ['b.script', 'b.style']
 ) : runSequence(
   // development
