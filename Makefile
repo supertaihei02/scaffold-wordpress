@@ -104,16 +104,16 @@ import:
 	bash tools/shell-scripts/db-import.sh
 
 import-from-production:
-	bash tools/shell-scripts/db-import.sh $(PRODUCTION_DOMAIN) $(LOCAL_DOMAIN)
+	bash tools/shell-scripts/db-import.sh $(PRODUCTION_WP_HOME) $(LOCAL_WP_HOME)
 
 import-from-staging:
-	bash tools/shell-scripts/db-import.sh $(STAGING_DOMAIN) $(LOCAL_DOMAIN)
+	bash tools/shell-scripts/db-import.sh $(STAGING_WP_HOME) $(LOCAL_WP_HOME)
 
 export:
 	bash tools/shell-scripts/db-export.sh
 
 export-to-production:
-	bash tools/shell-scripts/db-export.sh $(PRODUCTION_DOMAIN) $(LOCAL_DOMAIN)
+	bash tools/shell-scripts/db-export.sh $(PRODUCTION_WP_HOME) $(LOCAL_WP_HOME)
 
 export-to-staging:
-	bash tools/shell-scripts/db-export.sh $(STAGING_DOMAIN) $(LOCAL_DOMAIN)
+	bash tools/shell-scripts/db-export.sh $(STAGING_WP_HOME) $(LOCAL_WP_HOME)

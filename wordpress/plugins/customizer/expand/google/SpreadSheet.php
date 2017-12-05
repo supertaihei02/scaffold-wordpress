@@ -18,6 +18,7 @@ class CustomizerSpreadSheet
     static function iAmApi()
     {
         header('content-type: application/json; charset=utf-8');
+        header("X-Content-Type-Options: nosniff");
     }
 
     /* *******************************

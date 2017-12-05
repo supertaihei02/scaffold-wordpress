@@ -16,6 +16,7 @@ services:
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
       - ./wordpress/uploads:/var/www/html/wp-content/uploads
       - ./tools/wordmove:/var/www/tools/wordmove
+      - ./tools/shell-scripts/lib:/var/www/tools/shell-scripts
       - ./.env:/var/www/.env
       - ~/.ssh:/root/.ssh
     networks:
