@@ -48,7 +48,7 @@ abstract class CustomizerBaseConfig
         }
         
         foreach (get_class_methods($class_name) as $method) {
-            if (in_array($method, ['get', 'getAll']) || isset($config[$method])) {
+            if (in_array($method, ['get', 'getAll', 'getAdditionalConfig']) || isset($config[$method])) {
                 continue;
             }
             $callable = $class_name . "::{$method}";

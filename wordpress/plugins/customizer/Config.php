@@ -949,31 +949,7 @@ class CustomizerFormSettings extends CustomizerBaseConfig
                             ],
                             SI_FIELD_OPTION_AUTOLOAD => true,
                             SI_EXTRA => [],
-                        ],
-                        [
-                            SI_KEY => 'theme_template_dir',
-                            SI_NAME => 'テンプレートファイル置き場',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => get_template_directory(),
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
-                            SI_EXTRA => [],
-                        ],
-                        [
-                            SI_KEY => 'theme_template_cache_dir',
-                            SI_NAME => 'テンプレートキャッシュ場所',
-                            SI_FIELD_IS_REQUIRE => false,
-                            SI_FIELD_TYPE => SI_FIELD_TYPE_TEXT,
-                            SI_DEFAULT => get_template_directory() . '/twig_cache',
-                            SI_ELEM_ATTRS => [],
-                            SI_ELEM_CLASSES => [],
-                            SI_FIELD_CHOICE_VALUES => [],
-                            SI_FIELD_OPTION_AUTOLOAD => true,
-                            SI_EXTRA => [],
-                        ],
+                        ]
                     ]
                 ],
                 [

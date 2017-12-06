@@ -11,15 +11,12 @@ class CustomizerTwig
         $setting = CustomizerFormSettings::get('backbone');
         $setting = CustomizerConfig::getFieldSetting($setting, 'template');
         $debug_mode = CustomizerConfig::getInputSetting($setting, 'debug_mode');
-        $theme_template_dir = CustomizerConfig::getInputSetting($setting, 'theme_template_dir');
-        $theme_template_cache_dir = CustomizerConfig::getInputSetting($setting, 'theme_template_cache_dir');
         
         $is_debug = CustomizerDatabase::getOption('backbone_template_debug_mode', $debug_mode[SI_DEFAULT], true);
-        $template_dir = CustomizerDatabase::getOption('backbone_template_theme_template_dir', $theme_template_dir[SI_DEFAULT], true);
-        $template_cache_dir = CustomizerDatabase::getOption('backbone_template_theme_template_cache_dir', $theme_template_cache_dir[SI_DEFAULT], true);
+        $template_dir = get_template_directory();
+        $template_cache_dir = $template_dir . '/twig_cache';
         $plugin_template_dir = plugin_dir_path(__FILE__) . '/templates';
         
-        CustomizerUtils::createDir($template_dir);
         CustomizerUtils::createDir($template_cache_dir);
 
         $loader = new \Twig_Loader_Filesystem([
