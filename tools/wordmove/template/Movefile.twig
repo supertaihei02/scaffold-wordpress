@@ -1,25 +1,25 @@
 global:
   sql_adapter: "default"
 local:
-  vhost: "{{ env.LOCAL_WP_HOME }}"
+  vhost: "{{ env.LOCAL_WP_HOME|raw }}"
   wordpress_path: "/var/www/html"
   database:
-    name: "{{ env.WORDPRESS_DB_NAME }}"
-    user: "{{ env.WORDPRESS_DB_USER }}"
-    password: "{{ env.WORDPRESS_DB_PASSWORD }}"
-    host: "{{ env.MYSQL_CONTAINER }}"
+    name: "{{ env.WORDPRESS_DB_NAME|raw }}"
+    user: "{{ env.WORDPRESS_DB_USER|raw }}"
+    password: "{{ env.WORDPRESS_DB_PASSWORD|raw }}"
+    host: "{{ env.MYSQL_CONTAINER|raw }}"
     charset: "utf8"
 
 {% if env.STAGING_WP_HOME is not empty %}
 staging:
-  vhost: "{{ env.STAGING_WP_HOME }}"
-  wordpress_path: "{{ env.STAGING_WP_SETTINGS_PATH }}"
+  vhost: "{{ env.STAGING_WP_HOME|raw }}"
+  wordpress_path: "{{ env.STAGING_WP_SETTINGS_PATH|raw }}"
 
   database:
-    name: "{{ env.STAGING_WORDPRESS_DB_NAME }}"
-    user: "{{ env.STAGING_WORDPRESS_DB_USER }}"
-    password: "{{ env.STAGING_WORDPRESS_DB_PASSWORD }}"
-    host: "{{ env.STAGING_WORDPRESS_DB_HOST }}"
+    name: "{{ env.STAGING_WORDPRESS_DB_NAME|raw }}"
+    user: "{{ env.STAGING_WORDPRESS_DB_USER|raw }}"
+    password: "{{ env.STAGING_WORDPRESS_DB_PASSWORD|raw }}"
+    host: "{{ env.STAGING_WORDPRESS_DB_HOST|raw }}"
     charset: "utf8"
   exclude:
     - ".git/"
@@ -35,34 +35,34 @@ staging:
 {% endif %}  
 {% if env.STAGING_UPLOAD_PROTOCOL == "SFTP" %}
   ssh:
-    host: "{{ env.STAGING_UPLOAD_HOST }}"
-    user: "{{ env.STAGING_UPLOAD_USER }}"
-    port: {{ env.STAGING_UPLOAD_PORT }}
+    host: "{{ env.STAGING_UPLOAD_HOST|raw }}"
+    user: "{{ env.STAGING_UPLOAD_USER|raw }}"
+    port: {{ env.STAGING_UPLOAD_PORT|raw }}
 {% if env.STAGING_UPLOAD_PASS is not empty %}
-    password: {{ env.STAGING_UPLOAD_PASS }}
+    password: {{ env.STAGING_UPLOAD_PASS|raw }}
 {% endif %}
     rsync_options: --verbose
 {% elseif env.STAGING_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
-    host: "{{ env.STAGING_UPLOAD_HOST }}"
-    user: "{{ env.STAGING_UPLOAD_USER }}"
-    port: {{ env.STAGING_UPLOAD_PORT }}
+    host: "{{ env.STAGING_UPLOAD_HOST|raw }}"
+    user: "{{ env.STAGING_UPLOAD_USER|raw }}"
+    port: {{ env.STAGING_UPLOAD_PORT|raw }}
 {% if env.STAGING_UPLOAD_PASS is not empty %}
-    password: {{ env.STAGING_UPLOAD_PASS }}
+    password: {{ env.STAGING_UPLOAD_PASS|raw }}
 {% endif %}
     passive: false
 {% endif %}
 {% endif %}
 {% if env.PRODUCTION_WP_HOME is not empty %}
 production:
-  vhost: "{{ env.PRODUCTION_WP_HOME }}"
-  wordpress_path: "{{ env.PRODUCTION_WP_SETTINGS_PATH }}"
+  vhost: "{{ env.PRODUCTION_WP_HOME|raw }}"
+  wordpress_path: "{{ env.PRODUCTION_WP_SETTINGS_PATH|raw }}"
 
   database:
-    name: "{{ env.PRODUCTION_WORDPRESS_DB_NAME }}"
-    user: "{{ env.PRODUCTION_WORDPRESS_DB_USER }}"
-    password: "{{ env.PRODUCTION_WORDPRESS_DB_PASSWORD }}"
-    host: "{{ env.PRODUCTION_WORDPRESS_DB_HOST }}"
+    name: "{{ env.PRODUCTION_WORDPRESS_DB_NAME|raw }}"
+    user: "{{ env.PRODUCTION_WORDPRESS_DB_USER|raw }}"
+    password: "{{ env.PRODUCTION_WORDPRESS_DB_PASSWORD|raw }}"
+    host: "{{ env.PRODUCTION_WORDPRESS_DB_HOST|raw }}"
     charset: "utf8"
   exclude:
     - ".git/"
@@ -78,20 +78,20 @@ production:
 {% endif %}
 {% if env.PRODUCTION_UPLOAD_PROTOCOL == "SFTP" %}
   ssh:
-    host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
-    user: "{{ env.PRODUCTION_UPLOAD_USER }}"
-    port: {{ env.PRODUCTION_UPLOAD_PORT }}
+    host: "{{ env.PRODUCTION_UPLOAD_HOST|raw }}"
+    user: "{{ env.PRODUCTION_UPLOAD_USER|raw }}"
+    port: {{ env.PRODUCTION_UPLOAD_PORT|raw }}
 {% if env.PRODUCTION_UPLOAD_PASS is not empty %}
-    password: {{ env.PRODUCTION_UPLOAD_PASS }}
+    password: {{ env.PRODUCTION_UPLOAD_PASS|raw }}
 {% endif %}
     rsync_options: --verbose
 {% elseif env.PRODUCTION_UPLOAD_PROTOCOL == "FTP" %}
   ftp:
-    host: "{{ env.PRODUCTION_UPLOAD_HOST }}"
-    user: "{{ env.PRODUCTION_UPLOAD_USER }}"
-    port: {{ env.PRODUCTION_UPLOAD_PORT }}
+    host: "{{ env.PRODUCTION_UPLOAD_HOST|raw }}"
+    user: "{{ env.PRODUCTION_UPLOAD_USER|raw }}"
+    port: {{ env.PRODUCTION_UPLOAD_PORT|raw }}
 {% if env.PRODUCTION_UPLOAD_PASS is not empty %}
-    password: {{ env.PRODUCTION_UPLOAD_PASS }}
+    password: {{ env.PRODUCTION_UPLOAD_PASS|raw }}
 {% endif %}
     passive: false
 {% endif %}
