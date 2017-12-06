@@ -165,6 +165,9 @@ $RECYCLE.BIN/
 /wordpress/plugins/hello.php
 /wordpress/plugins/index.php
 /wordpress/plugins/customizer/log/
+/wordpress/plugins/customizer/vendor/
+/wordpress/plugins/customizer/composer.json
+/wordpress/plugins/customizer/composer.lock
 /wordpress/plugins/customizer/expand/google/credentials/
 
 /wordpress/uploads/

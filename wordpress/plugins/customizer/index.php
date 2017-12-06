@@ -30,10 +30,10 @@ define('SI_BASE_PATH', __DIR__);
 define('SI_PLUGIN_PATH', __DIR__ . '/customizer');
 
 // Modules
-if (!is_file(ABSPATH . '/vendor/autoload.php')) {
+if (!is_file(SI_BASE_PATH . '/vendor/autoload.php')) {
     die('Wordpressインストールディレクトリで次のコマンドを実行してください `composer install` ');
 }
-require ABSPATH . '/vendor/autoload.php';
+require SI_BASE_PATH . '/vendor/autoload.php';
 require SI_BASE_PATH . '/ClassLoader.php';
 
 // DBの定義
