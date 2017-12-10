@@ -48,6 +48,7 @@
     "imagemin-mozjpeg": "^6.0.0",
     "imagemin-pngquant": "^5.0.1",
     "npm-run-all": "^4.0.2",
+    "postcss-color-hex-alpha": "^3.0.0",
     "postcss-custom-media": "^6.0.0",
     "postcss-custom-properties": "^6.1.0",
     "postcss-fixes": "^2.0.1",
