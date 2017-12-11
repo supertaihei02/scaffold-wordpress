@@ -8,6 +8,7 @@
     "postinstall": "flow-typed install",
     "start": "NODE_ENV=development gulp",
     "build": "NODE_ENV=production gulp",
+    "build:customizer": "NODE_ENV=production gulp customizer",
     "check": "run-s typecheck lint",
     "lint": "run-p lint:*",
     "lint:script": "eslint --ext .js,.jsx frontend/",

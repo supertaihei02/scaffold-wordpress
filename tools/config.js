@@ -85,5 +85,13 @@ module.exports = {
       cacheDirectory: true,
       babelrc: false
     }
+  },
+
+  customizer: {
+    entries: [
+      'wordpress/plugins/customizer/src/js/**/*.{js,jsx}',
+      '!wordpress/plugins/customizer/src/js/**/_*.{js,jsx}',
+    ],
+    outputDir: 'wordpress/plugins/customizer/js'
   }
 };
