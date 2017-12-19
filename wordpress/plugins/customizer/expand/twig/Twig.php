@@ -90,8 +90,17 @@ class CustomizerTwig
      */
     static function defaultRoutingLogic()
     {
+        $page_type = CustomizerUtils::getPageType();
+        switch ($page_type) {
+            case SI_PAGE_TYPE_PAGE:
+                $name = get_post()->post_name;
+                break;
+            default:
+                $name = get_post_type();
+                break;
+        }
         return self::buildFileName(
-            CustomizerUtils::getPageType(), get_post_type()
+            $page_type, $name
         );
     }
 

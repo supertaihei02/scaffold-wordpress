@@ -920,11 +920,12 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $form = null;
     $do_redirect = true;
     $actions = isset($_POST['actions']) ? $_POST['actions'] : [];
-    if (!empty($actions)) {
-        require dirname(dirname(dirname(__DIR__))) . '/wp-load.php';
-        $form = new CustomizerForm();
+    if (empty($actions)) {
+        return;
     }
 
+    require dirname(dirname(dirname(__DIR__))) . '/wp-load.php';
+    $form = new CustomizerForm();
     foreach ($actions as $action) {
 
         // 追加MODE[問い合わせフォーム等] => 独自options
