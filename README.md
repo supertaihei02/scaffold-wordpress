@@ -56,6 +56,8 @@ make export
 |- .gitattributes           # git設定 yarn.lockをバイナリ扱いなど
 |- .gitignore               # git管理対象外を記述
 |- .node-version            # ndenv用のバージョン指定
+|- .prettierignore          # prettier対象除外設定
+|- .prettierrc              # prettier設定
 |- .stylelintrc             # stylelint設定ファイル
 |- gulpfile.js              # gulp実行ファイル
 |- Makefile                 # makeコマンド設定ファイル
@@ -199,6 +201,35 @@ make export
 - サイトマップちゃんとしたほうがよろしい
     - Google XML Sitemaps使うのが楽っぽい。[参考](https://www.adminweb.jp/wordpress-plugin/list/index2.html)
 - ちゃんとクローリングされるように設定から __検索エンジンがサイトをインデックスしないようにする__ のチェックを外すこと
+
+## Prettierのすすめ
+
+commit時に勝手にコードを整形してくれる。
+
+エディタを設定すると保存時にもいい感じに整形してくれる。
+
+### VSCode設定
+
+1. [拡張](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)を入れる
+1. ローカル設定に以下を追加
+
+```json
+{
+  // prettier
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.formatOnSave": true
+  },
+}
+```
+
+グローバル設定をどうするかは人によりますが、falseにしといたほうがいいと思います。他のプロジェクトで適当に整形されたりするので。
+
+### IntelliJ設定
+
+[この辺](https://qiita.com/kouchi67/items/6d3b5cf66f57c4ff6600)を参考に。
 
 ## TODO or 野望
 

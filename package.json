@@ -13,7 +13,12 @@
     "lint": "run-p lint:*",
     "lint:script": "eslint --ext .js,.jsx frontend/",
     "lint:style": "stylelint 'frontend/**/*.css'",
-    "typecheck": "flow"
+    "typecheck": "flow",
+    "safe-guard": "lint-staged",
+    "prettier": "run-p prettier:*",
+    "prettier:style": "prettier --write 'frontend/styles/**/*.css'",
+    "prettier:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
+    "precommit": "run-s typecheck safe-guard"
   },
   "browserslist": [
     "ie 11",
@@ -22,6 +27,26 @@
     "not ie <= 10",
     "not chrome 49"
   ],
+  "lint-staged": {
+    "subTaskConcurrency": 1,
+    "linters": {
+      "*.js": [
+        "prettier:script",
+        "lint:script",
+        "git add frontend/**/*.js"
+      ],
+      "*.jsx": [
+        "prettier:script",
+        "lint:script",
+        "git add frontend/**/*.jsx"
+      ],
+      "*.css": [
+        "prettier:style",
+        "lint:style",
+        "git add frontend/**/*.css"
+      ]
+    }
+  },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel-core": "^6.25.0",
@@ -37,7 +62,9 @@
     "dotenv": "^4.0.0",
     "eslint": "^4.4.0",
     "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.3.0",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-flowtype-errors": "^3.3.6",
+    "eslint-plugin-prettier": "^2.6.0",
     "flow-bin": "^0.52.0",
     "flow-typed": "^2.1.2",
     "globby": "^6.1.0",
@@ -46,8 +73,10 @@
     "gulp-load-plugins": "^1.5.0",
     "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^7.0.0",
+    "husky": "^0.14.3",
     "imagemin-mozjpeg": "^6.0.0",
     "imagemin-pngquant": "^5.0.1",
+    "lint-staged": "^6.1.1",
     "npm-run-all": "^4.0.2",
     "postcss-color-hex-alpha": "^3.0.0",
     "postcss-custom-media": "^6.0.0",
@@ -58,6 +87,7 @@
     "postcss-nested": "^2.0.2",
     "postcss-simple-vars": "^4.1.0",
     "postcss-url": "^7.0.0",
+    "prettier": "^1.10.2",
     "raw-loader": "^0.5.1",
     "require-dir": "^0.3.2",
     "run-sequence": "^2.1.0",

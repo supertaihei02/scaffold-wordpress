@@ -1,8 +1,37 @@
 {
+  "plugins": [
+    "prettier"
+  ],
   "extends": [
-    "framelunch"
+    "framelunch/flow",
+    "prettier"
   ],
   "rules": {
+    "no-console": "warn",
+    "require-jsdoc": "off",
+    // 未使用変数 警告 ただし、先頭に_のついている変数、引数はOKとする
+    "no-unused-vars": [
+      "warn",
+      {
+        "caughtErrors": "all",
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    // thisを参照しないクラスメソッドはstaticでなければいけない 無効化 オブジェクト指向ってそういうもんではないと思う
+    "class-methods-use-this": "off",
+    // exportが1件だけならdefaultにする 無効化 気にしない
+    "import/prefer-default-export": "off",
+    "import/extensions": ["error", "ignorePackages", { ".ts": "never" }],
+
+    /*
+     * eslint with typescript problems
+     */
+    "no-undef": "off",
+
+    /*
+     * with prettier
+     */
+    "prettier/prettier": "warn"
   }
 }
-
