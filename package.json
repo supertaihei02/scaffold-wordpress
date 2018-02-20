@@ -13,7 +13,13 @@
     "lint": "run-p lint:*",
     "lint:script": "eslint --ext .js,.jsx frontend/",
     "lint:style": "stylelint 'frontend/**/*.css'",
-    "typecheck": "flow"
+    "typecheck": "flow",
+    "safe-guard": "lint-staged",
+    "prettier": "run-p prettier:*",
+    "prettier:style": "prettier --write 'frontend/styles/**/*.css'",
+    "prettier:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
+    "prettier:json": "prettier --write 'frontend/scripts/**/*.json'",
+    "_precommit": "run-s typecheck safe-guard"
   },
   "browserslist": [
     "ie 11",
@@ -46,8 +52,10 @@
     "gulp-load-plugins": "^1.5.0",
     "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^7.0.0",
+    "husky": "^0.14.3",
     "imagemin-mozjpeg": "^6.0.0",
     "imagemin-pngquant": "^5.0.1",
+    "lint-staged": "^6.1.1",
     "npm-run-all": "^4.0.2",
     "postcss-color-hex-alpha": "^3.0.0",
     "postcss-custom-media": "^6.0.0",
