@@ -36,7 +36,7 @@
     "cssnano": "^3.10.0",
     "dotenv": "^4.0.0",
     "eslint": "^4.4.0",
-    "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.2.3",
+    "eslint-config-framelunch": "framelunch/eslint-config-framelunch#v0.3.0",
     "eslint-plugin-flowtype-errors": "^3.3.6",
     "flow-bin": "^0.52.0",
     "flow-typed": "^2.1.2",
