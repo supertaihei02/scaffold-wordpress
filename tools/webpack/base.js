@@ -5,7 +5,10 @@ const conf = require('../config');
 
 const entry = {
   vendor: [
-    'babel-polyfill',
+    // useBuiltIns: trueが効かなくなるためvendorからは外す
+    // 'babel-polyfill',
+    // babel-plugin-date-fnsが効かなくなるためvendorからは外す
+    // 'date-fns',
     'jquery'
   ]
 };
@@ -31,10 +34,13 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: conf.script.babelOptions
-        }
+        use: [
+          'cache-loader',
+          {
+            loader: 'babel-loader',
+            options: conf.script.babelOptions
+          }
+        ]
       },
       {
         test: /\.(jpg|png|gif)$/,

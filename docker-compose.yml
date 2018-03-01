@@ -2,10 +2,10 @@ version: "2"
 services:
   # このイメージのバージョンアップ = wordpress, PHPのバージョンアップ
   wordpress:
-    container_name: wp
-    image: wordpress:php7.1-fpm-alpine
+    container_name: ${WORDPRESS_CONTAINER}
+    build: ./settings/wp
     ports:
-      - "9000:9000"
+      - "${EXPOSE_WP_PORT}:9000"
     links:
       - db
     environment:
@@ -14,16 +14,21 @@ services:
     volumes:
       - ./wordpress/themes/fl:/var/www/html/wp-content/themes/fl
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
-      - ./wordpress/wp-console:/var/www/html/wp-console
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
+      - ./tools/wordmove:/var/www/tools/wordmove
+      - ./tools/shell-scripts/lib:/var/www/tools/shell-scripts
+      - ./.env:/var/www/.env
+      - ~/.ssh:/root/.ssh
     networks:
       main:
         aliases:
           - wp
   nginx:
-    container_name: wp-web
+    container_name: ${NGINX_CONTAINER}
     image: nginx:alpine
+    env_file: .env
     ports:
-      - "80:80"
+      - "${EXPOSE_WEB_PORT}:80"
     volumes:
       - ./settings/nginx:/etc/nginx/conf.d
       - ./logs/nginx:/var/log/nginx
@@ -36,7 +41,7 @@ services:
         aliases:
           - web
   db:
-    container_name: wp-db
+    container_name: ${MYSQL_CONTAINER}
     image: mariadb:latest
     env_file: .env
     volumes:

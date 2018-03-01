@@ -1,12 +1,15 @@
 const gulp = require('gulp');
 const runSequence = require('run-sequence');
 const browserSync = require('browser-sync');
+const dotenv = require('dotenv');
 
 const conf = require('../config');
 
+dotenv.config();
+
 gulp.task('default', () => process.env.NODE_ENV === 'production' ? runSequence(
   // production
-  'copy',
+  ['b.copy', 'image'],
   ['b.script', 'b.style']
 ) : runSequence(
   // development
@@ -24,7 +27,7 @@ gulp.task('watch', () => {
 
 gulp.task('browserSync', () => {
   browserSync({
-    proxy: 'localhost',
+    proxy: `localhost:${process.env.EXPOSE_WEB_PORT}`,
     files: [
       "./wordpress/themes/fl/**/*",
       "!./wordpress/themes/fl/js/vendor.bundle.js",

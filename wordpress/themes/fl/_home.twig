@@ -1,0 +1,15 @@
+{% extends "default_frame.twig" %}
+{#このページ特有のMETAタグ#}
+{% block metadatas %}{% endblock metadatas %}
+{#このページ特有のCSS#}
+{% block styles %}{% endblock styles %}
+{#このページ特有のJS#}
+{% block scripts %}
+  {{ scripts(['/js/index.js', '/js/home.js']) }}
+{% endblock scripts %}
+{#bodyタグの中身#}
+{% block main %}
+  {#{% include 'news-archive.twig' %}#}
+  
+  {{ displayFormFront('reservation') }}
+{% endblock main %}

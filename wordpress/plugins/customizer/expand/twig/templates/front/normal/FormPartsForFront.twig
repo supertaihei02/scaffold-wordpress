@@ -1,0 +1,106 @@
+{% macro render(element, index) %}
+  <div id="detail{{ index }}" class="detail">
+
+    {% if element.isInput() and element.input_type != 'hidden' %}
+      {% import 'Builder.twig' as builder %}
+      <div class="{{ element.input_type }}">
+        {% if element.input_type != 'button' %}
+          <label for="{{ element.id }}">{{ element.layer_name }}</label>
+        {% endif %}
+        {% if keyExists(constant('SI_EXTRA_NOTICE'), element.extras) %}
+          <span id="notice-{{ element.id }}" class="notice" >element.extras.notice</span>
+        {% else %}
+          <span id="notice-{{ element.id }}" class="hidden notice" ></span>
+        {% endif %}
+        {{ builder.input(element) }}
+        <span id="err-{{ element.id }}" class="hidden error" ></span>
+      </div>
+    {% elseif element.input_type == 'hidden' %}
+      {% import 'Builder.twig' as builder %}
+      {{ builder.input(element, [], []) }}
+    {% endif %}
+
+    {# START: 子ノードがいる場合再帰的に描画 #}
+    {% if element.hasChild() %}
+      {% import _self as recursive %}
+      {% for child in element.children %}
+        {{ recursive.render(child, loop.index) }}
+      {% endfor %}
+    {% endif %}
+    {# END: 子ノードがいる場合再帰的に描画 #}
+  </div>
+{% endmacro render %}
+
+{% macro block(element, currentMaxSequence) %}
+  {% if currentMaxSequence is empty %}
+    {% set currentMaxSequence = getCurrentMaxSequence(element.children) %}
+  {% endif %}
+  
+  {# START: 第二層 FORM BLOCK #}
+  <section {{ easyAttrs(element, ['block', element.multiple_common_id])|raw }}>
+    {% if element.layer_name is not empty %}
+      <h4>{{ element.layer_name }}</h4>
+    {% else %}
+      <hr>
+    {% endif %}
+    {# START: 第三層以降 子ノードがいる場合再帰的に描画 #}
+    {% if element.hasChild() %}
+      {% import _self as recursive %}
+      {% for child in element.children %}
+        {{ recursive.render(child, loop.index) }}
+      {% endfor %}
+    {% endif %}
+    {# END: 第三層以降 子ノードがいる場合再帰的に描画 #}
+
+    {% if element.multiple %}
+      <div class="button-group">
+        {# 削除ボタン #}
+        <div data-group-key="{{ element.multiple_common_id }}"
+             data-bf-group-id="{{ element.before_block_id }}"
+             data-delete-target="{{ element.id }}"
+             data-delete-sequence="{{ element.sequence }}"
+             class="field-del-button button">削除
+        </div>
+        {# 追加ボタン #}
+        {% set hidden = 'hidden' %}
+        {% if element.multiple_last_block %}
+          {% set hidden = '' %}
+        {% endif %}
+        <div data-template="CallFrontForApi.twig"
+             data-group-key="{{ element.multiple_common_id }}"
+             data-append-target="{{ element.id }}"
+             data-current-sequence="{{ currentMaxSequence }}"
+             data-config-path="{{ element.config_path|json_encode() }}"
+             class="field-add-button button button-primary {{ hidden }}">追加
+        </div>
+      </div>
+    {% endif %}
+  </section>
+  {# END: 第二層 FORM BLOCK #}
+{% endmacro %}
+
+{% macro form(root, elements) %}
+  <article class="wrap">
+    <h2>Custom Form</h2>
+    <form id="auto-form" method="post" action="{{ getFormAction() }}">
+      {{ formSettingForOptions(root) }}
+
+      {% for element in elements %}
+        <hr>
+        {# START: 第一層 FORM GROUP #}
+        {% if element.hasChild() %}
+          <article {{ easyAttrs(element, 'group')|raw }}>
+            <h3>{{ element.layer_name }}</h3>
+            {% for block in element.children %}
+              {% import _self as builder %}
+              {{ builder.block(block) }}
+            {% endfor %}
+          </article>
+        {% endif %}
+        {# END: 第一層 FORM GROUP #}
+      {% endfor %}
+
+      <input type="submit" value="更新" />
+    </form>
+  </article>
+{% endmacro %}

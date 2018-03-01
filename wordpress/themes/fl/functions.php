@@ -1,117 +1,144 @@
 <?php
-add_action('after_setup_theme', 'blankslate_setup');
+$seo_meta = [];
+$conditions = [];
+$forms = [];
+if (isActiveCustomizer()) {
+    /* *******************************
+     * TDKをページごとにまとめて指定する
+     * 読み込まれる "Twigファイル名(拡張子なし)"
+     * をKEYとして設定する
+     * *******************************/
+    $seo_meta = [
+        // Top Page
+        SI_PAGE_TYPE_HOME => [
+            SI_TITLE => 'HOME title',
+            SI_DESCRIPTION => 'HOME desc',
+            SI_KEYWORDS => 'HOME keywords',
+            SI_OGP_IMAGE => null
+        ],
+        // 404 Page
+        SI_PAGE_TYPE_404 => [
+            SI_TITLE => '404 title',
+            SI_DESCRIPTION => '',
+            SI_KEYWORDS => '',
+            SI_OGP_IMAGE => null
+        ],
+        // News Archive Page
+        SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
+            SI_TITLE => 'NEWS ARCHIVE title',
+            SI_DESCRIPTION => 'NEWS ARCHIVE desc',
+            SI_KEYWORDS => 'NEWS ARCHIVE keywords',
+            SI_OGP_IMAGE => null
+        ],
+    ];
+    
+    /* *******************************
+     * 記事取得条件をページごとにまとめて指定する
+     * 読み込まれる "Twigファイル名(拡張子なし)"
+     * をKEYとして設定する
+     * onLoad に指定した条件はページ読み込み時に
+     * その条件で記事を取得したものが渡される
+     * *******************************/
+    $conditions = [
+        // Top Page
+        SI_PAGE_TYPE_HOME => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => 'news',
+                SI_GET_P_LIMIT => 8,
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+            ]
+        ],
+        // Search Page
+        SI_PAGE_TYPE_SEARCH => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_SEARCH_KEYWORDS => CustomizerUtils::get($_GET, SI_GET_P_SEARCH_KEYWORDS),
+                SI_GET_P_PAGE => CustomizerUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_POST_TYPE => CustomizerUtils::get($_GET, SI_POST_TYPE, 'any'),
+                SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 15),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+            ]
+        ],
+        // News Archive Page
+        SI_PAGE_TYPE_ARCHIVE . SI_HYPHEN . 'news' => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => 'news',
+                SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 4),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => CustomizerUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_TAGS => CustomizerUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => CustomizerUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ],
+            'api' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => 'news',
+                SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 2),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => CustomizerUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_TAGS => CustomizerUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => CustomizerUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ],
+            'terms' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_T_TAXONOMIES => 'news'.'_categories',
+                SI_GET_T_HIDE_EMPTY => false,
+                SI_GET_T_TAGS => CustomizerUtils::get($_GET, SI_GET_T_TAGS, -1),
+            ],
+        ],
+        // News Single Page
+        SI_PAGE_TYPE_SINGLE . SI_HYPHEN . 'news' => [
+            /*
+             * [読み込み時]
+             */
+            'onLoad' => [
+                SI_GET_P_STATUS => SI_GET_P_STATUS_PUBLISH,
+                SI_GET_P_POST_TYPE => 'news',
+                SI_GET_P_LIMIT => CustomizerUtils::get($_GET, SI_GET_P_LIMIT, 4),
+                SI_GET_P_ORDER => 'DESC',
+                SI_GET_P_ORDER_BY => 'date',
+                SI_GET_P_PAGE => CustomizerUtils::get($_GET, SI_GET_P_PAGE, 1),
+                SI_GET_P_TAGS => CustomizerUtils::get($_GET, SI_GET_P_TAGS, -1),
+                SI_GET_P_YEAR => CustomizerUtils::get($_GET, SI_GET_P_YEAR, ''),
+            ],
+        ],
+    ];
 
-/*
- * global setup
- */
-function blankslate_setup()
-{
-    load_theme_textdomain('blankslate', get_template_directory() . '/languages');
-    add_theme_support('title-tag');
-    add_theme_support('automatic-feed-links');
-    add_theme_support('post-thumbnails');
-    global $content_width;
-    if (!isset($content_width)) {
-        $content_width = 640;
-    }
-    register_nav_menus(
-        array('main-menu' => __('Main Menu', 'blankslate'))
-   );
+    /* *******************************
+     * Form内容設定
+     * *******************************/
+    $forms = [
+        'reservation' => CustomizerGoogleSpreadSheetSettings::get('reservation')
+    ];
 }
 
-/*
- * load JavaScript files
+/**
+ * Customizerプラグインの有効チェック
+ * @return bool
  */
-add_action('wp_enqueue_scripts', 'blankslate_load_scripts');
-
-function blankslate_load_scripts()
+function isActiveCustomizer()
 {
-    wp_enqueue_script('vendor.bundle', get_settings('site_url') . '/wp-content/themes/fl/js/vendor.bundle.js');
-    wp_enqueue_script('app', get_settings('site_url') . '/wp-content/themes/fl/js/index.js');
-}
-
-/*
- * set favicon
- */
-add_action('wp_head', 'blog_favicon');
-
-function blog_favicon()
-{
-    echo '<link rel="shortcut icon" type="image/x-icon" href="' . get_bloginfo('template_url').'/favicon.ico" />' . "\n";
-}
-
-/*
- * enable comment reply
- */
-add_action('comment_form_before', 'blankslate_enqueue_comment_reply_script');
-
-function blankslate_enqueue_comment_reply_script()
-{
-    if (get_option('thread_comments')) {
-        wp_enqueue_script('comment-reply');
-    }
-}
-
-/*
- * set title
- */
-add_filter('the_title', 'blankslate_title');
-
-function blankslate_title($title)
-{
-    return $title === '' ? '&rarr;' : $title;
-}
-
-/*
- * set filtered title
- */
-add_filter('wp_title', 'blankslate_filter_wp_title');
-
-function blankslate_filter_wp_title($title)
-{
-    return $title . esc_attr(get_bloginfo('name'));
-}
-
-/*
- * set widgets
- */
-add_action('widgets_init', 'blankslate_widgets_init');
-
-function blankslate_widgets_init()
-{
-    register_sidebar(array(
-        'name' => __('Sidebar Widget Area', 'blankslate'),
-        'id' => 'primary-widget-area',
-        'before_widget' => '<li id="%1$s" class="widget-container %2$s">',
-        'after_widget' => "</li>",
-        'before_title' => '<h3 class="widget-title">',
-        'after_title' => '</h3>',
-   ));
-}
-
-/*
- * set custom pings (not use it)
- */
-function blankslate_custom_pings($comment)
-{
-    $GLOBALS['comment'] = $comment;
-    ?>
-    <li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>"><?php echo comment_author_link(); ?></li>
-    <?php
-}
-
-/*
- * get comment number
- */
-add_filter('get_comments_number', 'blankslate_comments_number');
-
-function blankslate_comments_number($count)
-{
-    if (!is_admin()) {
-        global $id;
-        $comments_by_type = &separate_comments(get_comments('status=approve&post_id=' . $id));
-        return count($comments_by_type['comment']);
+    $plugin = 'customizer/index.php';
+    if (function_exists('is_plugin_active')) {
+        return is_plugin_active($plugin);
     } else {
-        return $count;
+        return in_array(
+            $plugin,
+            get_option('active_plugins')
+        );
     }
 }

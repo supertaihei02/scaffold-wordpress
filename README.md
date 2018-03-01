@@ -8,9 +8,11 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
 
 ## 動かす
 
+1. `cp .env.sample .env`
+    * 必要に応じてPortやコンテナ名を変更する
 1. `make`
-2. `yarn start`
-3. 外観 > テーマ > fl
+1. `yarn start`
+1. 外観 > テーマ > fl
 
 あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します。  
 dockerポートが被るので同時起動できません。  
@@ -61,6 +63,8 @@ DBファイルをバックアップ取ってやります。
 |- .gitattributes           # git設定 yarn.lockをバイナリ扱いなど
 |- .gitignore               # git管理対象外を記述
 |- .node-version            # ndenv用のバージョン指定
+|- .prettierignore          # prettier対象除外設定
+|- .prettierrc              # prettier設定
 |- .stylelintrc             # stylelint設定ファイル
 |- gulpfile.js              # gulp実行ファイル
 |- Makefile                 # makeコマンド設定ファイル
@@ -81,6 +85,92 @@ DBファイルをバックアップ取ってやります。
 
 使っているツール周りは基本的に[scaffold-frontend](https://github.com/framelunch/scaffold-frontend)と同じです。
 一部使ってないツールや設定(JSからのCSS読み込み)が混じってますが、どうしようか決めかねてます。
+
+##### 投稿内容へのスタイルあて
+
+以下を参考に、利用者が投稿したコンテンツに対してスタイルを当てておく必要がある。
+これでだいたいWISIWYGで付与されるスタイルは一通り当たってるはず。
+
+```css
+/* このクラスは適当 */
+.post {
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-weight: var(--fontWeight-bold);
+        margin: 0.5em 0;
+    }
+
+    h1 {
+        font-size: 2.4em;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+
+    h3 {
+        font-size: 1.8em;
+    }
+
+    h4 {
+        font-size: 1.6em;
+    }
+
+    h5 {
+        font-size: 1.4em;
+    }
+
+    h6 {
+        font-size: 1.2em;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    strong {
+        font-weight: var(--fontWeight-bold);
+    }
+
+    ul,
+    ol {
+        margin: 20px 0 20px 1em;
+    }
+
+    ul li {
+        list-style-type: disc;
+    }
+
+    ol li {
+        list-style-type: decimal;
+    }
+
+    blockquote {
+        background: rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        padding: 20px 30px;
+        font-size: 1.1em;
+    }
+
+    a {
+        color: var(--color-brand);
+    }
+
+    img {
+        margin: 20px 0;
+    }
+
+    p {
+        word-break: break-all;
+    }
+
+    hr {
+        margin: 1rem 0;
+    }
+}
+```
 
 #### いじりどころ
 
@@ -112,6 +202,41 @@ DBファイルをバックアップ取ってやります。
 - 検索結果: `search.php`
 - 固定ページ: `page.php`
 - タグ別一覧ページ: `tag.php`
+
+## 公開時の設定など
+
+- サイトマップちゃんとしたほうがよろしい
+    - Google XML Sitemaps使うのが楽っぽい。[参考](https://www.adminweb.jp/wordpress-plugin/list/index2.html)
+- ちゃんとクローリングされるように設定から __検索エンジンがサイトをインデックスしないようにする__ のチェックを外すこと
+
+## Prettierのすすめ
+
+commit時に勝手にコードを整形してくれる。
+
+エディタを設定すると保存時にもいい感じに整形してくれる。
+
+### VSCode設定
+
+1. [拡張](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)を入れる
+1. ローカル設定に以下を追加
+
+```json
+{
+  // prettier
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.formatOnSave": true
+  },
+}
+```
+
+グローバル設定をどうするかは人によりますが、falseにしといたほうがいいと思います。他のプロジェクトで適当に整形されたりするので。
+
+### IntelliJ設定
+
+[この辺](https://qiita.com/kouchi67/items/6d3b5cf66f57c4ff6600)を参考に。
 
 ## TODO or 野望
 

@@ -24,27 +24,34 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// Timezone
+date_default_timezone_set(get_option('timezone_string'));
 define('SI_BASE_PATH', __DIR__);
-// jsの読み込み
-function loadScript($hook)
-{
-    if ($hook == 'post.php' || $hook == 'post-new.php') {
-        wp_enqueue_media();
-        wp_enqueue_script('customFields', plugins_url('js/customFields.js', __FILE__));
-    }
+define('SI_PLUGIN_PATH', __DIR__ . '/customizer');
+
+// Modules
+if (!is_file(SI_BASE_PATH . '/vendor/autoload.php')) {
+    die('Wordpressインストールディレクトリで次のコマンドを実行してください `composer install` ');
 }
-add_action( 'admin_enqueue_scripts', 'loadScript' );
+require SI_BASE_PATH . '/vendor/autoload.php';
+require SI_BASE_PATH . '/ClassLoader.php';
 
-// このプラグインで利用するグローバル変数
-$si_posts = [];   // WP_Postクラスのリストが入る。使用後は空にする。
-$si_customs = []; // post_idをkeyにしたカスタムフィールドの値が入る。使用後は空にする。
-$si_terms = [];   // get_termsの結果が入る。使用後は空にする。
+// DBの定義
+CustomizerInstall::updateDb();
 
-// phpの読み込み
-require_once SI_BASE_PATH . '/SystemDefine.php';
-require_once SI_BASE_PATH . '/Utils.php';
-require_once SI_BASE_PATH . '/Config.php';
-require_once SI_BASE_PATH . '/CustomPostTypes.php';
-require_once SI_BASE_PATH . '/CustomFields.php';
-require_once SI_BASE_PATH . '/ConsoleManager.php';
-require_once SI_BASE_PATH . '/Template.php';
+// Globals
+$option_with_sequence_db_version = '1.0';
+$si_logger = new Logger();
+$si_customs = [];
+$si_terms = [];
+$si_twig = CustomizerTwig::createEngine();
+
+// User定義情報
+$seo_meta = [];
+$conditions = [];
+$forms = [];
+$post_types = [];
+$taxonomies = [];
+
+// Plugin Initialize
+CustomizerInstall::initialize();

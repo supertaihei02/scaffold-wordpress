@@ -148,11 +148,14 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/node,osx,linux,windows,vim,visualstudiocode
 
 ### Manual ###
+/.cache-loader
 /.env
 /.idea
+/.vscode
 /flow-typed
 /data
 /wordpress/themes/fl/**/*
+/wordpress/themes/fl/twig_cache/
 !/wordpress/themes/fl/template-parts/*.php
 !/wordpress/themes/fl/**/*.php
 !/wordpress/themes/fl/readme.txt
@@ -162,4 +165,14 @@ $RECYCLE.BIN/
 /wordpress/plugins/akismet/
 /wordpress/plugins/hello.php
 /wordpress/plugins/index.php
+/wordpress/plugins/customizer/log/
+/wordpress/plugins/customizer/vendor/
+/wordpress/plugins/customizer/composer.json
+/wordpress/plugins/customizer/composer.lock
+/wordpress/plugins/customizer/expand/google/credentials/
 
+/wordpress/uploads/
+
+### まだしっかり実装できていないから省く
+/tools/hooks/
+/tools/operation/
