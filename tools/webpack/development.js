@@ -1,12 +1,16 @@
 const webpack = require('webpack');
 
 const base = require('./base');
+const conf = require('../config');
 
 module.exports = Object.assign({}, base, {
-  cache: true,
+  mode: 'development',
   devtool: 'inline-source-map',
   plugins: [
-    new webpack.LoaderOptionsPlugin({ debug: false }),
-    new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
+    new webpack.LoaderOptionsPlugin({ debug: true }),
+    new webpack.DllReferencePlugin({
+      manifest: conf.script.dll.manifest,
+      context: process.cwd(),
+    }),
   ]
 });

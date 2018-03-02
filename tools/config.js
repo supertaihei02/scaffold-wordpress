@@ -1,12 +1,19 @@
+const fs = require('fs');
+const path = require('path');
+
 const { browserslist: browsers } = require('../package.json');
+
+const manifestPath = path.join(__dirname, '..', 'frontend', 'assets', 'lib', 'vendor-manifest.json');
 
 module.exports = {
   copy: {
     sources: [
       'frontend/assets/**/*',
+      '!frontend/assets/lib/vendor-manifest.json',
     ],
     sourcesProduction: [
       'frontend/assets/**/*',
+      '!frontend/assets/lib/vendor-manifest.json',
       '!frontend/assets/**/*.{jpg,jpeg,gif,png}'
     ],
     outputDir: 'wordpress/themes/fl'
@@ -61,6 +68,26 @@ module.exports = {
     entries: ['frontend/scripts/*.{js,jsx}', '!frontend/scripts/_*.{js,jsx}'],
     watches: ['frontend/scripts/*.{js,jsx}', 'frontend/scripts/**/*.{js,jsx}'],
     outputDir: 'wordpress/themes/fl/js',
+    dll: {
+      path: {
+        dll: path.join(__dirname, '..', 'frontend', 'assets', 'lib', 'js'),
+        manifest: manifestPath,
+      },
+      ignore: [
+        'babel-polyfill',
+        'date-fns',
+        'libraries-frontend-framelunch',
+      ],
+      library: '[name]_library',
+      manifest: (() => {
+        try {
+          fs.statSync(manifestPath);
+          return require(manifestPath);
+        } catch (_error) {
+          return {};
+        }
+      })(),
+    },
     babelOptions: {
       presets: [
         ['env', {

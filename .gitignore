@@ -154,6 +154,8 @@ $RECYCLE.BIN/
 /.vscode
 /flow-typed
 /data
+/frontend/assets/lib/js/vendor.dll.js
+/frontend/assets/lib/vendor-manifest.json
 /wordpress/themes/fl/**/*
 /wordpress/themes/fl/twig_cache/
 !/wordpress/themes/fl/template-parts/*.php
