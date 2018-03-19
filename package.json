@@ -16,9 +16,9 @@
     "lint:style": "stylelint 'frontend/**/*.css'",
     "typecheck": "flow",
     "safe-guard": "lint-staged",
-    "prettier": "run-p prettier:*",
-    "prettier:style": "prettier --write 'frontend/styles/**/*.css'",
-    "prettier:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
+    "fix": "run-p fix:*",
+    "fix:style": "prettier --write 'frontend/styles/**/*.css'",
+    "fix:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
     "precommit": "run-s typecheck safe-guard"
   },
   "browserslist": [
@@ -31,20 +31,14 @@
   "lint-staged": {
     "subTaskConcurrency": 1,
     "linters": {
-      "*.js": [
-        "prettier:script",
-        "lint:script",
-        "git add frontend/**/*.js"
-      ],
-      "*.jsx": [
-        "prettier:script",
-        "lint:script",
-        "git add frontend/**/*.jsx"
+      "*.{js,jsx}": [
+        "eslint --ext .js,.jsx --fix",
+        "git add"
       ],
       "*.css": [
-        "prettier:style",
-        "lint:style",
-        "git add frontend/**/*.css"
+        "prettier --write",
+        "stylelint",
+        "git add"
       ]
     }
   },
