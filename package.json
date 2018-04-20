@@ -1,23 +1,24 @@
 {
   "name": "scaffold-wordpress",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "main": "index.js",
   "author": "kaave <abe@framelunch.jp>",
   "license": "MIT",
   "scripts": {
-    "postinstall": "flow-typed install",
+    "postinstall": "flow-typed install && npm run build:dll",
     "start": "NODE_ENV=development gulp",
     "build": "NODE_ENV=production gulp",
     "build:customizer": "NODE_ENV=production gulp customizer",
+    "build:dll": "webpack --progress --config tools/webpack/dll.js",
     "check": "run-s typecheck lint",
     "lint": "run-p lint:*",
     "lint:script": "eslint --ext .js,.jsx frontend/",
     "lint:style": "stylelint 'frontend/**/*.css'",
     "typecheck": "flow",
     "safe-guard": "lint-staged",
-    "prettier": "run-p prettier:*",
-    "prettier:style": "prettier --write 'frontend/styles/**/*.css'",
-    "prettier:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
+    "fix": "run-p fix:*",
+    "fix:style": "prettier --write 'frontend/styles/**/*.css'",
+    "fix:script": "eslint --ext .ts --fix 'frontend/scripts/**/*.{js,jsx}'",
     "precommit": "run-s typecheck safe-guard"
   },
   "browserslist": [
@@ -30,20 +31,14 @@
   "lint-staged": {
     "subTaskConcurrency": 1,
     "linters": {
-      "*.js": [
-        "prettier:script",
-        "lint:script",
-        "git add frontend/**/*.js"
-      ],
-      "*.jsx": [
-        "prettier:script",
-        "lint:script",
-        "git add frontend/**/*.jsx"
+      "*.{js,jsx}": [
+        "eslint --ext .js,.jsx --fix",
+        "git add"
       ],
       "*.css": [
-        "prettier:style",
-        "lint:style",
-        "git add frontend/**/*.css"
+        "prettier --write",
+        "stylelint",
+        "git add"
       ]
     }
   },
@@ -95,7 +90,8 @@
     "svg-inline-loader": "^0.8.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "url-loader": "^0.5.9",
-    "webpack": "^3.4.1",
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.10",
     "webpack-stream": "^3.2.0"
   },
   "dependencies": {

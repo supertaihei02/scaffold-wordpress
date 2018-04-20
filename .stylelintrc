@@ -4,7 +4,7 @@
     ],
     "ignoreFiles": [
         "node_modules/**/*",
-        "themes/**/*"
+        "wordpress/**/*"
     ],
     "rules": {
         "max-line-length": null,

@@ -1,16 +1,17 @@
 const webpack = require('webpack');
-const UglifyJs = require('uglifyjs-webpack-plugin');
 
 const base = require('./base');
+const conf = require('../config');
 
 process.noDeprecation = true;
 
 module.exports = Object.assign({}, base, {
-  cache: false,
-  devtool: '',
+  mode: 'production',
   plugins: [
     new webpack.LoaderOptionsPlugin({ debug: false }),
-    new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
-    new UglifyJs(),
+    new webpack.DllReferencePlugin({
+      manifest: conf.script.dll.manifest,
+      context: process.cwd(),
+    }),
   ]
 });

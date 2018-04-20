@@ -2,17 +2,7 @@ const globby = require('globby');
 const path = require('path');
 
 const conf = require('../config');
-
-const entry = {
-  vendor: [
-    // useBuiltIns: trueが効かなくなるためvendorからは外す
-    // 'babel-polyfill',
-    // babel-plugin-date-fnsが効かなくなるためvendorからは外す
-    // 'date-fns',
-    'jquery'
-  ]
-};
-
+const entry = {};
 globby.sync(conf.script.entries)
   .forEach((filename) => {
     const basename = path.basename(filename, path.extname(filename));
