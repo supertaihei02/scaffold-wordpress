@@ -29,8 +29,8 @@ gulp.task('browserSync', () => {
   browserSync({
     proxy: `localhost:${process.env.EXPOSE_WEB_PORT}`,
     files: [
-      "./wordpress/themes/fl/**/*",
-      "!./wordpress/themes/fl/js/vendor.bundle.js",
+      "./wordpress/themes/fl_vue/**/*",
+      "!./wordpress/themes/fl_vue/js/vendor.bundle.js",
     ]
   });
 });

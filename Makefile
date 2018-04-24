@@ -5,7 +5,6 @@ _:
 
 init:
 	docker-compose up -d
-	make composer
 	yarn
 	make import
 	make gen-movefile
@@ -30,8 +29,6 @@ message:
 	@echo "--------------------------------------------------------------------------------------------"
 	@echo ""
 
-composer:
-	bash tools/composer/composer.sh
 
 gen-movefile:
 	bash tools/wordmove/generate.sh 0

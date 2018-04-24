@@ -156,24 +156,24 @@ $RECYCLE.BIN/
 /data
 /frontend/assets/lib/js/vendor.dll.js
 /frontend/assets/lib/vendor-manifest.json
-/wordpress/themes/fl/**/*
-/wordpress/themes/fl/twig_cache/
-!/wordpress/themes/fl/template-parts/*.php
-!/wordpress/themes/fl/**/*.php
-!/wordpress/themes/fl/readme.txt
-!/wordpress/themes/fl/screenshot.*
-!/wordpress/themes/fl/languages/.gitkeep
+/html/themes/fl/**/*
+/html/themes/fl/twig_cache/
+!/html/themes/fl/template-parts/*.php
+!/html/themes/fl/**/*.php
+!/html/themes/fl/readme.txt
+!/html/themes/fl/screenshot.*
+!/html/themes/fl/languages/.gitkeep
 
-/wordpress/plugins/akismet/
-/wordpress/plugins/hello.php
-/wordpress/plugins/index.php
-/wordpress/plugins/customizer/log/
-/wordpress/plugins/customizer/vendor/
-/wordpress/plugins/customizer/composer.json
-/wordpress/plugins/customizer/composer.lock
-/wordpress/plugins/customizer/expand/google/credentials/
+/html/plugins/akismet/
+/html/plugins/hello.php
+/html/plugins/index.php
+/html/plugins/customizer/log/
+/html/plugins/customizer/vendor/
+/html/plugins/customizer/composer.json
+/html/plugins/customizer/composer.lock
+/html/plugins/customizer/expand/google/credentials/
 
-/wordpress/uploads/
+/html/uploads/
 
 ### まだしっかり実装できていないから省く
 /tools/hooks/
