@@ -1,10 +1,10 @@
-# FRAME LUNCH scaffold for wordpress project
+# scaffold for wordpress project
+forked by FRAME LUNCH scaffold for wordpress project
 
 ## 何
 
-フロントまわりを極力npmに切り離したWordpress開発環境です。  
-WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプルな環境を用意しました。  
-元ネタのテーマは[BlankSlate](http://tidythemes.com/concept/)を使いました。
+よりシンプルにcomposer、デフォルトプラグインを削除し
+themeにVue starterを設置して素早くwordpressテンプレートを作成する事に特化した。
 
 ## 動かす
 
@@ -12,7 +12,7 @@ WordpressとMySQLはDocker使ってフレッシュ&クリーン&高速&シンプ
     * 必要に応じてPortやコンテナ名を変更する
 1. `make`
 1. `yarn start`
-1. 外観 > テーマ > fl
+1. 外観 > テーマ > 
 
 あとはよしなに。 なお、 `yarn build` で例によって圧縮版を出力します。  
 dockerポートが被るので同時起動できません。  

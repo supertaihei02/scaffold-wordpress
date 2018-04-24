@@ -1,5 +1,2 @@
-flow-typed/**
-frontend/assets/**
 node_modules/**
-wordpress/**
 tools/**
