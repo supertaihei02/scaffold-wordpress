@@ -8,19 +8,15 @@
         <div class="progress-bar" role="progressbar" :style="loaderStyle" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
     </transition>
-
     <app-header></app-header>
-
     <transition name="page-transition" mode="out-in" appear>
       <div class="page-content-wrapper">
         <router-view></router-view>
       </div>
     </transition>
-
     <app-footer></app-footer>
   </div>
 </template>
-
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Header from './components/partials/Header'

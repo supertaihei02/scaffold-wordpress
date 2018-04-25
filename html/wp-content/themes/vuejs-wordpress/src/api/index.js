@@ -48,7 +48,6 @@ export default {
 
   getPosts (limit, cb) {
     if (_.isEmpty(limit)) { let limit = 5 }
-    
     axios.get(window.SETTINGS.API_BASE_PATH + 'posts?per_page='+limit)
       .then(response => {
         if( location.origin === undefined ){

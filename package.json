@@ -4,10 +4,7 @@
   "main": "index.js",
   "author": "supertaihei02 <>",
   "license": "MIT",
-  "scripts": {
-  },
-  "devDependencies": {
-  },
-  "dependencies": {
-  }
+  "scripts": {},
+  "devDependencies": {},
+  "dependencies": {}
 }
