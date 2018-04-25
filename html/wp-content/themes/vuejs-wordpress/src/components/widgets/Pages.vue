@@ -3,7 +3,7 @@
     <h3><slot></slot></h3>
     <ul v-if="allPagesLoaded">
       <li v-for="page in somePages(limit)" :key="page.id">
-        <a v-bind:href="page.link">{{ page.title.rendered }}</a>
+        <router-link v-bind:to="page.link">{{ page.title.rendered }}</router-link>
       </li>
     </ul>
     <div v-else>

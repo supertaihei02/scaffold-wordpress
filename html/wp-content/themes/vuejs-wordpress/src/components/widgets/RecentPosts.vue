@@ -3,7 +3,7 @@
     <h3><slot></slot></h3>
     <ul v-if="recentPostsLoaded">
       <li v-for="post in recentPosts(limit)" :key="post.id">
-        <a v-bind:href="post.link">{{ post.title.rendered }}</a>
+        <router-link v-bind:to="post.link">{{ post.title.rendered }}</router-link>
       </li>
     </ul>
     <div v-else>
