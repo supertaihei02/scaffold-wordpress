@@ -10,7 +10,13 @@
 
 <script>
 export default {
-  components: {
+  data: () => {
+    return {
+      post: void(0)
+    }
+  },
+  mounted: () => {
+    // TODO APIでpageデータを取得する（linkからの遷移ではpage_idが不明なのでguid遷移にする必要がある）
   }
 }
 </script>
